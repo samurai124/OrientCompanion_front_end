@@ -1,0 +1,302 @@
+/* ==========================================================================
+   ORIENTCOMPANION - RECOMMENDATIONS PAGE STYLES
+   Frosted Glass / Crystal Embossed Aesthetic
+   ========================================================================== */
+
+.recs-page-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 5rem;
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Circuit Pattern Layer */
+.recs-circuit-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--circuit-color);
+  opacity: 0.85;
+}
+.recs-circuit-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.recs-content-wrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+.recs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--dash-card-border);
+  flex-wrap: wrap;
+}
+
+.recs-title-col h1 {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.4rem;
+}
+
+.recs-title-col p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.recs-regen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  border: none;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.recs-regen-btn:hover {
+  background: var(--btn-dark-hover);
+  transform: translateY(-1px);
+}
+
+/* Error Banner */
+.recs-error-banner {
+  padding: 1rem 1.4rem;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Empty State */
+.recs-empty-card {
+  padding: 4.5rem 2rem;
+  border-radius: 24px;
+  background: var(--dash-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--dash-border);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+}
+
+.recs-empty-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recs-empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.recs-empty-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Recommendations Grid */
+.recs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.recs-card {
+  background: var(--dash-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 1.85rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.recs-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.recs-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.recs-card-school-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.recs-school-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recs-track-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.recs-school-name {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Compatibility Badge */
+.recs-match-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: var(--dash-card-subtle);
+  border: 1px solid var(--dash-card-border);
+}
+.recs-match-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.recs-match-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--accent-positive);
+}
+
+/* Analysis Box */
+.recs-analysis-box {
+  background: var(--dash-card-subtle);
+  border: 1px solid var(--dash-card-border);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1rem;
+}
+
+.recs-analysis-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.recs-analysis-text {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Loading State */
+.recs-loading-card {
+  padding: 5rem 2rem;
+  border-radius: 24px;
+  background: var(--dash-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--dash-border);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+}
+
+.recs-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--dash-bar-color);
+  border-top-color: var(--dash-highlight);
+  border-radius: 50%;
+  animation: spinRecs 0.8s linear infinite;
+}
+@keyframes spinRecs {
+  to { transform: rotate(360deg); }
+}
+
+.recs-loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recs-page-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+  .recs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .recs-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,932 @@
+/* ==========================================================================
+   BOARD — SHADCN MINIMALIST MONOCHROME COCKPIT
+   Strict Black & White / Zinc Palette, Thin Hairlines, Small Crisp Typography,
+   Spacious Airy Padding, Professional Clean Outline Icons
+   ========================================================================== */
+
+/* Theme Variables — Strict Monochrome Zinc */
+.board-container {
+  --bg-page: #fafafa;
+  --bg-card: #ffffff;
+  --bg-subtle: #f4f4f5;
+  --bg-hover: #ececee;
+  --border-hairline: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --text-primary: #09090b;
+  --text-secondary: #71717a;
+  --text-muted: #a1a1aa;
+  --btn-primary-bg: #18181b;
+  --btn-primary-text: #fafafa;
+  --btn-primary-hover: #27272a;
+  --progress-track: #f4f4f5;
+  --progress-fill: #18181b;
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] .board-container,
+.board-container[data-theme="dark"] {
+  --bg-page: #09090b;
+  --bg-card: #09090b;
+  --bg-subtle: #18181b;
+  --bg-hover: #27272a;
+  --border-hairline: #27272a;
+  --border-strong: #3f3f46;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --btn-primary-bg: #fafafa;
+  --btn-primary-text: #09090b;
+  --btn-primary-hover: #e4e4e7;
+  --progress-track: #18181b;
+  --progress-fill: #fafafa;
+}
+
+/* ── Topbar (shadcn navbar) ──────────────────────────────────────────────── */
+.board-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: 100%;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.board-topbar-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.board-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.board-brand-mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.board-nav-pill {
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.board-nav-pill:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-subtle);
+}
+
+.board-nav-pill.active {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.board-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.board-theme-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.board-theme-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background-color: var(--bg-subtle);
+}
+
+.board-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.55rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.board-user-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-logout-btn {
+  background: transparent;
+  border: 1px solid var(--border-hairline);
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.board-logout-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background-color: var(--bg-subtle);
+}
+
+/* ── Main Layout Container ────────────────────────────────────────────────── */
+.board-main-container {
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────────────── */
+.board-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.25rem;
+}
+
+.board-title-group h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+.board-subtitle {
+  margin: 0.35rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.board-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-card);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ── Reusable Card Component (shadcn style) ──────────────────────────────── */
+.board-card {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.board-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.board-card-title-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.board-card-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.board-card-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.board-card-desc {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Reusable shadcn Button styles */
+.board-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 0.85rem;
+  border-radius: 6px;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--btn-primary-bg);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.board-btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
+}
+
+.board-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 28px;
+  padding: 0 0.65rem;
+  border-radius: 6px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.73rem;
+  font-weight: 500;
+  border: 1px solid var(--border-hairline);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.board-btn-outline:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+/* Reusable Badge */
+.board-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.board-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--text-primary);
+  display: inline-block;
+}
+
+/* ==========================================================================
+   ZONE 1: PROGRESSION DU PARCOURS
+   ========================================================================== */
+.board-stepper-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.board-step-card {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 0.15s ease;
+}
+
+.board-step-card.active {
+  border-color: var(--border-strong);
+  background-color: var(--bg-card);
+}
+
+.board-step-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.board-step-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background-color: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-step-card.complete .board-step-circle {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-bg);
+}
+
+.board-step-state-text {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.board-step-card.complete .board-step-state-text {
+  color: var(--text-primary);
+}
+
+.board-step-name {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-step-summary {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Thin Progress Gauge */
+.board-gauge-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.board-gauge-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.board-gauge-track-thin {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--progress-track);
+  overflow: hidden;
+}
+
+.board-gauge-fill-thin {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--progress-fill);
+  transition: width 0.4s ease;
+}
+
+/* Progression Footer */
+.board-progress-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.board-guidance-note {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   2-COLUMN GRID (Zone 2 & Zone 3)
+   ========================================================================== */
+.board-columns-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .board-columns-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   ZONE 2: APERÇU DU PROFIL PSYCHOMÉTRIQUE
+   ========================================================================== */
+.board-psychometric-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Top 3 Code Banner */
+.board-code-banner {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.board-code-banner-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.board-code-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.board-code-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-family: monospace;
+}
+
+.board-code-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* Top 3 Dimensions List */
+.board-traits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.board-trait-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-card);
+  border-radius: 6px;
+  gap: 0.75rem;
+}
+
+.board-trait-left-col {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.board-trait-mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+.board-trait-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-trait-desc-text {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.board-trait-right-col {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.board-trait-bar-track {
+  width: 50px;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--progress-track);
+  overflow: hidden;
+}
+
+.board-trait-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--text-primary);
+}
+
+.board-trait-score-num {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: monospace;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Dual Academic Stats (Matière forte & Note moyenne) */
+.board-academic-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.board-stat-tile {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-card);
+  border-radius: 6px;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.board-stat-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.board-stat-tile-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.board-stat-tile-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.board-stat-tile-sub {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+/* Empty Profile Callout */
+.board-empty-state-box {
+  padding: 1.75rem 1rem;
+  text-align: center;
+  border: 1px dashed var(--border-hairline);
+  border-radius: 6px;
+  background-color: var(--bg-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.board-empty-state-box h4 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-empty-state-box p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  max-width: 340px;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   ZONE 3: TOP RECOMMANDATIONS (>80%)
+   ========================================================================== */
+.board-recs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.board-rec-item {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-card);
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.board-rec-item:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+.board-rec-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.board-rec-name {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.board-rec-match-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: monospace;
+  border: 1px solid var(--border-strong);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.board-rec-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.board-rec-school-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.board-rec-explanation-text {
+  margin: 0;
+  font-size: 0.71rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   ZONE 4: RENDEZ-VOUS DE MENTORAT
+   ========================================================================== */
+.board-session-box {
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-subtle);
+  border-radius: 6px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.board-session-details {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.board-session-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+.board-session-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.board-session-counselor-name {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-session-time {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* Unbooked Mentor Invitation Box */
+.board-mentor-invite {
+  border: 1px dashed var(--border-hairline);
+  background-color: var(--bg-subtle);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.board-invite-left-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 580px;
+}
+
+.board-invite-title {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-invite-text {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.board-invite-perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.board-perk-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Responsive Rules */
+@media (max-width: 768px) {
+  .board-nav-pills {
+    display: none;
+  }
+
+  .board-stepper-row {
+    grid-template-columns: 1fr;
+  }
+
+  .board-academic-stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .board-session-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .board-mentor-invite {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .board-progress-action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .board-btn-primary {
+    width: 100%;
+  }
+}

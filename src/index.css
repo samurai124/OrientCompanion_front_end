@@ -1,0 +1,86 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Light Theme Variables */
+:root, [data-theme="light"] {
+  --outer-bg: #f5f6f9;
+  --canvas-bg: #f5f6f9;
+  --nav-bg: rgba(245, 246, 249, 0.88);
+  --dash-bg: rgba(255, 255, 255, 0.92);
+  --dash-border: rgba(255, 255, 255, 0.95);
+  --dash-card-bg: #ffffff;
+  --dash-card-border: #eaedf2;
+  --dash-card-subtle: #f8f9fb;
+  --dash-highlight: #181a20;
+  --dash-bar-color: #cbd3e1;
+
+  --text-primary: #181a20;
+  --text-secondary: #5e6473;
+  --text-muted: #8b92a4;
+
+  --btn-dark-bg: #181a20;
+  --btn-dark-text: #ffffff;
+  --btn-dark-hover: #2b2e38;
+
+  --btn-outline-bg: #ffffff;
+  --btn-outline-border: #e2e5eb;
+  --btn-outline-text: #181a20;
+
+  --accent-positive: #10b981;
+  --accent-blue: #2563eb;
+  --circuit-color: #a8b0c2;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --outer-bg: #0d0f17;
+  --canvas-bg: #0d0f17;
+  --nav-bg: rgba(13, 15, 23, 0.88);
+  --dash-bg: rgba(18, 21, 32, 0.88);
+  --dash-border: rgba(255, 255, 255, 0.08);
+  --dash-card-bg: #151926;
+  --dash-card-border: rgba(255, 255, 255, 0.08);
+  --dash-card-subtle: #1a1f30;
+  --dash-highlight: #ffffff;
+  --dash-bar-color: #2c344a;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #9aa2b4;
+  --text-muted: #626a7e;
+
+  --btn-dark-bg: #ffffff;
+  --btn-dark-text: #0d0f17;
+  --btn-dark-hover: #e2e8f0;
+
+  --btn-outline-bg: rgba(255, 255, 255, 0.05);
+  --btn-outline-border: rgba(255, 255, 255, 0.12);
+  --btn-outline-text: #f8fafc;
+
+  --accent-positive: #34d399;
+  --accent-blue: #60a5fa;
+  --circuit-color: #2a3144;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-main);
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}

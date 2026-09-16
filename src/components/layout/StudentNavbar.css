@@ -1,0 +1,171 @@
+/* ==========================================================================
+   STUDENT NAVBAR — SHADCN MINIMALIST MONOCHROME
+   Unified navigation for all student pages (Dashboard, Chatbot, Recs, Mentorship, Schools)
+   ========================================================================== */
+
+.student-navbar {
+  --snb-bg: #ffffff;
+  --snb-bg-subtle: #f4f4f5;
+  --snb-border: #e4e4e7;
+  --snb-border-hover: #d4d4d8;
+  --snb-text-primary: #09090b;
+  --snb-text-secondary: #71717a;
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background-color: var(--snb-bg);
+  border-bottom: 1px solid var(--snb-border);
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .student-navbar {
+  --snb-bg: #09090b;
+  --snb-bg-subtle: #18181b;
+  --snb-border: #27272a;
+  --snb-border-hover: #3f3f46;
+  --snb-text-primary: #fafafa;
+  --snb-text-secondary: #a1a1aa;
+}
+
+.student-navbar-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Brand */
+.student-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--snb-text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.student-navbar-brand-mark {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: var(--snb-text-primary);
+  color: var(--snb-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Menu links */
+.student-navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.student-navbar-link {
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--snb-text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.student-navbar-link:hover {
+  color: var(--snb-text-primary);
+  background-color: var(--snb-bg-subtle);
+}
+
+.student-navbar-link.active {
+  background-color: var(--snb-bg-subtle);
+  color: var(--snb-text-primary);
+  font-weight: 600;
+}
+
+/* Actions */
+.student-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.student-navbar-theme-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--snb-border);
+  color: var(--snb-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.student-navbar-theme-btn:hover {
+  color: var(--snb-text-primary);
+  border-color: var(--snb-border-hover);
+  background-color: var(--snb-bg-subtle);
+}
+
+.student-navbar-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.55rem;
+  background-color: var(--snb-bg);
+  border: 1px solid var(--snb-border);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--snb-text-secondary);
+}
+
+.student-navbar-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background-color: var(--snb-text-primary);
+  color: var(--snb-bg);
+  font-size: 0.65rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-navbar-logout-btn {
+  background: transparent;
+  border: 1px solid var(--snb-border);
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--snb-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.student-navbar-logout-btn:hover {
+  color: var(--snb-text-primary);
+  border-color: var(--snb-border-hover);
+  background-color: var(--snb-bg-subtle);
+}
+
+@media (max-width: 820px) {
+  .student-navbar-menu {
+    overflow-x: auto;
+    max-width: 260px;
+  }
+}

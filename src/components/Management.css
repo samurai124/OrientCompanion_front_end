@@ -1,0 +1,400 @@
+/* ==========================================================================
+   ORIENTCOMPANION - MANAGEMENT PAGES STYLES
+   (Schools, Fields, and Mentorship Management)
+   Frosted Glass / Crystal Embossed Aesthetic
+   ========================================================================== */
+
+.mgmt-page-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 5rem;
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Background Circuit Pattern Layer */
+.mgmt-circuit-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--circuit-color);
+  opacity: 0.85;
+}
+.mgmt-circuit-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.mgmt-content-wrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+.mgmt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--dash-card-border);
+  flex-wrap: wrap;
+}
+
+.mgmt-title-area h1,
+.mgmt-title-area h2 {
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 0.4rem;
+}
+
+.mgmt-title-area p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Primary Action Button */
+.mgmt-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 12px;
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  border: none;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mgmt-btn-primary:hover {
+  background: var(--btn-dark-hover);
+  transform: translateY(-1px);
+}
+
+/* Filter Bar */
+.mgmt-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.mgmt-search-input,
+.mgmt-select {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-card-border);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s ease;
+}
+.mgmt-search-input {
+  min-width: 280px;
+  flex: 1;
+}
+.mgmt-search-input:focus,
+.mgmt-select:focus {
+  border-color: var(--dash-highlight);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Tab Switcher (Mentorship role toggle) */
+.mgmt-tab-switcher {
+  display: inline-flex;
+  gap: 0.35rem;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-card-border);
+  border-radius: 12px;
+  padding: 0.3rem;
+}
+.mgmt-tab-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.45rem 1rem;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mgmt-tab-btn.active {
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Card Wrapping Table */
+.mgmt-card-table {
+  background: var(--dash-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.mgmt-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mgmt-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.mgmt-table th {
+  padding: 1rem 1.25rem;
+  background: var(--dash-card-subtle);
+  border-bottom: 1px solid var(--dash-card-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.mgmt-table td {
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--dash-card-border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.mgmt-table tbody tr:hover {
+  background: var(--dash-card-subtle);
+}
+
+.mgmt-table-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--dash-card-subtle);
+  border: 1px solid var(--dash-card-border);
+  color: var(--text-secondary);
+}
+
+.mgmt-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mgmt-action-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--dash-card-border);
+  background: var(--dash-card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.mgmt-action-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--dash-highlight);
+}
+.mgmt-action-btn--delete {
+  color: #ef4444;
+}
+.mgmt-action-btn--delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Mentor Cards Grid */
+.mgmt-mentor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.mgmt-mentor-card {
+  background: var(--dash-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--dash-border);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mgmt-mentor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.07);
+}
+
+.mgmt-mentor-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.mgmt-mentor-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.mgmt-mentor-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.2rem;
+}
+.mgmt-mentor-specialty {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Modal Dialog */
+.mgmt-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.mgmt-modal-card {
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--dash-bg);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--dash-border);
+  border-radius: 24px;
+  padding: 2.25rem;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.mgmt-modal-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem;
+}
+
+.mgmt-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.mgmt-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.mgmt-modal-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.mgmt-modal-field input,
+.mgmt-modal-field select,
+.mgmt-modal-field textarea {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-card-border);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+}
+.mgmt-modal-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.mgmt-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.mgmt-btn-secondary {
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid var(--dash-card-border);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mgmt-btn-secondary:hover {
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mgmt-page-container {
+    padding: 1.5rem 1rem 3rem;
+  }
+  .mgmt-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .mgmt-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mgmt-search-input {
+    min-width: 100%;
+  }
+}

@@ -1,0 +1,151 @@
+/* ==========================================================================
+   APP GLOBAL STYLES & SUB-PAGE NAVIGATION BAR
+   Frosted Glass / Crystal Embossed Aesthetic
+   ========================================================================== */
+
+.app-subpage-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Unified Frosted Sub-Header */
+.app-sub-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background: var(--nav-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--dash-card-border);
+  box-sizing: border-box;
+}
+
+.app-sub-navbar-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0.85rem clamp(1.25rem, 4vw, 3.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.app-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  user-select: none;
+}
+.app-brand-symbol {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app-brand-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.app-brand-name strong {
+  font-weight: 700;
+}
+
+.app-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 0.4rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.app-nav-btn:hover {
+  background: var(--dash-card-subtle);
+  color: var(--text-primary);
+}
+.app-nav-btn.active {
+  background: var(--dash-card-bg);
+  color: var(--text-primary);
+  border-color: var(--dash-card-border);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.app-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-theme-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-card-border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.app-theme-btn:hover {
+  transform: translateY(-1px);
+}
+
+.app-cta-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9px;
+  background: var(--btn-dark-bg);
+  color: var(--btn-dark-text);
+  border: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.app-cta-chat:hover {
+  background: var(--btn-dark-hover);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .app-nav-menu {
+    overflow-x: auto;
+    width: 100%;
+    order: 3;
+    padding-bottom: 0.25rem;
+  }
+}
