@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conseiller IA RIASEC — OrientCompanion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #fafafa;
+      color: #09090b;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOPBAR NAVBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 30; width: 100%;
+      background-color: #ffffff; border-bottom: 1px solid #e4e4e7;
+    }
+    .topbar-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0.75rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
+      color: #09090b; font-size: 0.85rem; font-weight: 600;
+    }
+    .brand-mark {
+      width: 20px; height: 20px; border-radius: 4px; background: #09090b; color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-pills { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      padding: 0.35rem 0.65rem; font-size: 0.76rem; font-weight: 500;
+      color: #71717a; text-decoration: none; border-radius: 6px; transition: all 0.15s;
+    }
+    .nav-link:hover { color: #09090b; background: #f4f4f5; }
+    .nav-link.active { color: #09090b; background: #f4f4f5; font-weight: 600; }
+    .user-profile {
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.3rem 0.65rem; border-radius: 9999px; border: 1px solid #e4e4e7; background: #ffffff;
+    }
+    .user-avatar {
+      width: 22px; height: 22px; border-radius: 50%; background: #09090b; color: #fff;
+      font-size: 0.68rem; font-weight: 600; display: flex; align-items: center; justify-content: center;
+    }
+    .user-meta { font-size: 0.75rem; font-weight: 500; color: #09090b; }
+
+    /* ── PAGE LAYOUT ── */
+    .chat-page {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 1.5rem;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── METHODOLOGY STEPS BAR ── */
+    .chat-steps-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-shrink: 0;
+    }
+    .chat-nav-step-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: #71717a;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+    }
+    .chat-nav-step-chip.active {
+      background: #09090b;
+      color: #fafafa;
+      border-color: #09090b;
+      font-weight: 600;
+    }
+    .step-num {
+      font-size: 0.68rem;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    /* ── MAIN CHAT CARD CONTAINER ── */
+    .chat-card-container {
+      flex: 1;
+      min-height: 0;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Scroll Area */
+    .chat-messages-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+    }
+    .chat-messages-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* Message Rows */
+    .chat-msg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      width: 100%;
+    }
+    .chat-msg-row.user {
+      flex-direction: row-reverse;
+    }
+
+    /* Avatars */
+    .chat-msg-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .avatar-bot {
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      color: #09090b;
+    }
+    .avatar-user {
+      background: #09090b;
+      color: #fafafa;
+    }
+
+    /* Bubble Cards */
+    .chat-bubble-card {
+      max-width: 78%;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+    .chat-msg-row.bot .chat-bubble-card {
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      color: #09090b;
+      border-top-left-radius: 2px;
+    }
+    .chat-msg-row.user .chat-bubble-card {
+      background: #09090b;
+      color: #fafafa;
+      border-top-right-radius: 2px;
+    }
+
+    .chat-text-line { margin-bottom: 0.4rem; }
+    .chat-text-line:last-child { margin-bottom: 0; }
+    .chat-bullet-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      margin-bottom: 0.35rem;
+      padding-left: 0.35rem;
+    }
+    .chat-bullet-line strong { color: #09090b; }
+    .chat-msg-row.user .chat-bullet-line strong { color: #ffffff; }
+
+    /* ── HOLLAND RIASEC SUMMARY CARD ── */
+    .chat-completion-card {
+      background: #fafafa;
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      padding: 1.35rem;
+      margin-top: 0.5rem;
+    }
+    .completion-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .completion-icon-trophy {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #09090b;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .completion-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #09090b;
+      margin-bottom: 0.2rem;
+    }
+    .completion-header p {
+      font-size: 0.76rem;
+      color: #71717a;
+    }
+
+    .riasec-scores-summary {
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .riasec-scores-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #71717a;
+      margin-bottom: 0.85rem;
+    }
+    .riasec-bars-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.75rem;
+      height: 120px;
+    }
+    .riasec-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+    .riasec-bar-track {
+      width: 100%;
+      max-width: 24px;
+      height: 70px;
+      background: #f4f4f5;
+      border-radius: 4px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border: 1px solid #e4e4e7;
+    }
+    .riasec-bar-fill {
+      width: 100%;
+      background: #09090b;
+      border-radius: 3px;
+    }
+    .riasec-bar-letter {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #09090b;
+    }
+    .riasec-bar-value {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #71717a;
+    }
+    .riasec-bar-label {
+      font-size: 0.62rem;
+      color: #a1a1aa;
+    }
+
+    .completion-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .btn-view-recs {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 6px;
+      background: #09090b;
+      color: #fafafa;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    .btn-view-recs:hover { background: #27272a; }
+
+    /* ── INPUT BAR ── */
+    .chat-input-form-bar {
+      padding: 0.85rem 1.5rem;
+      border-top: 1px solid #e4e4e7;
+      background: #fafafa;
+    }
+    .chat-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .chat-text-input {
+      flex: 1;
+      height: 38px;
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      color: #09090b;
+      font-size: 0.82rem;
+      padding: 0 0.85rem;
+      outline: none;
+    }
+    .chat-send-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      height: 38px;
+      padding: 0 1.15rem;
+      border-radius: 6px;
+      background: #09090b;
+      color: #fafafa;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .chat-send-btn:hover { background: #27272a; }
+  </style>
+</head>
+<body>
+
+  <!-- TOPBAR NAVBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="dashboard.html" class="brand">
+        <div class="brand-mark">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
+          </svg>
+        </div>
+        <span>OrientCompanion</span>
+      </a>
+
+      <nav class="nav-pills">
+        <a href="dashboard.html" class="nav-link">Cockpit Étudiant</a>
+        <a href="schools.html" class="nav-link">Annuaire Écoles</a>
+        <a href="recommendations.html" class="nav-link">Recommandations</a>
+        <a href="mentorship.html" class="nav-link">Mentorat & Visio</a>
+        <a href="chatbot.html" class="nav-link active">Conseiller IA RIASEC</a>
+      </nav>
+
+      <div class="user-profile">
+        <div class="user-avatar">H</div>
+        <span class="user-meta">Hamza • CPGE MP</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CHAT PAGE -->
+  <main class="chat-page">
+
+    <!-- STEPS / METHODOLOGY TRACKER -->
+    <div class="chat-steps-bar">
+      <div class="chat-nav-step-chip active">
+        <span class="step-num">01</span>
+        <span>Découverte</span>
+      </div>
+      <div class="chat-nav-step-chip active">
+        <span class="step-num">02</span>
+        <span>Filières</span>
+      </div>
+      <div class="chat-nav-step-chip active">
+        <span class="step-num">03</span>
+        <span>Comparatif</span>
+      </div>
+      <div class="chat-nav-step-chip active">
+        <span class="step-num">04</span>
+        <span>Recommandations</span>
+      </div>
+    </div>
+
+    <!-- CHAT CARD CONTAINER -->
+    <div class="chat-card-container">
+
+      <!-- MESSAGES SCROLL AREA -->
+      <div class="chat-messages-scroll">
+        <div class="chat-messages-inner">
+
+          <!-- Turn 1: Bot -->
+          <div class="chat-msg-row bot">
+            <div class="chat-msg-avatar avatar-bot">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+            </div>
+            <div class="chat-bubble-card">
+              <div class="chat-text-line">Bonjour ! Je suis <strong>Companion Orient</strong>, votre conseiller expert en orientation académique pour l'enseignement supérieur marocain.</div>
+              <div class="chat-text-line">Mon rôle est d'analyser vos appétences, de cartographier votre profil psychométrique (modèle <strong>Holland RIASEC</strong>) et de vous orienter vers les écoles d'ingénieurs et grandes filières les plus adaptées.</div>
+              <div class="chat-text-line">Pour entamer notre échange, quel est votre cursus actuel et quelles matières vous passionnent le plus ?</div>
+            </div>
+          </div>
+
+          <!-- Turn 2: User -->
+          <div class="chat-msg-row user">
+            <div class="chat-msg-avatar avatar-user">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <div class="chat-bubble-card">
+              <div class="chat-text-line">Je suis en 2ème année CPGE MP à Rabat. J'ai 17.5/20 de moyenne en Mathématiques et 18/20 en Informatique. Je veux m'orienter vers l'Intelligence Artificielle et le Génie Logiciel. Quelles sont les filières d'excellence au Maroc ?</div>
+            </div>
+          </div>
+
+          <!-- Turn 3: Bot -->
+          <div class="chat-msg-row bot">
+            <div class="chat-msg-avatar avatar-bot">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+            </div>
+            <div class="chat-bubble-card">
+              <div class="chat-text-line">Votre solide assise en mathématiques et algorithmique vous ouvre l'accès aux départements d'élite via le Concours National Commun (CNC) :</div>
+              <div class="chat-bullet-line">• <strong>EMI Rabat (Génie Informatique & Réseaux)</strong> : Référence historique au Maroc avec de forts débouchés en architecture logicielle.</div>
+              <div class="chat-bullet-line">• <strong>ENSAM Casablanca & Rabat (Systèmes Communicants & IA)</strong> : Approche ingénieur globale, ateliers de prototypage et double-diplômes internationaux.</div>
+              <div class="chat-bullet-line">• <strong>INPT Rabat (Cloud Computing & Big Data)</strong> : Pôle d'excellence télécoms et infrastructures distribuées.</div>
+              <div class="chat-bullet-line">• <strong>UM6P Benguerir (School of Computer Science)</strong> : Cursus centré sur la recherche de pointe, le Deep Learning et l'innovation entrepreneuriale.</div>
+              <div class="chat-text-line" style="margin-top: 0.5rem;">Préférez-vous la recherche théorique et l'optimisation d'algorithmes, ou concevoir et déployer des applications concrètes à grande échelle ?</div>
+            </div>
+          </div>
+
+          <!-- Turn 4: User -->
+          <div class="chat-msg-row user">
+            <div class="chat-msg-avatar avatar-user">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <div class="chat-bubble-card">
+              <div class="chat-text-line">Je préfère concevoir des architectures complètes et bâtir des projets innovants, tout en gardant une composante analytique rigoureuse pour l'IA.</div>
+            </div>
+          </div>
+
+          <!-- Turn 5: Bot -->
+          <div class="chat-msg-row bot">
+            <div class="chat-msg-avatar avatar-bot">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+            </div>
+            <div class="chat-bubble-card">
+              <div class="chat-text-line">Votre profil s'articule autour du binôme dominant <strong>Investigateur (I: 88%)</strong> et <strong>Réaliste (R: 74%)</strong>, soutenu par une forte composante <strong>Entreprenante (E: 65%)</strong>.</div>
+              <div class="chat-text-line">Cela correspond parfaitement aux postes de :</div>
+              <div class="chat-bullet-line">• <strong>Ingénieur Machine Learning & MLOps</strong></div>
+              <div class="chat-bullet-line">• <strong>Architecte Cloud & Systèmes Distribués</strong></div>
+              <div class="chat-bullet-line">• <strong>Lead Développeur Fullstack & IA</strong></div>
+              <div class="chat-text-line" style="margin-top: 0.5rem;">Votre bilan d'orientation RIASEC complet a été calculé et synchronisé :</div>
+            </div>
+          </div>
+
+          <!-- COMPLETION CARD & RIASEC PROFILE -->
+          <div class="chat-completion-card">
+            <div class="completion-header">
+              <div class="completion-icon-trophy">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                  <path d="M4 22h16" />
+                  <path d="M10 14.66V17c0 .55-.45 1-1 1H7" />
+                  <path d="M14 14.66V17c0 .55.45 1 1 1h2" />
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+                </svg>
+              </div>
+              <div>
+                <h3>Bilan d'orientation finalisé avec succès !</h3>
+                <p>Vos scores Holland RIASEC et vos préférences académiques ont été enregistrés dans votre dossier.</p>
+              </div>
+            </div>
+
+            <!-- RIASEC BARS -->
+            <div class="riasec-scores-summary">
+              <div class="riasec-scores-title">Profil Psychométrique Holland (RIASEC)</div>
+              <div class="riasec-bars-grid">
+                <!-- R -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 74%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">R</span>
+                  <span class="riasec-bar-value">74%</span>
+                  <span class="riasec-bar-label">Réaliste</span>
+                </div>
+                <!-- I -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 88%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">I</span>
+                  <span class="riasec-bar-value">88%</span>
+                  <span class="riasec-bar-label">Investigateur</span>
+                </div>
+                <!-- A -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 35%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">A</span>
+                  <span class="riasec-bar-value">35%</span>
+                  <span class="riasec-bar-label">Artistique</span>
+                </div>
+                <!-- S -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 52%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">S</span>
+                  <span class="riasec-bar-value">52%</span>
+                  <span class="riasec-bar-label">Social</span>
+                </div>
+                <!-- E -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 65%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">E</span>
+                  <span class="riasec-bar-value">65%</span>
+                  <span class="riasec-bar-label">Entreprenant</span>
+                </div>
+                <!-- C -->
+                <div class="riasec-bar-item">
+                  <div class="riasec-bar-track">
+                    <div class="riasec-bar-fill" style="height: 70%;"></div>
+                  </div>
+                  <span class="riasec-bar-letter">C</span>
+                  <span class="riasec-bar-value">70%</span>
+                  <span class="riasec-bar-label">Conventionnel</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="completion-actions">
+              <a href="recommendations.html" class="btn-view-recs">
+                <span>Découvrir mes écoles & filières recommandées</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- INPUT BAR -->
+      <form class="chat-input-form-bar" onsubmit="return false;">
+        <div class="chat-input-wrapper">
+          <input
+            type="text"
+            placeholder="Posez votre question ou répondez à Companion Orient..."
+            class="chat-text-input"
+          >
+          <button type="button" class="chat-send-btn">
+            <span>Envoyer</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </form>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

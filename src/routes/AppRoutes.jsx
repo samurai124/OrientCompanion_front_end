@@ -21,7 +21,6 @@ import CounselorSessionsPage from "../components/pages/CounselorSessionsPage";
 
 // Route Guards
 import ProtectedRoute from "./ProtectedRoute";
-import AssessmentGuard from "./AssessmentGuard";
 
 // Misc
 import UnauthorizedPage from "../components/pages/UnauthorizedPage";
@@ -67,9 +66,7 @@ export default function AppRoutes() {
           <Route path="/board" element={<Board/>}/>
           
 
-          <Route element={<AssessmentGuard />}>
-            <Route path="/recommendations" element={<RecommendationsPage />} />
-          </Route>
+          <Route path="/recommendations" element={<RecommendationsPage />} />
         </Route>
       </Route>
 

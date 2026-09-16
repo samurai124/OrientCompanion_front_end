@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Établissements & Grandes Écoles — OrientCompanion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #fafafa;
+      color: #09090b;
+    }
+
+    /* Navbar */
+    .topbar {
+      position: sticky; top: 0; z-index: 30; width: 100%;
+      background-color: #ffffff; border-bottom: 1px solid #e4e4e7;
+    }
+    .topbar-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0.75rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
+      color: #09090b; font-size: 0.85rem; font-weight: 600;
+    }
+    .brand-mark {
+      width: 20px; height: 20px; border-radius: 4px; background: #09090b; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-pills { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      padding: 0.35rem 0.65rem; font-size: 0.76rem; font-weight: 500;
+      color: #71717a; text-decoration: none; border-radius: 6px;
+    }
+    .nav-link.active { color: #09090b; background: #f4f4f5; font-weight: 600; }
+
+    /* Page Container */
+    .schools-wrapper {
+      max-width: 1200px; margin: 0 auto; padding: 2.25rem 1.5rem 5rem;
+    }
+    .schools-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding-bottom: 1.5rem; border-bottom: 1px solid #e4e4e7; flex-wrap: wrap; gap: 1rem;
+    }
+    .schools-title { font-size: 1.35rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .schools-subtitle { font-size: 0.82rem; color: #71717a; }
+    .counter-pill {
+      display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.75rem;
+      font-weight: 500; color: #71717a; background: #ffffff; border: 1px solid #e4e4e7;
+      padding: 0.35rem 0.75rem; border-radius: 9999px;
+    }
+    .counter-dot { width: 6px; height: 6px; border-radius: 50%; background: #09090b; }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 2rem; flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1; min-width: 260px; height: 38px; display: flex; align-items: center; gap: 0.55rem;
+      padding: 0 0.85rem; border-radius: 6px; border: 1px solid #e4e4e7; background: #ffffff;
+    }
+    .search-input { width: 100%; border: none; outline: none; font-size: 0.8rem; background: transparent; }
+    .select-input {
+      height: 38px; padding: 0 1.75rem 0 0.85rem; border-radius: 6px; border: 1px solid #e4e4e7;
+      background: #ffffff; color: #09090b; font-size: 0.8rem; outline: none; cursor: pointer;
+    }
+
+    /* Cards Grid */
+    .schools-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.35rem;
+    }
+    .school-card {
+      border: 1px solid #e4e4e7; border-radius: 8px; background: #ffffff; overflow: hidden;
+      display: flex; flex-direction: column; transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .school-card:hover {
+      border-color: #d4d4d8; transform: translateY(-2px);
+    }
+    .school-media {
+      position: relative; width: 100%; height: 175px; background: #f4f4f5; overflow: hidden;
+      border-bottom: 1px solid #e4e4e7;
+    }
+    .school-img { width: 100%; height: 100%; object-fit: cover; }
+    .school-badges-top {
+      position: absolute; top: 0.75rem; left: 0.75rem; right: 0.75rem;
+      display: flex; align-items: center; justify-content: space-between; z-index: 5;
+    }
+    .badge-sector {
+      font-size: 0.68rem; font-weight: 600; text-transform: uppercase; padding: 0.22rem 0.6rem;
+      border-radius: 4px; background: rgba(9, 9, 11, 0.85); color: #fafafa;
+      border: 1px solid rgba(255, 255, 255, 0.18); backdrop-filter: blur(8px);
+    }
+    .badge-city {
+      font-size: 0.68rem; font-weight: 500; padding: 0.22rem 0.55rem; border-radius: 4px;
+      background: rgba(9, 9, 11, 0.85); color: #fafafa; border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .school-body {
+      padding: 1.15rem; flex: 1; display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .school-name { font-size: 0.95rem; font-weight: 600; line-height: 1.35; margin: 0; }
+    .school-desc {
+      font-size: 0.78rem; line-height: 1.5; color: #71717a; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .filiere-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: auto; }
+    .tag-pill {
+      font-size: 0.68rem; color: #71717a; background: #f4f4f5; border: 1px solid #e4e4e7;
+      padding: 0.18rem 0.5rem; border-radius: 4px;
+    }
+
+    .school-footer {
+      padding: 0.75rem 1.15rem; border-top: 1px solid #e4e4e7;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-info { font-size: 0.72rem; color: #a1a1aa; }
+    .btn-portal {
+      font-size: 0.75rem; font-weight: 500; padding: 0.38rem 0.75rem; border-radius: 6px;
+      border: 1px solid #e4e4e7; background: #ffffff; color: #09090b; text-decoration: none;
+    }
+    .btn-portal:hover { background: #18181b; color: #fff; }
+
+    @media (max-width: 768px) {
+      .schools-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="dashboard.html" class="brand">
+        <div class="brand-mark">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor"/></svg>
+        </div>
+        <span>Orient<strong>Companion</strong></span>
+      </a>
+
+      <nav class="nav-pills">
+        <a href="dashboard.html" class="nav-link">Tableau de bord</a>
+        <a href="chatbot.html" class="nav-link">Entretien IA</a>
+        <a href="recommendations.html" class="nav-link">Recommandations</a>
+        <a href="schools.html" class="nav-link active">Écoles</a>
+        <a href="mentorship.html" class="nav-link">Mentorat</a>
+      </nav>
+
+      <span style="font-size: 0.72rem; color: #71717a;">Yassine El Idrissi</span>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="schools-wrapper">
+    <header class="schools-header">
+      <div>
+        <h1 class="schools-title">Établissements & Grandes Écoles</h1>
+        <p class="schools-subtitle">Explorez les universités, instituts et grandes écoles correspondant à vos ambitions académiques.</p>
+      </div>
+
+      <div class="counter-pill">
+        <span class="counter-dot"></span>
+        <span>6 établissements répertoriés</span>
+      </div>
+    </header>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Rechercher par école ou ville..." class="search-input">
+      </div>
+
+      <select class="select-input">
+        <option>Toutes les filières</option>
+        <option>Génie Informatique</option>
+        <option>Intelligence Artificielle</option>
+        <option>Management & Finance</option>
+        <option>Médecine & Santé</option>
+      </select>
+
+      <select class="select-input">
+        <option>Tous les statuts</option>
+        <option>Public</option>
+        <option>Privé</option>
+        <option>Semi-Public</option>
+      </select>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div class="schools-grid">
+      <!-- 1. ENSAM Casablanca -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80" alt="ENSAM Casablanca" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Public</span>
+            <span class="badge-city">📍 Casablanca</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">ENSAM Casablanca</h2>
+          <p class="school-desc">École Nationale Supérieure d'Arts et Métiers formant des ingénieurs d'état polyvalents en génie mécanique, industriel et systèmes automatisés.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Génie Logiciel & IA</span>
+            <span class="tag-pill">Mécatronique</span>
+            <span class="tag-pill">+4 autres</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">6 parcours accrédités</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+
+      <!-- 2. UM6P Benguerir -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80" alt="UM6P Benguerir" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Semi-Public</span>
+            <span class="badge-city">📍 Benguerir</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">UM6P — School of Computer Science</h2>
+          <p class="school-desc">Université Mohammed VI Polytechnique orientée vers la recherche appliquée, l'innovation de rupture et les technologies numériques du futur.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Data & IA</span>
+            <span class="tag-pill">Cybersecurity</span>
+            <span class="tag-pill">+5 autres</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">8 parcours accrédités</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+
+      <!-- 3. ENCG Settat -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80" alt="ENCG Settat" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Public</span>
+            <span class="badge-city">📍 Settat</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">ENCG Settat</h2>
+          <p class="school-desc">École Nationale de Commerce et de Gestion de référence formant les leaders de demain en finance d'entreprise, audit et marketing stratégique.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Finance & Audit</span>
+            <span class="tag-pill">Commerce International</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">4 parcours accrédités</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+
+      <!-- 4. EMI Rabat -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=800&q=80" alt="EMI Rabat" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Public</span>
+            <span class="badge-city">📍 Rabat</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">EMI — École Mohammadia d'Ingénieurs</h2>
+          <p class="school-desc">La plus ancienne école d'ingénieurs au Maroc réputée pour sa formation d'excellence civique et technique en génie civil, électrique et modélisation.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Génie Civil</span>
+            <span class="tag-pill">Génie Électrique</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">7 parcours accrédités</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+
+      <!-- 5. INPT Rabat -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80" alt="INPT Rabat" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Public</span>
+            <span class="badge-city">📍 Rabat</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">INPT — Télécoms & Numérique</h2>
+          <p class="school-desc">Institut National des Postes et Télécommunications, fer de lance de l'ingénierie des réseaux mobiles, de la cybersécurité et des architectures cloud.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Cybersécurité</span>
+            <span class="tag-pill">Cloud & Télécoms</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">5 parcours accrédités</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+
+      <!-- 6. FMP Casablanca -->
+      <article class="school-card">
+        <div class="school-media">
+          <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80" alt="FMP Casablanca" class="school-img">
+          <div class="school-badges-top">
+            <span class="badge-sector">Public</span>
+            <span class="badge-city">📍 Casablanca</span>
+          </div>
+        </div>
+        <div class="school-body">
+          <h2 class="school-name">Faculté de Médecine et de Pharmacie</h2>
+          <p class="school-desc">Établissement universitaire d'excellence médicale formant les praticiens hospitaliers et les spécialistes de la santé publique au Maroc.</p>
+          <div class="filiere-tags">
+            <span class="tag-pill">Médecine Générale</span>
+            <span class="tag-pill">Pharmacie</span>
+          </div>
+        </div>
+        <footer class="school-footer">
+          <span class="footer-info">3 filières d'état</span>
+          <a href="#" class="btn-portal">Portail officiel ↗</a>
+        </footer>
+      </article>
+    </div>
+  </main>
+</body>
+</html>

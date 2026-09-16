@@ -45,6 +45,7 @@ export default function StudentNavbar() {
     setTheme(next);
     localStorage.setItem("orient_theme", next);
     document.documentElement.setAttribute("data-theme", next);
+    window.dispatchEvent(new CustomEvent("orient_theme_change", { detail: next }));
   };
 
   const handleLogout = () => {

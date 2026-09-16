@@ -200,10 +200,49 @@ export default function CompleteAssessmentChatbot() {
     C: "Conventionnel",
   };
 
-  // Theme state synced with landing page
-  const [theme] = useState(() => {
-    return localStorage.getItem("orient_theme") || "light";
+  // Theme state dynamically synced with <html> attribute and storage
+  const [theme, setTheme] = useState(() => {
+    return (
+      document.documentElement.getAttribute("data-theme") ||
+      localStorage.getItem("orient_theme") ||
+      "light"
+    );
   });
+
+  useEffect(() => {
+    const syncTheme = () => {
+      const activeTheme =
+        document.documentElement.getAttribute("data-theme") ||
+        localStorage.getItem("orient_theme") ||
+        "light";
+      setTheme(activeTheme);
+    };
+
+    syncTheme();
+
+    // Observe data-theme changes on <html> directly
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === "attributes" && m.attributeName === "data-theme") {
+          syncTheme();
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    window.addEventListener("orient_theme_change", syncTheme);
+    window.addEventListener("storage", syncTheme);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("orient_theme_change", syncTheme);
+      window.removeEventListener("storage", syncTheme);
+    };
+  }, []);
 
   return (
     <div className="chat-page-root" data-theme={theme}>
@@ -345,7 +384,7 @@ export default function CompleteAssessmentChatbot() {
                         </div>
                         <span className="riasec-bar-letter">{key}</span>
                         <span className="riasec-bar-value">{Math.round(score)}%</span>
-                        <span style={{ fontSize: "0.65rem", color: "#cbd5e1" }}>
+                        <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>
                           {personalityLabels[key] || key}
                         </span>
                       </div>

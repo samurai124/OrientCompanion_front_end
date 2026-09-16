@@ -1,7 +1,60 @@
 import { useContext, useEffect, useState, useMemo } from "react";
 import { SchoolContext } from "../../context/SchoolContext";
 import { FieldContext } from "../../context/FieldContext";
-import "../Management.css";
+import "./StudentRecommendedSchools.css";
+
+// Curated high-resolution campus photography for Moroccan universities and schools
+const CAMPUS_PRESETS = {
+  ensam: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80",
+  um6p: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80",
+  encg: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80",
+  emi: "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=800&q=80",
+  inpt: "https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80",
+  ensa: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
+  ehtp: "https://images.unsplash.com/photo-1525921429624-479b6a26d84d?auto=format&fit=crop&w=800&q=80",
+  aiac: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
+  iscae: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+  fmp: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
+  fst: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80",
+  ena: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+  fsjes: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80",
+  generic: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80",
+};
+
+/**
+ * Maps a school object to its campus image.
+ * Uses school.imageUrl or school.image if provided, otherwise matches by name/type keywords.
+ */
+function getSchoolCampusImage(school) {
+  if (school?.imageUrl) return school.imageUrl;
+  if (school?.image) return school.image;
+
+  const normalized = (school?.name || "").toLowerCase();
+
+  for (const [key, url] of Object.entries(CAMPUS_PRESETS)) {
+    if (key !== "generic" && normalized.includes(key)) {
+      return url;
+    }
+  }
+
+  if (normalized.includes("ingén") || normalized.includes("polytech") || normalized.includes("techno")) {
+    return CAMPUS_PRESETS.ensam;
+  }
+  if (normalized.includes("commerce") || normalized.includes("gestion") || normalized.includes("business")) {
+    return CAMPUS_PRESETS.encg;
+  }
+  if (normalized.includes("médec") || normalized.includes("santé") || normalized.includes("pharma")) {
+    return CAMPUS_PRESETS.fmp;
+  }
+  if (normalized.includes("archi")) {
+    return CAMPUS_PRESETS.ena;
+  }
+  if (normalized.includes("droit") || normalized.includes("écono")) {
+    return CAMPUS_PRESETS.fsjes;
+  }
+
+  return CAMPUS_PRESETS.generic;
+}
 
 export default function StudentRecommendedSchools() {
   const { schools, loading, error, fetchSchools } = useContext(SchoolContext);
@@ -22,148 +75,341 @@ export default function StudentRecommendedSchools() {
 
   const filteredSchools = useMemo(() => {
     return (schools || []).filter((school) => {
-      const matchesSearch =
-        school.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        school.city?.toLowerCase().includes(searchTerm.toLowerCase());
+      const name = (school.name || "").toLowerCase();
+      const city = (school.city || "").toLowerCase();
+      const query = searchTerm.toLowerCase().trim();
 
-      const matchesSector =
-        selectedSector === "ALL" || school.type === selectedSector;
+      const matchesSearch = !query || name.includes(query) || city.includes(query);
+      const matchesSector = selectedSector === "ALL" || school.type === selectedSector;
 
       return matchesSearch && matchesSector;
     });
   }, [schools, searchTerm, selectedSector]);
 
+  const hasActiveFilters = Boolean(searchTerm || selectedFieldId || selectedSector !== "ALL");
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedFieldId("");
+    setSelectedSector("ALL");
+  };
+
   return (
-    <div className="mgmt-page-container" data-theme={theme}>
-      {/* Background Circuit Pattern Layer */}
-      <div className="mgmt-circuit-layer" aria-hidden="true">
-        <svg className="mgmt-circuit-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="circuitGridStudentSchools" width="240" height="240" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 40 80 L 120 80 L 120 160 L 200 160 L 200 240" fill="none" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.12" />
-              <path d="M 0 120 L 80 120 L 80 200 L 160 200" fill="none" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.12" />
-              <circle cx="40" cy="80" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-              <circle cx="120" cy="160" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-              <circle cx="80" cy="200" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#circuitGridStudentSchools)" />
-        </svg>
-      </div>
-
-      <div className="mgmt-content-wrapper">
-        {/* Header */}
-        <div className="mgmt-header">
-          <div className="mgmt-title-area">
-            <h2>Établissements & Grandes Écoles</h2>
-            <p>Découvrez les universités et instituts correspondant à votre projet d'orientation.</p>
+    <div className="schools-container" data-theme={theme}>
+      <div className="schools-wrapper">
+        {/* ── HEADER ──────────────────────────────────────────────────────── */}
+        <header className="schools-header">
+          <div className="schools-title-group">
+            <h1 className="schools-title">Établissements & Grandes Écoles</h1>
+            <p className="schools-subtitle">
+              Explorez les universités, instituts et grandes écoles correspondant à vos ambitions académiques.
+            </p>
           </div>
-          <div className="mgmt-counter-badge">
-            <span>{filteredSchools.length} établissement(s) disponible(s)</span>
+
+          <div className="schools-counter-pill">
+            <span className="schools-counter-dot" />
+            <span>{filteredSchools.length} établissement{filteredSchools.length !== 1 ? "s" : ""}</span>
+          </div>
+        </header>
+
+        {/* ── SEARCH & FILTER TOOLBAR ─────────────────────────────────────── */}
+        <div className="schools-toolbar">
+          {/* Search box with inline icon */}
+          <div className="schools-search-box">
+            <svg
+              className="schools-search-icon"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Rechercher par école ou ville..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="schools-search-input"
+            />
+          </div>
+
+          {/* Filter dropdowns */}
+          <div className="schools-filter-group">
+            <select
+              value={selectedFieldId}
+              onChange={(e) => setSelectedFieldId(e.target.value)}
+              className="schools-select"
+            >
+              <option value="">Toutes les filières</option>
+              {fields?.map((field) => (
+                <option key={field.id} value={field.id}>
+                  {field.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedSector}
+              onChange={(e) => setSelectedSector(e.target.value)}
+              className="schools-select"
+            >
+              <option value="ALL">Tous les statuts</option>
+              <option value="PUBLIC">Public</option>
+              <option value="PRIVATE">Privé</option>
+              <option value="SEMI_PUBLIC">Semi-Public</option>
+            </select>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="schools-reset-btn"
+                title="Effacer tous les filtres"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                <span>Effacer</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="mgmt-filter-bar">
-          <input
-            type="text"
-            placeholder="Rechercher par école ou ville..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="mgmt-search-input"
-          />
+        {/* ── ERROR NOTIFICATION ──────────────────────────────────────────── */}
+        {error && (
+          <div className="schools-error-banner" role="alert">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
 
-          <select
-            value={selectedFieldId}
-            onChange={(e) => setSelectedFieldId(e.target.value)}
-            className="mgmt-select"
-          >
-            <option value="">Toutes les filières</option>
-            {fields?.map((field) => (
-              <option key={field.id} value={field.id}>
-                {field.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
-            className="mgmt-select"
-          >
-            <option value="ALL">Tous les secteurs</option>
-            <option value="PUBLIC">Public</option>
-            <option value="PRIVATE">Privé</option>
-            <option value="SEMI_PUBLIC">Semi-Public</option>
-          </select>
-        </div>
-
-        {/* Error Banner */}
-        {error && <div className="recs-error-banner">{error}</div>}
-
-        {/* Table Content */}
+        {/* ── SKELETON LOADING STATE ───────────────────────────────────────── */}
         {loading ? (
-          <div className="recs-loading-card">
-            <div className="recs-spinner" />
-            <p className="recs-loading-text">Recherche des établissements...</p>
+          <div className="schools-cards-grid">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="school-skeleton-card">
+                <div className="school-skeleton-media" />
+                <div className="school-skeleton-body">
+                  <div className="school-skeleton-line" style={{ width: "65%" }} />
+                  <div className="school-skeleton-line" style={{ width: "90%" }} />
+                  <div className="school-skeleton-line" style={{ width: "45%" }} />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="mgmt-card-table">
-            <div className="mgmt-table-responsive">
-              <table className="mgmt-table">
-                <thead>
-                  <tr>
-                    <th>Établissement</th>
-                    <th>Ville</th>
-                    <th>Secteur</th>
-                    <th>Présentation</th>
-                    <th>Portail Web</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSchools.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted)" }}>
-                        Aucun établissement trouvé selon vos critères.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredSchools.map((school) => (
-                      <tr key={school.id}>
-                        <td>
-                          <strong>{school.name}</strong>
-                        </td>
-                        <td>📍 {school.city || "Non spécifiée"}</td>
-                        <td>
-                          <span className="mgmt-table-tag">
-                            {school.type || "PUBLIC"}
-                          </span>
-                        </td>
-                        <td style={{ maxWidth: "340px" }}>
-                          <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-muted)" }}>
-                            {school.description || "Aucune description détaillée disponible."}
-                          </p>
-                        </td>
-                        <td>
-                          {school.website ? (
-                            <a
-                              href={school.website}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ color: "var(--accent-blue)", textDecoration: "none", fontWeight: 600 }}
+          /* ── SCHOOL CARDS GRID ─────────────────────────────────────────── */
+          <div className="schools-cards-grid">
+            {filteredSchools.length === 0 ? (
+              <div className="schools-empty-state">
+                <div className="schools-empty-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 21h18" />
+                    <path d="M5 21V7l8-4v18" />
+                    <path d="M19 21V11l-6-4" />
+                    <path d="M9 9v.01" />
+                    <path d="M9 12v.01" />
+                    <path d="M9 15v.01" />
+                    <path d="M9 18v.01" />
+                  </svg>
+                </div>
+                <h3 className="schools-empty-title">Aucun établissement trouvé</h3>
+                <p className="schools-empty-desc">
+                  Aucun résultat ne correspond à vos filtres actuels. Essayez de modifier vos termes de recherche.
+                </p>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="schools-reset-btn"
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    Réinitialiser les filtres
+                  </button>
+                )}
+              </div>
+            ) : (
+              filteredSchools.map((school) => {
+                const schoolImage = getSchoolCampusImage(school);
+                const sectorLabel =
+                  school.type === "PUBLIC"
+                    ? "Public"
+                    : school.type === "PRIVATE"
+                    ? "Privé"
+                    : school.type === "SEMI_PUBLIC"
+                    ? "Semi-Public"
+                    : school.type || "Public";
+
+                return (
+                  <article key={school.id} className="school-card">
+                    {/* Top image media with overlays */}
+                    <div className="school-card-media">
+                      <img
+                        src={schoolImage}
+                        alt={`Campus ${school.name}`}
+                        className="school-card-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = CAMPUS_PRESETS.generic;
+                        }}
+                      />
+                      <div className="school-media-overlay" />
+
+                      <div className="school-media-top-badges">
+                        <span className="school-type-badge">
+                          {sectorLabel}
+                        </span>
+
+                        {school.city && (
+                          <span className="school-city-badge">
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             >
-                              Accéder au site 🔗
-                            </a>
-                          ) : (
-                            <span style={{ color: "var(--text-muted)" }}>Non renseigné</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span>{school.city}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="school-card-body">
+                      <div className="school-card-header">
+                        <h2 className="school-card-title">{school.name}</h2>
+                      </div>
+
+                      <p className="school-card-desc">
+                        {school.description ||
+                          "Établissement d'enseignement supérieur d'excellence proposant des formations accréditées et des débouchés professionnels reconnus."}
+                      </p>
+
+                      {/* Filières tags */}
+                      {Array.isArray(school.fields) && school.fields.length > 0 && (
+                        <div className="school-fields-section">
+                          <span className="school-fields-label">Filières clés</span>
+                          <div className="school-fields-tags">
+                            {school.fields.slice(0, 3).map((f) => (
+                              <span key={f.id} className="school-field-pill" title={f.name}>
+                                {f.name}
+                              </span>
+                            ))}
+                            {school.fields.length > 3 && (
+                              <span
+                                className="school-field-pill-more"
+                                title={school.fields
+                                  .slice(3)
+                                  .map((f) => f.name)
+                                  .join(", ")}
+                              >
+                                +{school.fields.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Card Footer */}
+                    <footer className="school-card-footer">
+                      <div className="school-footer-meta">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                          <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                        </svg>
+                        <span>
+                          {Array.isArray(school.fields) ? `${school.fields.length} parcours` : "Accrédité"}
+                        </span>
+                      </div>
+
+                      {school.website ? (
+                        <a
+                          href={school.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="school-portal-link"
+                          title={`Consulter le site officiel de ${school.name}`}
+                        >
+                          <span>Portail officiel</span>
+                          <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                        </a>
+                      ) : (
+                        <span className="school-no-portal">Portail non renseigné</span>
+                      )}
+                    </footer>
+                  </article>
+                );
+              })
+            )}
           </div>
         )}
       </div>

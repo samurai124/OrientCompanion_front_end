@@ -32,69 +32,72 @@
 }
 
 /* LIGHT THEME (Frosted Glass & Pearl Slate) */
-.chat-page-root[data-theme="light"] {
-  --chat-bg: #f5f6f9;
-  --chat-nav-bg: rgba(245, 246, 249, 0.85);
+.chat-page-root,
+.chat-page-root[data-theme="light"],
+[data-theme="light"] .chat-page-root {
+  --chat-bg: #fafafa;
+  --chat-nav-bg: rgba(250, 250, 250, 0.85);
 
-  --text-primary: #181a20;
-  --text-secondary: #5e6473;
-  --text-muted: #8b92a4;
+  --text-primary: #09090b;
+  --text-secondary: #71717a;
+  --text-muted: #a1a1aa;
 
-  --circuit-color: #a8b0c2;
+  --circuit-color: #e4e4e7;
   --token-bg: #ffffff;
-  --token-border: rgba(255, 255, 255, 0.9);
-  --token-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  --token-border: #e4e4e7;
+  --token-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
 
-  --btn-dark-bg: #181a20;
-  --btn-dark-text: #ffffff;
-  --btn-dark-hover: #2b2e38;
+  --btn-dark-bg: #18181b;
+  --btn-dark-text: #fafafa;
+  --btn-dark-hover: #27272a;
 
   --btn-outline-bg: #ffffff;
-  --btn-outline-border: #e2e5eb;
-  --btn-outline-text: #181a20;
+  --btn-outline-border: #e4e4e7;
+  --btn-outline-text: #09090b;
 
-  --dash-bg: rgba(255, 255, 255, 0.9);
-  --dash-border: rgba(255, 255, 255, 0.95);
+  --dash-bg: #ffffff;
+  --dash-border: #e4e4e7;
   --dash-card-bg: #ffffff;
-  --dash-card-border: #eaedf2;
-  --dash-card-subtle: #f8f9fb;
-  --dash-highlight: #181a20;
-  --dash-bar-color: #cbd3e1;
+  --dash-card-border: #e4e4e7;
+  --dash-card-subtle: #f4f4f5;
+  --dash-highlight: #18181b;
+  --dash-bar-color: #e4e4e7;
 
   --accent-positive: #10b981;
 }
 
-/* DARK THEME (Obsidian Frosted Glass) */
+/* DARK THEME (Obsidian Frosted Glass & Zinc) */
+[data-theme="dark"] .chat-page-root,
 .chat-page-root[data-theme="dark"] {
-  --chat-bg: #0d0f17;
-  --chat-nav-bg: rgba(13, 15, 23, 0.85);
+  --chat-bg: #09090b;
+  --chat-nav-bg: rgba(9, 9, 11, 0.85);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #9aa2b4;
-  --text-muted: #626a7e;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
 
-  --circuit-color: #2a3144;
-  --token-bg: #151824;
-  --token-border: rgba(255, 255, 255, 0.1);
+  --circuit-color: #27272a;
+  --token-bg: #18181b;
+  --token-border: #27272a;
   --token-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
-  --btn-dark-bg: #ffffff;
-  --btn-dark-text: #0d0f17;
-  --btn-dark-hover: #e2e8f0;
+  --btn-dark-bg: #fafafa;
+  --btn-dark-text: #09090b;
+  --btn-dark-hover: #e4e4e7;
 
-  --btn-outline-bg: rgba(255, 255, 255, 0.05);
-  --btn-outline-border: rgba(255, 255, 255, 0.12);
-  --btn-outline-text: #f8fafc;
+  --btn-outline-bg: #18181b;
+  --btn-outline-border: #27272a;
+  --btn-outline-text: #fafafa;
 
-  --dash-bg: rgba(18, 21, 32, 0.88);
-  --dash-border: rgba(255, 255, 255, 0.08);
-  --dash-card-bg: #151926;
-  --dash-card-border: rgba(255, 255, 255, 0.08);
-  --dash-card-subtle: #1a1f30;
-  --dash-highlight: #ffffff;
-  --dash-bar-color: #2c344a;
+  --dash-bg: #09090b;
+  --dash-border: #27272a;
+  --dash-card-bg: #18181b;
+  --dash-card-border: #27272a;
+  --dash-card-subtle: #27272a;
+  --dash-highlight: #fafafa;
+  --dash-bar-color: #3f3f46;
 
-  --accent-positive: #34d399;
+  --accent-positive: #10b981;
 }
 
 .chat-page-root {
