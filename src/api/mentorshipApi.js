@@ -21,7 +21,6 @@ export const MentorshipApi = {
     return response.data;
   },
 
-
   getMySessionsAsCounselor: async () => {
     const response = await apiClient.get("/counselor/mentorship/sessions");
     return response.data;
