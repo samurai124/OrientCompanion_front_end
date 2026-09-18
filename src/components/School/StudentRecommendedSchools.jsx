@@ -3,7 +3,6 @@ import { SchoolContext } from "../../context/SchoolContext";
 import { FieldContext } from "../../context/FieldContext";
 import "./StudentRecommendedSchools.css";
 
-// Curated high-resolution campus photography for Moroccan universities and schools
 const CAMPUS_PRESETS = {
   ensam: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80",
   um6p: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80",
@@ -21,10 +20,6 @@ const CAMPUS_PRESETS = {
   generic: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80",
 };
 
-/**
- * Maps a school object to its campus image.
- * Uses school.imageUrl or school.image if provided, otherwise matches by name/type keywords.
- */
 function getSchoolCampusImage(school) {
   if (school?.imageUrl) return school.imageUrl;
   if (school?.image) return school.image;
@@ -97,7 +92,7 @@ export default function StudentRecommendedSchools() {
   return (
     <div className="schools-container" data-theme={theme}>
       <div className="schools-wrapper">
-        {/* ── HEADER ──────────────────────────────────────────────────────── */}
+
         <header className="schools-header">
           <div className="schools-title-group">
             <h1 className="schools-title">Établissements & Grandes Écoles</h1>
@@ -112,9 +107,8 @@ export default function StudentRecommendedSchools() {
           </div>
         </header>
 
-        {/* ── SEARCH & FILTER TOOLBAR ─────────────────────────────────────── */}
         <div className="schools-toolbar">
-          {/* Search box with inline icon */}
+
           <div className="schools-search-box">
             <svg
               className="schools-search-icon"
@@ -139,7 +133,6 @@ export default function StudentRecommendedSchools() {
             />
           </div>
 
-          {/* Filter dropdowns */}
           <div className="schools-filter-group">
             <select
               value={selectedFieldId}
@@ -191,7 +184,6 @@ export default function StudentRecommendedSchools() {
           </div>
         </div>
 
-        {/* ── ERROR NOTIFICATION ──────────────────────────────────────────── */}
         {error && (
           <div className="schools-error-banner" role="alert">
             <svg
@@ -212,7 +204,6 @@ export default function StudentRecommendedSchools() {
           </div>
         )}
 
-        {/* ── SKELETON LOADING STATE ───────────────────────────────────────── */}
         {loading ? (
           <div className="schools-cards-grid">
             {[...Array(6)].map((_, i) => (
@@ -227,7 +218,7 @@ export default function StudentRecommendedSchools() {
             ))}
           </div>
         ) : (
-          /* ── SCHOOL CARDS GRID ─────────────────────────────────────────── */
+
           <div className="schools-cards-grid">
             {filteredSchools.length === 0 ? (
               <div className="schools-empty-state">
@@ -280,7 +271,7 @@ export default function StudentRecommendedSchools() {
 
                 return (
                   <article key={school.id} className="school-card">
-                    {/* Top image media with overlays */}
+
                     <div className="school-card-media">
                       <img
                         src={schoolImage}
@@ -320,7 +311,6 @@ export default function StudentRecommendedSchools() {
                       </div>
                     </div>
 
-                    {/* Card Body */}
                     <div className="school-card-body">
                       <div className="school-card-header">
                         <h2 className="school-card-title">{school.name}</h2>
@@ -331,7 +321,6 @@ export default function StudentRecommendedSchools() {
                           "Établissement d'enseignement supérieur d'excellence proposant des formations accréditées et des débouchés professionnels reconnus."}
                       </p>
 
-                      {/* Filières tags */}
                       {Array.isArray(school.fields) && school.fields.length > 0 && (
                         <div className="school-fields-section">
                           <span className="school-fields-label">Filières clés</span>
@@ -357,7 +346,6 @@ export default function StudentRecommendedSchools() {
                       )}
                     </div>
 
-                    {/* Card Footer */}
                     <footer className="school-card-footer">
                       <div className="school-footer-meta">
                         <svg

@@ -5,9 +5,6 @@ import { RecommendationContext } from "../../context/RecommendationContext";
 import { MentorshipContext } from "../../context/MentorshipContext";
 import "./Board.css";
 
-/**
- * RIASEC Holland Personality dimensions reference (Monochrome & descriptions)
- */
 const RIASEC_INFO = {
   R: { label: "Réaliste", desc: "Pratique, technique et concret" },
   I: { label: "Investigateur", desc: "Analytique, scientifique et curieux" },
@@ -17,9 +14,6 @@ const RIASEC_INFO = {
   C: { label: "Conventionnel", desc: "Méthodique, rigoureux et structuré" },
 };
 
-/**
- * Clean Lucide-style SVG icons (monochrome, 1.5px stroke)
- */
 const Icons = {
   Compass: () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +81,6 @@ const Icons = {
   ),
 };
 
-
 export default function Board() {
   const navigate = useNavigate();
   const {
@@ -113,7 +106,6 @@ export default function Board() {
     if (fetchMySessionsAsStudent) fetchMySessionsAsStudent();
   }, [fetchProfile, fetchMyRecommendations, fetchMySessionsAsStudent]);
 
-  // Date du jour formatée
   const todayDateFormatted = useMemo(() => {
     const raw = new Intl.DateTimeFormat("fr-FR", {
       weekday: "long",
@@ -124,7 +116,6 @@ export default function Board() {
     return raw.charAt(0).toUpperCase() + raw.slice(1);
   }, []);
 
-  // Extraction défensive des scores RIASEC
   const personalityScores = useMemo(() => {
     if (!profile) return null;
     if (profile.personalityScores) return profile.personalityScores;
@@ -140,7 +131,6 @@ export default function Board() {
     return hasAny ? fallback : null;
   }, [profile]);
 
-  // Top 3 code RIASEC
   const top3Riasec = useMemo(() => {
     if (profile?.riasecCode && profile.riasecCode.length >= 3) {
       return profile.riasecCode.slice(0, 3).toUpperCase();
@@ -153,7 +143,6 @@ export default function Board() {
     return sorted.slice(0, 3).map(([k]) => k).join("");
   }, [profile, personalityScores]);
 
-  // Détails des dimensions dominantes du Top 3
   const top3Dimensions = useMemo(() => {
     if (!top3Riasec || !personalityScores) return [];
     return top3Riasec.split("").map((letter) => {
@@ -166,7 +155,6 @@ export default function Board() {
     });
   }, [top3Riasec, personalityScores]);
 
-  // Matière forte déclarée
   const strongSubject = useMemo(() => {
     if (profile?.strongSubject) {
       if (typeof profile.strongSubject === "string") {
@@ -184,7 +172,6 @@ export default function Board() {
     return { name: entries[0][0], score: entries[0][1] };
   }, [profile]);
 
-  // Note moyenne déclarée
   const averageGrade = useMemo(() => {
     if (profile?.averageGrade) {
       return Number(profile.averageGrade).toFixed(1);
@@ -199,7 +186,6 @@ export default function Board() {
     return (sum / vals.length).toFixed(1);
   }, [profile]);
 
-  // ── 1. Progression du Parcours ─────────────────────────────────────────────
   const isAssessmentCompleted = Boolean(profile || hasCompletedAssessment);
   const hasRecommendations = Boolean(recommendations && recommendations.length > 0);
   const hasMentorshipSession = Boolean(studentSessions && studentSessions.length > 0);
@@ -251,7 +237,6 @@ export default function Board() {
     };
   }, [isAssessmentCompleted, hasRecommendations, hasMentorshipSession]);
 
-  // ── 3. Top Recommandations (>80%) ──────────────────────────────────────────
   const topRecommendations = useMemo(() => {
     if (!recommendations || recommendations.length === 0) return [];
 
@@ -286,7 +271,6 @@ export default function Board() {
     return mapped.slice(0, 3);
   }, [recommendations]);
 
-  // ── 4. Mentorat ────────────────────────────────────────────────────────────
   const nextSession = useMemo(() => {
     if (!studentSessions || studentSessions.length === 0) return null;
     return studentSessions[studentSessions.length - 1];
@@ -294,9 +278,9 @@ export default function Board() {
 
   return (
     <div className="board-container">
-      {/* ── Main Cockpit Container (Spacious & Clean) ─────────────────────── */}
+
       <main className="board-main-container">
-        {/* Page Header */}
+
         <div className="board-page-header">
           <div className="board-title-group">
             <h1>Tableau de bord</h1>
@@ -310,9 +294,7 @@ export default function Board() {
           </div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 1: PROGRESSION DU PARCOURS
-            ══════════════════════════════════════════════════════════════════ */}
+        
         <section className="board-card" aria-labelledby="heading-progression">
           <div className="board-card-header">
             <div className="board-card-title-group">
@@ -335,9 +317,8 @@ export default function Board() {
             </div>
           </div>
 
-          {/* Stepper en 3 jalons */}
           <div className="board-stepper-row">
-            {/* Jalon 1 : Bilan RIASEC */}
+
             <div className={`board-step-card ${isAssessmentCompleted ? "complete" : "active"}`}>
               <div className="board-step-card-header">
                 <span className="board-step-circle">
@@ -355,7 +336,6 @@ export default function Board() {
               </p>
             </div>
 
-            {/* Jalon 2 : Découverte filières */}
             <div
               className={`board-step-card ${
                 hasRecommendations
@@ -385,7 +365,6 @@ export default function Board() {
               </p>
             </div>
 
-            {/* Jalon 3 : Mentorat */}
             <div
               className={`board-step-card ${
                 hasMentorshipSession
@@ -416,7 +395,6 @@ export default function Board() {
             </div>
           </div>
 
-          {/* Jauge de progression fine */}
           <div className="board-gauge-box">
             <div className="board-gauge-meta">
               <span>Avancement global</span>
@@ -430,7 +408,6 @@ export default function Board() {
             </div>
           </div>
 
-          {/* Action Row */}
           <div className="board-progress-action-row">
             <div className="board-guidance-note">
               <span>{primaryAction.guidance}</span>
@@ -446,13 +423,8 @@ export default function Board() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            GRILLE : ZONE 2 & ZONE 3 (Airy 2 Columns)
-            ══════════════════════════════════════════════════════════════════ */}
         <div className="board-columns-grid">
-          {/* ────────────────────────────────────────────────────────────────
-              ZONE 2: APERÇU DU PROFIL PSYCHOMÉTRIQUE
-              ──────────────────────────────────────────────────────────────── */}
+
           <section className="board-card" aria-labelledby="heading-profile">
             <div className="board-card-header">
               <div className="board-card-title-group">
@@ -485,7 +457,7 @@ export default function Board() {
               </div>
             ) : isAssessmentCompleted && top3Riasec ? (
               <div className="board-psychometric-stack">
-                {/* Code RIASEC dominant */}
+                
                 <div className="board-code-banner">
                   <div className="board-code-banner-col">
                     <span className="board-code-label">Code Holland (Top 3)</span>
@@ -496,7 +468,7 @@ export default function Board() {
                   </div>
                 </div>
 
-                {/* Top 3 Dimensions list */}
+                
                 <div className="board-traits-list">
                   {top3Dimensions.map((dim) => (
                     <div key={dim.letter} className="board-trait-row">
@@ -521,7 +493,7 @@ export default function Board() {
                   ))}
                 </div>
 
-                {/* Métriques académiques : Matière forte & Note moyenne */}
+                
                 <div className="board-academic-stats-row">
                   <div className="board-stat-tile">
                     <div className="board-stat-tile-header">
@@ -568,9 +540,6 @@ export default function Board() {
             )}
           </section>
 
-          {/* ────────────────────────────────────────────────────────────────
-              ZONE 3: TOP RECOMMANDATIONS (>80%)
-              ──────────────────────────────────────────────────────────────── */}
           <section className="board-card" aria-labelledby="heading-recs">
             <div className="board-card-header">
               <div className="board-card-title-group">
@@ -651,9 +620,7 @@ export default function Board() {
           </section>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 4: RENDEZ-VOUS DE MENTORAT
-            ══════════════════════════════════════════════════════════════════ */}
+        
         <section className="board-card" aria-labelledby="heading-mentor">
           <div className="board-card-header">
             <div className="board-card-title-group">

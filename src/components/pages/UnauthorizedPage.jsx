@@ -2,16 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-/**
- * UnauthorizedPage — Affiché quand un utilisateur authentifié tente d'accéder
- * à une ressource réservée à un autre rôle.
- */
 export default function UnauthorizedPage() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   const handleGoBack = () => {
-    // Redirige vers la page d'accueil appropriée selon le rôle
+
     if (user?.role === "STUDENT") navigate("/dashboard", { replace: true });
     else if (user?.role === "COUNSELOR") navigate("/counselor/sessions", { replace: true });
     else if (user?.role === "ADMIN") navigate("/admin/fields", { replace: true });

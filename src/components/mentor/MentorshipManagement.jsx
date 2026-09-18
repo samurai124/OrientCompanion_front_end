@@ -2,31 +2,27 @@ import { useContext, useEffect, useState, useMemo } from "react";
 import { MentorshipContext } from "../../context/MentorshipContext";
 import "./MentorshipManagement.css";
 
-// High-resolution photography of academic advisors and professional mentors
 const MENTOR_PRESETS = {
-  // 1. Engineering / Tech Advisor
+
   engineering: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-  // 2. Tech / Computer Science Mentor
+
   tech: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-  // 3. Business / Finance / Management Mentor
+
   business: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
-  // 4. Medical / Health Sciences Mentor
+
   medicine: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=800&q=80",
-  // 5. Architecture & Design Mentor
+
   architecture: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80",
-  // 6. Law & Humanities Counselor
+
   law: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80",
-  // 7. Academic Guidance Counselor (General)
+
   academic: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=800&q=80",
-  // 8. Senior Director Advisor
+
   senior: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=800&q=80",
-  // Generic fallback
+
   generic: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80",
 };
 
-/**
- * Maps a counselor/mentor to a high-resolution professional advisor portrait.
- */
 function getMentorImage(counselor) {
   if (counselor?.imageUrl) return counselor.imageUrl;
   if (counselor?.avatarUrl) return counselor.avatarUrl;
@@ -129,7 +125,7 @@ export default function MentorshipManagement() {
   return (
     <div className="mentor-container" data-theme={theme}>
       <div className="mentor-wrapper">
-        {/* ── HEADER ──────────────────────────────────────────────────────── */}
+
         <header className="mentor-header">
           <div className="mentor-title-group">
             <h1 className="mentor-title">Mentorat & Accompagnement Visio</h1>
@@ -163,7 +159,6 @@ export default function MentorshipManagement() {
           </div>
         </header>
 
-        {/* ── NOTIFICATIONS ───────────────────────────────────────────────── */}
         {error && (
           <div className="schools-error-banner" role="alert" style={{ marginTop: "1.5rem" }}>
             <span>{error}</span>
@@ -193,12 +188,9 @@ export default function MentorshipManagement() {
           </div>
         )}
 
-        {/* =================================================================
-            VUE ÉTUDIANT
-            ================================================================= */}
         {activeTab === "STUDENT" && (
           <div>
-            {/* Section Header & Toolbar */}
+
             <div className="mentor-section-header">
               <h2 className="mentor-section-title">Mentors & Conseillers Disponibles</h2>
               <span className="schools-counter-pill">
@@ -233,7 +225,6 @@ export default function MentorshipManagement() {
               </div>
             </div>
 
-            {/* Skeletons on loading */}
             {loading ? (
               <div className="mentor-cards-grid">
                 {[...Array(6)].map((_, i) => (
@@ -263,7 +254,7 @@ export default function MentorshipManagement() {
                 </p>
               </div>
             ) : (
-              /* ── MENTORS CARDS GRID ─────────────────────────────────────── */
+
               <div className="mentor-cards-grid">
                 {filteredCounselors.map((counselor) => {
                   const mentorPhoto = getMentorImage(counselor);
@@ -273,7 +264,7 @@ export default function MentorshipManagement() {
 
                   return (
                     <article key={counselor.id} className="mentor-card">
-                      {/* Top Advisor Photo with Overlays */}
+
                       <div className="mentor-card-media">
                         <img
                           src={mentorPhoto}
@@ -299,7 +290,6 @@ export default function MentorshipManagement() {
                         </div>
                       </div>
 
-                      {/* Card Body */}
                       <div className="mentor-card-body">
                         <div className="mentor-card-header">
                           <h3 className="mentor-card-title">{counselorName}</h3>
@@ -325,7 +315,6 @@ export default function MentorshipManagement() {
                         </div>
                       </div>
 
-                      {/* Card Footer */}
                       <footer className="mentor-card-footer">
                         <div className="mentor-footer-meta">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -356,7 +345,6 @@ export default function MentorshipManagement() {
               </div>
             )}
 
-            {/* ── SECTION: MES SÉANCES DEMANDÉES ──────────────────────────── */}
             <div style={{ marginTop: "3.5rem" }}>
               <div className="mentor-section-header">
                 <h2 className="mentor-section-title">Mes Séances de Mentorat</h2>
@@ -416,9 +404,7 @@ export default function MentorshipManagement() {
           </div>
         )}
 
-        {/* =================================================================
-            VUE CONSEILLER
-            ================================================================= */}
+        
         {activeTab === "COUNSELOR" && (
           <div style={{ marginTop: "2rem" }}>
             <div className="mentor-section-header">

@@ -1,8 +1,3 @@
-/* ==========================================================================
-   ORIENTCOMPANION - RIASEC AI CHATBOT STYLES
-   Frosted Glass / Crystal Embossed Aesthetic matching the Landing Page
-   Dual Theme Support: Light Mode & Dark Mode
-   ========================================================================== */
 
 .chat-page-root {
   --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
@@ -31,7 +26,6 @@
   flex-shrink: 0;
 }
 
-/* LIGHT THEME (Frosted Glass & Pearl Slate) */
 .chat-page-root,
 .chat-page-root[data-theme="light"],
 [data-theme="light"] .chat-page-root {
@@ -66,7 +60,6 @@
   --accent-positive: #10b981;
 }
 
-/* DARK THEME (Obsidian Frosted Glass & Zinc) */
 [data-theme="dark"] .chat-page-root,
 .chat-page-root[data-theme="dark"] {
   --chat-bg: #09090b;
@@ -105,7 +98,6 @@
   color: var(--text-primary);
 }
 
-/* Subtle Embossed Circuit Layer in Background */
 .chat-circuit-layer {
   position: absolute;
   inset: 0;
@@ -120,9 +112,6 @@
   height: 100%;
 }
 
-/* ==========================================================================
-   1. TOP NAVBAR
-   ========================================================================== */
 .chat-nav-wrapper {
   position: relative;
   z-index: 20;
@@ -154,7 +143,6 @@
   gap: 1.5rem;
 }
 
-/* Brand */
 .chat-nav-brand {
   display: flex;
   align-items: center;
@@ -192,7 +180,6 @@
   color: var(--text-muted);
 }
 
-/* Steps / Methodology Tracker */
 .chat-nav-steps {
   display: flex;
   align-items: center;
@@ -223,7 +210,6 @@
   font-weight: 600;
 }
 
-/* Right Actions */
 .chat-nav-actions {
   display: flex;
   align-items: center;
@@ -251,7 +237,6 @@
   color: var(--text-secondary);
 }
 
-/* Theme Toggle Button */
 .chat-theme-btn {
   width: 32px;
   height: 32px;
@@ -269,7 +254,6 @@
   transform: translateY(-1px);
 }
 
-/* Nav Action Buttons */
 .chat-nav-btn-recs,
 .chat-nav-btn-home {
   display: inline-flex;
@@ -292,9 +276,6 @@
   transform: translateY(-1px);
 }
 
-/* ==========================================================================
-   2. CHAT CARD CONTAINER (Frosted glass centerpiece)
-   ========================================================================== */
 .chat-card-container {
   position: relative;
   z-index: 10;
@@ -315,7 +296,6 @@
   box-sizing: border-box;
 }
 
-/* Messages Scroll Area */
 .chat-messages-scroll {
   flex: 1;
   min-height: 0;
@@ -324,7 +304,6 @@
   scroll-behavior: smooth;
 }
 
-/* Custom Minimalist Scrollbar */
 .chat-messages-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -344,7 +323,6 @@
   margin: 0 auto;
 }
 
-/* Error Banner */
 .error-banner {
   display: flex;
   align-items: center;
@@ -357,7 +335,6 @@
   font-size: 0.88rem;
 }
 
-/* Chat Message Rows */
 .chat-msg-row {
   display: flex;
   align-items: flex-start;
@@ -374,7 +351,6 @@
   flex-direction: row-reverse;
 }
 
-/* Avatars */
 .chat-msg-avatar {
   width: 36px;
   height: 36px;
@@ -395,7 +371,6 @@
   color: var(--btn-dark-text);
 }
 
-/* Message Bubble Cards */
 .chat-bubble-card {
   max-width: 80%;
   padding: 1.15rem 1.45rem;
@@ -405,7 +380,6 @@
   box-sizing: border-box;
 }
 
-/* Bot Bubble: Frosted Glass Card */
 .chat-msg-row.bot .chat-bubble-card {
   background: var(--dash-card-bg);
   border: 1px solid var(--dash-card-border);
@@ -414,7 +388,6 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
 }
 
-/* User Bubble: High Contrast Pill */
 .chat-msg-row.user .chat-bubble-card {
   background: var(--btn-dark-bg);
   color: var(--btn-dark-text);
@@ -436,7 +409,6 @@
   padding-left: 0.5rem;
 }
 
-/* Typing Indicator Bubble */
 .chat-typing-row {
   display: flex;
   align-items: center;
@@ -474,9 +446,6 @@
   color: var(--text-muted);
 }
 
-/* ==========================================================================
-   3. COMPLETION TROPHY CARD (RIASEC Results summary)
-   ========================================================================== */
 .chat-completion-card {
   background: var(--dash-card-bg);
   border: 1px solid var(--dash-card-border);
@@ -595,9 +564,6 @@
   transform: translateY(-1px);
 }
 
-/* ==========================================================================
-   4. CHAT INPUT FORM BAR
-   ========================================================================== */
 .chat-input-form-bar {
   padding: 1.15rem 1.75rem 1.35rem;
   border-top: 1px solid var(--dash-card-border);
@@ -658,9 +624,6 @@
   cursor: not-allowed;
 }
 
-/* ==========================================================================
-   RESPONSIVE DESIGN
-   ========================================================================== */
 @media (max-width: 900px) {
   .chat-nav-steps {
     display: none;

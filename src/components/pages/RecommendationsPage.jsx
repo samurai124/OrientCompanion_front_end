@@ -3,60 +3,55 @@ import { useNavigate, Link } from "react-router-dom";
 import { RecommendationContext } from "../../context/RecommendationContext";
 import "./RecommendationsPage.css";
 
-// High-resolution photography specifically representing each discipline / branch / profession
 const DISCIPLINE_PRESETS = {
-  // 1. Intelligence Artificielle, Data Science & Machine Learning
+
   ai: "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80",
-  // 2. Génie Logiciel, Informatique, Cloud & Programmation
+
   software: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
-  // 3. Cybersécurité & Sécurité des Réseaux
+
   cyber: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80",
-  // 4. Télécommunications, Réseaux & IoT
+
   telecom: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80",
-  // 5. Robotique, Mécatronique & Automatisation
+
   robotics: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
-  // 6. Génie Électrique, Électronique & Systèmes Embarqués
+
   electronics: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-  // 7. Génie Civil, Travaux Publics & BTP
+
   civil: "https://images.unsplash.com/photo-1541888946425-d0fbb18015f5?auto=format&fit=crop&w=800&q=80",
-  // 8. Architecture, Urbanisme & Conception
+
   architecture: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
-  // 9. Médecine Générale, Chirurgie & Soins Cliniques
+
   medicine: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
-  // 10. Médecine Dentaire & Odontologie
+
   dentistry: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80",
-  // 11. Pharmacie, Biologie Médicale & Biotechnologies
+
   pharmacy: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80",
-  // 12. Finance, Marchés Boursiers, Banque & Audit
+
   finance: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80",
-  // 13. Commerce, Management, Marketing & Gestion d'Entreprise
+
   business: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80",
-  // 14. Logistique, Supply Chain & Fret International
+
   logistics: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
-  // 15. Aéronautique, Espace & Maintenance Aérienne
+
   aerospace: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80",
-  // 16. Agronomie, Agriculture Intelligente & Agro-alimentaire
+
   agronomy: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=800&q=80",
-  // 17. Droit, Justice, Sciences Politiques & Diplomatie
+
   law: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
-  // 18. Design Graphique, Multimédia & UI/UX Design
+
   design: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80",
-  // 19. Sciences Fondamentales (Mathématiques, Physique, Chimie)
+
   science: "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&w=800&q=80",
-  // 20. Fallback académique d'excellence
+
   generic: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80",
 };
 
-/**
- * Maps a recommendation item directly to an evocative image of its field/branch.
- */
 function getRecommendationImage(item) {
   if (item?.imageUrl) return item.imageUrl;
   if (item?.image) return item.image;
 
   const text = `${item.fieldName || ""} ${item.trackName || ""} ${item.fieldCategory || ""} ${item.category || ""} ${item.explanation || ""}`.toLowerCase();
 
-  // 1. Intelligence Artificielle & Data Science
   if (
     text.includes("artificielle") ||
     text.includes("big data") ||
@@ -69,7 +64,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.ai;
   }
 
-  // 2. Cybersécurité & Sécurité des systèmes
   if (
     text.includes("cyber") ||
     text.includes("sécurité des systèmes") ||
@@ -79,7 +73,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.cyber;
   }
 
-  // 3. Télécommunications & Réseaux
   if (
     text.includes("télécom") ||
     text.includes("telecom") ||
@@ -90,7 +83,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.telecom;
   }
 
-  // 4. Génie Logiciel, Informatique & Programmation
   if (
     text.includes("logiciel") ||
     text.includes("software") ||
@@ -104,7 +96,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.software;
   }
 
-  // 5. Aéronautique & Aérospatial
   if (
     text.includes("aéron") ||
     text.includes("aérospat") ||
@@ -115,7 +106,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.aerospace;
   }
 
-  // 6. Mécatronique & Robotique
   if (
     text.includes("mécatron") ||
     text.includes("robot") ||
@@ -124,7 +114,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.robotics;
   }
 
-  // 7. Électronique & Électrique & Embarqué
   if (
     text.includes("électron") ||
     text.includes("embarqu") ||
@@ -134,7 +123,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.electronics;
   }
 
-  // 8. Génie Civil & Construction BTP
   if (
     text.includes("civil") ||
     text.includes("btp") ||
@@ -146,7 +134,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.civil;
   }
 
-  // 9. Architecture & Urbanisme
   if (
     text.includes("architec") ||
     text.includes("urban") ||
@@ -155,7 +142,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.architecture;
   }
 
-  // 10. Médecine Dentaire (Odontologie)
   if (
     text.includes("dent") ||
     text.includes("odontol") ||
@@ -164,7 +150,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.dentistry;
   }
 
-  // 11. Pharmacie & Biologie Médicale
   if (
     text.includes("pharm") ||
     text.includes("biotech") ||
@@ -175,7 +160,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.pharmacy;
   }
 
-  // 12. Médecine & Chirurgie
   if (
     text.includes("médec") ||
     text.includes("chirurg") ||
@@ -186,7 +170,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.medicine;
   }
 
-  // 13. Finance, Banque & Audit
   if (
     text.includes("financ") ||
     text.includes("banque") ||
@@ -198,7 +181,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.finance;
   }
 
-  // 14. Logistique & Supply Chain
   if (
     text.includes("logist") ||
     text.includes("supply") ||
@@ -208,7 +190,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.logistics;
   }
 
-  // 15. Commerce, Marketing & Management
   if (
     text.includes("commerce") ||
     text.includes("marketing") ||
@@ -221,7 +202,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.business;
   }
 
-  // 16. Agronomie & Agriculture
   if (
     text.includes("agro") ||
     text.includes("agri") ||
@@ -233,7 +213,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.agronomy;
   }
 
-  // 17. Droit & Sciences Politiques
   if (
     text.includes("droit") ||
     text.includes("jurid") ||
@@ -246,7 +225,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.law;
   }
 
-  // 18. Design & Arts Appliqués
   if (
     text.includes("design") ||
     text.includes("graphi") ||
@@ -258,7 +236,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.design;
   }
 
-  // 19. Génie Mécanique & Industriel
   if (
     text.includes("mécan") ||
     text.includes("industr") ||
@@ -268,7 +245,6 @@ function getRecommendationImage(item) {
     return DISCIPLINE_PRESETS.robotics;
   }
 
-  // 20. Sciences Fondamentales
   if (
     text.includes("physique") ||
     text.includes("chimie") ||
@@ -303,7 +279,6 @@ export default function RecommendationsPage() {
     fetchMyRecommendations();
   }, [fetchMyRecommendations]);
 
-  // Extract unique categories for filtering
   const categories = useMemo(() => {
     const set = new Set();
     (recommendations || []).forEach((r) => {
@@ -313,7 +288,6 @@ export default function RecommendationsPage() {
     return Array.from(set);
   }, [recommendations]);
 
-  // Filter recommendations
   const filteredRecommendations = useMemo(() => {
     return (recommendations || []).filter((item) => {
       const fieldName = (item.fieldName || item.trackName || "").toLowerCase();
@@ -355,7 +329,7 @@ export default function RecommendationsPage() {
   return (
     <div className="recs-container" data-theme={theme}>
       <div className="recs-wrapper">
-        {/* ── HEADER ──────────────────────────────────────────────────────── */}
+
         <header className="recs-header">
           <div className="recs-title-group">
             <h1 className="recs-title">Filières & Formations Recommandées</h1>
@@ -415,7 +389,6 @@ export default function RecommendationsPage() {
           </div>
         </header>
 
-        {/* ── TOOLBAR ─────────────────────────────────────────────────────── */}
         <div className="recs-toolbar">
           <div className="recs-search-box">
             <svg
@@ -490,7 +463,6 @@ export default function RecommendationsPage() {
           )}
         </div>
 
-        {/* ── ERROR NOTIFICATION ──────────────────────────────────────────── */}
         {error && (
           <div className="recs-error-banner" role="alert">
             <svg
@@ -511,7 +483,6 @@ export default function RecommendationsPage() {
           </div>
         )}
 
-        {/* ── LOADING SKELETONS ────────────────────────────────────────────── */}
         {loading ? (
           <div className="recs-cards-grid">
             {[...Array(6)].map((_, i) => (
@@ -527,7 +498,7 @@ export default function RecommendationsPage() {
             ))}
           </div>
         ) : (
-          /* ── RECOMMENDATIONS GRID ───────────────────────────────────────── */
+
           <div className="recs-cards-grid">
             {filteredRecommendations.length === 0 ? (
               <div className="recs-empty-card">
@@ -587,7 +558,7 @@ export default function RecommendationsPage() {
 
                 return (
                   <article key={item.id ?? index} className="rec-card">
-                    {/* Top campus photo with overlays */}
+
                     <div className="rec-card-media">
                       <img
                         src={cardImage}
@@ -624,7 +595,6 @@ export default function RecommendationsPage() {
                       </div>
                     </div>
 
-                    {/* Card Body */}
                     <div className="rec-card-body">
                       <div className="rec-card-header">
                         <h2 className="rec-track-title">{fieldName}</h2>
@@ -651,7 +621,6 @@ export default function RecommendationsPage() {
                         )}
                       </div>
 
-                      {/* AI RIASEC Explanation */}
                       {item.explanation && (
                         <div className="rec-analysis-box">
                           <div className="rec-analysis-header">
@@ -674,7 +643,6 @@ export default function RecommendationsPage() {
                         </div>
                       )}
 
-                      {/* Associated schools */}
                       {Array.isArray(item.schools) && item.schools.length > 1 && (
                         <div className="rec-schools-section">
                           <span className="rec-schools-label">Établissements partenaires</span>
@@ -698,7 +666,6 @@ export default function RecommendationsPage() {
                       )}
                     </div>
 
-                    {/* Card Footer */}
                     <footer className="rec-card-footer">
                       <div className="rec-footer-meta">
                         <svg

@@ -1,8 +1,5 @@
 import { Link } from "react-router-dom";
 
-/**
- * NotFoundPage — Page 404 générique.
- */
 export default function NotFoundPage() {
   return (
     <div

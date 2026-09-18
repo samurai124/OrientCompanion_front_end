@@ -65,13 +65,11 @@ Utilisez UNIQUEMENT les noms exacts suivants :
 - When summarizing recommended options, highlight: Degree Level, Duration, Key Skills Required, and Typical Career Roles.
 `;
 
-// Helper to strip JSON output from raw message text
 function cleanBotResponse(text) {
   if (!text) return "";
   return text.replace(/```json[\s\S]*?```/, "").trim();
 }
 
-// Helper to format bot and user markdown (bolding and bullet points)
 function formatMessageContent(text) {
   if (!text) return "";
   const lines = text.split("\n");
@@ -97,7 +95,6 @@ export default function CompleteAssessmentChatbot() {
   const { submitAssessment, loading: contextSubmitting, error: contextError } = useContext(AssessmentContext);
   const navigate = useNavigate();
   const location = useLocation();
-
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -159,7 +156,6 @@ export default function CompleteAssessmentChatbot() {
 
       setMessages((prev) => [...prev, { sender: "bot", text: cleanBotResponse(rawText) }]);
 
-      // Extraction du JSON d'évaluation finale
       const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
         try {
@@ -168,12 +164,9 @@ export default function CompleteAssessmentChatbot() {
             setIsFinished(true);
             setAssessmentResult(parsed.assessmentData);
 
-            // Envoi au backend via AssessmentContext
             const success = await submitAssessment(parsed.assessmentData);
             if (success) {
-              // Post-Assessment Flow :
-              // Si AssessmentGuard a mémorisé la destination dans location.state,
-              // on y redirige directement ; sinon, fallback vers /recommendations.
+
               const redirectTarget =
                 location.state?.redirectAfterAssessment ?? "/recommendations";
               navigate(redirectTarget, { replace: true });
@@ -200,7 +193,6 @@ export default function CompleteAssessmentChatbot() {
     C: "Conventionnel",
   };
 
-  // Theme state dynamically synced with <html> attribute and storage
   const [theme, setTheme] = useState(() => {
     return (
       document.documentElement.getAttribute("data-theme") ||
@@ -220,7 +212,6 @@ export default function CompleteAssessmentChatbot() {
 
     syncTheme();
 
-    // Observe data-theme changes on <html> directly
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === "attributes" && m.attributeName === "data-theme") {
@@ -246,7 +237,7 @@ export default function CompleteAssessmentChatbot() {
 
   return (
     <div className="chat-page-root" data-theme={theme}>
-      {/* Subtle Embossed Circuit / Pathway Layer */}
+
       <div className="chat-circuit-layer" aria-hidden="true">
         <svg className="chat-circuit-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -262,7 +253,6 @@ export default function CompleteAssessmentChatbot() {
         </svg>
       </div>
 
-      {/* Steps / Methodology Tracker */}
       <div className="chat-steps-bar">
         <div className={`chat-nav-step-chip ${messages.length >= 0 ? "active" : ""}`}>
           <span className="step-num">01</span>
@@ -282,9 +272,8 @@ export default function CompleteAssessmentChatbot() {
         </div>
       </div>
 
-      {/* Chatbot Frosted Glass Window Container */}
       <div className="chat-card-container">
-        {/* Chat Messages Scroll Area */}
+
         <div className="chat-messages-scroll">
           <div className="chat-messages-inner">
             {(error || contextError) && (
@@ -322,7 +311,6 @@ export default function CompleteAssessmentChatbot() {
             );
           })}
 
-          {/* Typing Indicator */}
           {loading && (
             <div className="chat-typing-row">
               <div className="chat-msg-avatar avatar-bot">
@@ -341,7 +329,6 @@ export default function CompleteAssessmentChatbot() {
             </div>
           )}
 
-          {/* Context Submitting State */}
           {contextSubmitting && (
             <div className="chat-typing-row">
               <div className="chat-typing-bubble" style={{ borderLeft: "4px solid #10b981" }}>
@@ -350,7 +337,7 @@ export default function CompleteAssessmentChatbot() {
             </div>
           )}
 
-          {/* Celebration Card When Assessment is Finished */}
+          
           {isFinished && assessmentResult && (
             <div className="chat-completion-card">
               <div className="completion-header">
@@ -409,7 +396,6 @@ export default function CompleteAssessmentChatbot() {
           </div>
         </div>
 
-        {/* Input Form Bar */}
         <form onSubmit={handleSendMessage} className="chat-input-form-bar">
           <div className="chat-input-wrapper">
             <input
