@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrientCompanion — Orientation Post-Bac & Grandes Écoles au Maroc</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #ffffff;
+      color: #09090b;
+      line-height: 1.5;
+    }
+
+    /* Top Navigation */
+    .landing-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e4e4e7;
+    }
+    .landing-nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: #09090b;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: #09090b;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+    .nav-item {
+      text-decoration: none;
+      color: #52525b;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .nav-item:hover { color: #09090b; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary {
+      background: #ffffff;
+      border-color: #e4e4e7;
+      color: #09090b;
+    }
+    .btn-secondary:hover { background: #f4f4f5; }
+    .btn-primary {
+      background: #09090b;
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: #27272a; }
+    .btn-lg {
+      padding: 0.75rem 1.4rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border-radius: 8px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 5rem 1.5rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #27272a;
+      margin-bottom: 1.5rem;
+    }
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      color: #09090b;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #18181b 0%, #71717a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      color: #52525b;
+      max-width: 720px;
+      margin: 0 auto 2.25rem;
+      font-weight: 400;
+    }
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+      flex-wrap: wrap;
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem;
+      background: #fafafa;
+      border: 1px solid #e4e4e7;
+      border-radius: 12px;
+    }
+    .metric-card { text-align: center; }
+    .metric-num {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #09090b;
+      letter-spacing: -0.02em;
+    }
+    .metric-label {
+      font-size: 0.76rem;
+      color: #71717a;
+      margin-top: 0.2rem;
+    }
+
+    /* Section Header */
+    .section-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem;
+    }
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 3rem;
+    }
+    .section-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #71717a;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #09090b;
+      margin-bottom: 0.75rem;
+    }
+    .section-desc {
+      font-size: 0.92rem;
+      color: #52525b;
+    }
+
+    /* RIASEC 6 Dimensions Grid */
+    .riasec-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .riasec-card {
+      background: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .riasec-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .riasec-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .riasec-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #09090b;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .riasec-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #09090b;
+    }
+    .riasec-sub {
+      font-size: 0.76rem;
+      color: #71717a;
+      font-weight: 500;
+    }
+    .riasec-desc {
+      font-size: 0.82rem;
+      color: #52525b;
+      line-height: 1.45;
+    }
+    .riasec-pill-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .riasec-pill {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background: #f4f4f5;
+      color: #27272a;
+      border: 1px solid #e4e4e7;
+    }
+
+    /* Schools Section */
+    .schools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .school-card {
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .school-card-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid #f4f4f5;
+    }
+    .school-city-tag {
+      font-size: 0.7rem;
+      color: #71717a;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .school-name {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: #09090b;
+      margin-bottom: 0.25rem;
+    }
+    .school-category {
+      font-size: 0.76rem;
+      color: #52525b;
+    }
+    .school-card-body {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .threshold-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 0.74rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    /* Mentorship Highlight */
+    .mentor-banner {
+      background: #09090b;
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 3.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+    .mentor-banner-title {
+      font-size: 1.95rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+    .mentor-banner-desc {
+      font-size: 0.92rem;
+      color: #a1a1aa;
+      line-height: 1.55;
+      margin-bottom: 1.75rem;
+    }
+    .mentor-card-preview {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .mentor-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .mentor-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #27272a;
+      color: #ffffff;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      border: 2px solid #3f3f46;
+    }
+    .mentor-name { font-weight: 600; font-size: 0.92rem; color: #f4f4f5; }
+    .mentor-title { font-size: 0.76rem; color: #a1a1aa; }
+
+    /* Footer */
+    .landing-footer {
+      border-top: 1px solid #e4e4e7;
+      background: #fafafa;
+      padding: 3rem 1.5rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .footer-copy { font-size: 0.78rem; color: #71717a; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="landing-nav">
+    <div class="landing-nav-inner">
+      <a href="landing.html" class="brand-link">
+        <div class="brand-logo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="2" fill="currentColor"/>
+            <rect x="14" y="3" width="7" height="7" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="3" y="14" width="7" height="7" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="14" y="14" width="7" height="7" rx="2" fill="currentColor"/>
+          </svg>
+        </div>
+        OrientCompanion
+      </a>
+
+      <div class="nav-menu">
+        <a href="#riasec" class="nav-item">Test RIASEC</a>
+        <a href="#schools" class="nav-item">Écoles du Maroc</a>
+        <a href="#mentorship" class="nav-item">Mentorat Conseillers</a>
+        <a href="dashboard.html" class="nav-item">Cockpit Étudiant</a>
+        <a href="counselor-dashboard.html" class="nav-item">Espace Conseiller</a>
+        <a href="admin-dashboard.html" class="nav-item">Administration</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-secondary">Connexion</a>
+        <a href="register.html" class="btn btn-primary">Commencer gratuitement</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Intelligence Artificielle & Mentorat Certifié au Maroc
+    </div>
+    <h1 class="hero-title">
+      Trouvez votre voie post-bac.<br>
+      <span>En toute certitude.</span>
+    </h1>
+    <p class="hero-subtitle">
+      Évaluez votre profil psychométrique RIASEC, explorez les filières d'excellence et les concours marocains, et préparez vos admissions avec des conseillers dédiés.
+    </p>
+    <div class="hero-ctas">
+      <a href="register.html" class="btn btn-primary btn-lg">Faire mon bilan RIASEC (5 min)</a>
+      <a href="schools.html" class="btn btn-secondary btn-lg">Explorer les 48+ Écoles</a>
+    </div>
+
+    <!-- Live Platform Metrics -->
+    <div class="hero-metrics">
+      <div class="metric-card">
+        <div class="metric-num">98.4%</div>
+        <div class="metric-label">Taux d'adéquation RIASEC</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">48+</div>
+        <div class="metric-label">Grandes Écoles & Universités</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">350+</div>
+        <div class="metric-label">Séances de Mentorat Réalisées</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">12 400+</div>
+        <div class="metric-label">Lycéens & Étudiants Orientés</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIASEC 6 Dimensions Section -->
+  <section id="riasec" class="section-wrap">
+    <div class="section-header">
+      <div class="section-tag">Modèle Psychométrique Universel</div>
+      <h2 class="section-title">Les 6 Dimensions du Test RIASEC</h2>
+      <p class="section-desc">
+        Notre algorithme analyse vos réponses interactives pour déterminer votre top 3 et vous guider vers les filières adaptées à votre personnalité.
+      </p>
+    </div>
+
+    <div class="riasec-grid">
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">I</div>
+          <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;">Score moyen 92%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Investigateur</div>
+          <div class="riasec-sub">Analytique, Scientifique & Curieux</div>
+        </div>
+        <p class="riasec-desc">
+          Passionné par la résolution d'énigmes mathématiques, la recherche empirique et les modèles algorithmiques complexes.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Data Scientist</span>
+          <span class="riasec-pill">Recherche IA</span>
+          <span class="riasec-pill">Médecine</span>
+        </div>
+      </div>
+
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">R</div>
+          <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;">Score moyen 84%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Réaliste</div>
+          <div class="riasec-sub">Pratique, Technique & Concret</div>
+        </div>
+        <p class="riasec-desc">
+          Orienté vers l'ingénierie mécanique, les systèmes embarqués, les chantiers et les applications industrielles tangibles.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Génie Mécanique</span>
+          <span class="riasec-pill">BTP</span>
+          <span class="riasec-pill">Robotique</span>
+        </div>
+      </div>
+
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">A</div>
+          <span style="font-size: 0.72rem; color: #71717a; font-weight: 700;">Score moyen 68%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Artistique</div>
+          <div class="riasec-sub">Créatif, Intuitif & Expressif</div>
+        </div>
+        <p class="riasec-desc">
+          Besoin d'innover visuellement, de concevoir des architectures uniques et de façonner des expériences esthétiques.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Architecture</span>
+          <span class="riasec-pill">Design UI/UX</span>
+          <span class="riasec-pill">Audiovisuel</span>
+        </div>
+      </div>
+
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">S</div>
+          <span style="font-size: 0.72rem; color: #71717a; font-weight: 700;">Score moyen 74%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Social</div>
+          <div class="riasec-sub">Empathique, Pédagogue & À l'écoute</div>
+        </div>
+        <p class="riasec-desc">
+          Motivé par le conseil, la santé, le soutien thérapeutique et l'épanouissement individuel ou collectif.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Santé & Médecine</span>
+          <span class="riasec-pill">Enseignement</span>
+          <span class="riasec-pill">RH</span>
+        </div>
+      </div>
+
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">E</div>
+          <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700;">Score moyen 79%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Entreprenant</div>
+          <div class="riasec-sub">Leader, Stratège & Décideur</div>
+        </div>
+        <p class="riasec-desc">
+          Dynamique commerciale, négociation, pilotage de projets à fort impact et entrepreneuriat technologique.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Finance & Audit</span>
+          <span class="riasec-pill">Management</span>
+          <span class="riasec-pill">Startup</span>
+        </div>
+      </div>
+
+      <div class="riasec-card">
+        <div class="riasec-card-top">
+          <div class="riasec-badge">C</div>
+          <span style="font-size: 0.72rem; color: #71717a; font-weight: 700;">Score moyen 71%</span>
+        </div>
+        <div>
+          <div class="riasec-name">Conventionnel</div>
+          <div class="riasec-sub">Méthodique, Structuré & Fiable</div>
+        </div>
+        <p class="riasec-desc">
+          Excellence dans l'organisation de données complexes, la comptabilité, le contrôle légal et les protocoles rigoureux.
+        </p>
+        <div class="riasec-pill-wrap">
+          <span class="riasec-pill">Expertise Comptable</span>
+          <span class="riasec-pill">Actuariat</span>
+          <span class="riasec-pill">Logistique</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Moroccan Top Schools Section -->
+  <section id="schools" class="section-wrap" style="background: #fafafa; border-top: 1px solid #e4e4e7; border-bottom: 1px solid #e4e4e7;">
+    <div class="section-header">
+      <div class="section-tag">Établissements d'Excellence</div>
+      <h2 class="section-title">Grandes Écoles & Concours du Maroc</h2>
+      <p class="section-desc">
+        Consultez les seuils de présélection, les épreuves de concours et les dates limites de dépôt de dossier.
+      </p>
+    </div>
+
+    <div class="schools-grid">
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-city-tag">Benguerir & Rabat</div>
+          <div class="school-name">UM6P — Université Mohammed VI</div>
+          <div class="school-category">Informatique, Mines & Gouvernance</div>
+        </div>
+        <div class="school-card-body">
+          <div class="threshold-badge">Dossier + Concours écrit & oral</div>
+          <p style="font-size: 0.8rem; color: #52525b;">Campus de référence africaine avec bourses d'excellence et laboratoires de pointe.</p>
+        </div>
+      </div>
+
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-city-tag">Casablanca & Meknès</div>
+          <div class="school-name">ENSAM Maroc</div>
+          <div class="school-category">Arts et Métiers — Génie Industriel</div>
+        </div>
+        <div class="school-card-body">
+          <div class="threshold-badge">Seuil Bac: ~15.20 (SM / PC)</div>
+          <p style="font-size: 0.8rem; color: #52525b;">Formation d'ingénieurs d'État polyvalents très recherchés dans l'industrie automobile et aéronautique.</p>
+        </div>
+      </div>
+
+      <div class="school-card">
+        <div class="school-card-header">
+          <div class="school-city-tag">Casablanca</div>
+          <div class="school-name">ISCAE & Réseau ENCG</div>
+          <div class="school-category">Commerce, Finance & Audit</div>
+        </div>
+        <div class="school-card-body">
+          <div class="threshold-badge">TAFEM / Concours National</div>
+          <p style="font-size: 0.8rem; color: #52525b;">Pôles d'excellence en gestion, finance de marché, marketing stratégique et management d'entreprise.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 2.5rem;">
+      <a href="schools.html" class="btn btn-secondary">Voir toutes les 48 écoles répertoriées →</a>
+    </div>
+  </section>
+
+  <!-- Mentorship Feature Banner -->
+  <section id="mentorship" class="section-wrap">
+    <div class="mentor-banner">
+      <div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #a1a1aa; margin-bottom: 0.5rem; font-weight: 700;">Séances Individuelles en Visioconférence</div>
+        <h2 class="mentor-banner-title">Échangez avec des Conseillers Spécialisés</h2>
+        <p class="mentor-banner-desc">
+          Bénéficiez d'une relecture approfondie de vos résultats RIASEC, de simulations d'oraux de concours et de conseils personnalisés pour vos choix de filières.
+        </p>
+        <a href="mentorship.html" class="btn btn-primary" style="background: #ffffff; color: #09090b; font-weight: 600;">Réserver une séance de mentorat</a>
+      </div>
+
+      <div class="mentor-card-preview">
+        <div class="mentor-profile-row">
+          <div class="mentor-avatar">AB</div>
+          <div>
+            <div class="mentor-name">Dr. Amine Benjelloun</div>
+            <div class="mentor-title">Conseiller d'orientation & Ex-Jury Concours</div>
+          </div>
+        </div>
+        <div style="font-size: 0.78rem; color: #d4d4d8; line-height: 1.45;">
+          « Nous aidons chaque lycéen à aligner ses ambitions réelles avec les exigences des grandes écoles marocaines. »
+        </div>
+        <div style="display: flex; gap: 0.5rem; font-size: 0.72rem; color: #a1a1aa;">
+          <span>⭐ 4.9/5 (84 avis)</span>
+          <span>•</span>
+          <span>120+ étudiants suivis</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div class="brand-link">
+        <div class="brand-logo" style="width: 22px; height: 22px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="2" fill="currentColor"/>
+            <rect x="14" y="3" width="7" height="7" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="3" y="14" width="7" height="7" rx="2" fill="currentColor" opacity="0.6"/>
+            <rect x="14" y="14" width="7" height="7" rx="2" fill="currentColor"/>
+          </svg>
+        </div>
+        OrientCompanion
+      </div>
+      <div class="footer-copy">
+        © 2026 OrientCompanion. Plateforme nationale d'orientation académique et professionnelle. Tous droits réservés.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

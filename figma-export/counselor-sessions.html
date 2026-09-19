@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Séances — Espace Conseiller OrientCompanion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    .csl-layout { display: flex; min-height: 100vh; width: 100vw; }
+
+    /* Sidebar */
+    .csl-sidebar {
+      width: 260px; background: #ffffff; border-right: 1px solid #e2e8f0;
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+    }
+    .csl-sidebar-top { padding: 1.5rem 1.25rem; }
+    .csl-brand {
+      display: flex; align-items: center; gap: 0.65rem; text-decoration: none;
+      color: #0f172a; font-weight: 700; font-size: 0.95rem; margin-bottom: 2rem;
+    }
+    .csl-brand-logo {
+      width: 28px; height: 28px; border-radius: 6px; background: #0284c7; color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .csl-nav { display: flex; flex-direction: column; gap: 0.35rem; }
+    .csl-nav-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.85rem;
+      border-radius: 8px; color: #64748b; text-decoration: none; font-size: 0.82rem; font-weight: 500;
+    }
+    .csl-nav-item:hover { background: #f1f5f9; color: #0f172a; }
+    .csl-nav-item.active { background: #f0f9ff; color: #0284c7; font-weight: 600; }
+    .csl-profile-box {
+      padding: 1.25rem; border-top: 1px solid #e2e8f0; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .csl-avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: #0284c7; color: #ffffff;
+      font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Main */
+    .csl-main { flex: 1; display: flex; flex-direction: column; }
+    .csl-header {
+      background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20;
+    }
+    .csl-breadcrumb { font-size: 0.85rem; color: #64748b; }
+    .csl-body { padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* Filter Tabs & Toolbar */
+    .csl-tabs-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .tabs-group { display: flex; align-items: center; gap: 0.5rem; }
+    .tab-btn {
+      padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid transparent; background: transparent; color: #64748b; cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #ffffff; border-color: #e2e8f0; color: #0f172a; font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .search-input {
+      padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #cbd5e1;
+      font-size: 0.8rem; width: 260px; outline: none; background: #ffffff;
+    }
+
+    /* Session Cards Grid */
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+    .session-card {
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .session-card-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+    }
+    .student-badge-wrap { display: flex; align-items: center; gap: 0.75rem; }
+    .student-pic {
+      width: 44px; height: 44px; border-radius: 50%; background: #e0f2fe; color: #0369a1;
+      font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
+    }
+    .student-name { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+    .student-stream { font-size: 0.74rem; color: #64748b; }
+    .status-tag {
+      font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 999px;
+    }
+    .tag-today { background: #dcfce7; color: #15803d; }
+    .tag-upcoming { background: #eff6ff; color: #1d4ed8; }
+    
+    .session-agenda {
+      background: #f8fafc; border-radius: 6px; padding: 0.85rem 1rem;
+      font-size: 0.8rem; color: #334155; line-height: 1.45;
+    }
+    .agenda-title { font-weight: 600; color: #0f172a; margin-bottom: 0.2rem; }
+
+    .session-meta-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.76rem; color: #64748b;
+    }
+    .session-actions {
+      display: flex; align-items: center; gap: 0.65rem; border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+    }
+    .btn-act {
+      padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.76rem; font-weight: 600;
+      text-decoration: none; border: 1px solid transparent; cursor: pointer;
+    }
+    .btn-meet-primary {
+      background: #0284c7; color: #ffffff; display: flex; align-items: center; gap: 0.35rem;
+    }
+    .btn-reschedule {
+      background: #ffffff; border-color: #cbd5e1; color: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="csl-layout">
+    
+    <!-- Counselor Sidebar -->
+    <aside class="csl-sidebar">
+      <div class="csl-sidebar-top">
+        <a href="counselor-dashboard.html" class="csl-brand">
+          <div class="csl-brand-logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          Conseiller Orient
+        </a>
+
+        <nav class="csl-nav">
+          <a href="counselor-dashboard.html" class="csl-nav-item">
+            <span>📊</span> Tableau de bord
+          </a>
+          <a href="counselor-sessions.html" class="csl-nav-item active">
+            <span>📅</span> Mes Séances
+          </a>
+          <a href="#students" class="csl-nav-item">
+            <span>🎓</span> Mes Étudiants
+          </a>
+          <a href="#reviews" class="csl-nav-item">
+            <span>📝</span> Revues RIASEC
+          </a>
+          <a href="#resources" class="csl-nav-item">
+            <span>📚</span> Guide & Seuils
+          </a>
+        </nav>
+      </div>
+
+      <div class="csl-profile-box">
+        <div class="csl-avatar">AB</div>
+        <div>
+          <div style="font-size: 0.82rem; font-weight: 600;">Dr. Amine Benjelloun</div>
+          <div style="font-size: 0.72rem; color: #64748b;">Conseiller Agréé</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="csl-main">
+      <header class="csl-header">
+        <div class="csl-breadcrumb">
+          Conseiller / <strong>Séances d'Orientation & Visio</strong>
+        </div>
+        <div>
+          <button class="btn-act btn-meet-primary" style="padding: 0.5rem 1rem;">+ Planifier une nouvelle séance</button>
+        </div>
+      </header>
+
+      <main class="csl-body">
+        
+        <!-- Toolbar & Tabs -->
+        <div class="csl-tabs-row">
+          <div class="tabs-group">
+            <button class="tab-btn active">Toutes les séances (6)</button>
+            <button class="tab-btn">Aujourd'hui (2)</button>
+            <button class="tab-btn">Cette semaine (3)</button>
+            <button class="tab-btn">Historique terminé</button>
+          </div>
+          <input type="text" placeholder="Rechercher par étudiant ou lycée..." class="search-input" />
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="sessions-grid">
+          
+          <!-- Card 1 -->
+          <div class="session-card">
+            <div class="session-card-header">
+              <div class="student-badge-wrap">
+                <div class="student-pic">YE</div>
+                <div>
+                  <div class="student-name">Youssef El Amrani</div>
+                  <div class="student-stream">Bac SM-A • Lycée Moulay Idriss (Fès)</div>
+                </div>
+              </div>
+              <span class="status-tag tag-today">Aujourd'hui 16:30</span>
+            </div>
+
+            <div class="session-agenda">
+              <div class="agenda-title">Revue de dossier de candidature UM6P & ENSAM</div>
+              Vérification des relevés de notes, optimisation de la lettre de motivation et conseils pour l'entretien d'admission.
+            </div>
+
+            <div class="session-meta-row">
+              <span>⏱ Durée prévue : 45 min</span>
+              <span>🔗 Google Meet lié</span>
+            </div>
+
+            <div class="session-actions">
+              <a href="#" class="btn-act btn-meet-primary">🎥 Démarrer l'appel Visio</a>
+              <button class="btn-act btn-reschedule">Déplacer l'horaire</button>
+              <button class="btn-act btn-reschedule">Fiche étudiant</button>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="session-card">
+            <div class="session-card-header">
+              <div class="student-badge-wrap">
+                <div class="student-pic" style="background: #fdf2f8; color: #be185d;">SZ</div>
+                <div>
+                  <div class="student-name">Salma Zerouali</div>
+                  <div class="student-stream">Bac Sciences Physiques • Rabat</div>
+                </div>
+              </div>
+              <span class="status-tag tag-today">Aujourd'hui 18:00</span>
+            </div>
+
+            <div class="session-agenda">
+              <div class="agenda-title">Simulation orale — Faculté de Médecine (FMP)</div>
+              Entraînement aux QCM de SVT et questions de motivation pour le concours commun d'accès aux facultés de médecine.
+            </div>
+
+            <div class="session-meta-row">
+              <span>⏱ Durée : 45 min</span>
+              <span>🔗 Google Meet lié</span>
+            </div>
+
+            <div class="session-actions">
+              <a href="#" class="btn-act btn-meet-primary">🎥 Démarrer l'appel Visio</a>
+              <button class="btn-act btn-reschedule">Déplacer</button>
+              <button class="btn-act btn-reschedule">Fiche étudiant</button>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="session-card">
+            <div class="session-card-header">
+              <div class="student-badge-wrap">
+                <div class="student-pic" style="background: #fefce8; color: #a16207;">OT</div>
+                <div>
+                  <div class="student-name">Omar Tazi</div>
+                  <div class="student-stream">Bac Sciences Éco • Marrakech</div>
+                </div>
+              </div>
+              <span class="status-tag tag-upcoming">Demain 10:00</span>
+            </div>
+
+            <div class="session-agenda">
+              <div class="agenda-title">Stratégie Concours TAFEM & Choix ENCG vs ISCAE</div>
+              Analyse des seuils 2024-2025 et cadrage de la préparation aux épreuves de logique et de mémorisation.
+            </div>
+
+            <div class="session-meta-row">
+              <span>⏱ Durée : 45 min</span>
+              <span>🔗 Google Meet généré</span>
+            </div>
+
+            <div class="session-actions">
+              <button class="btn-act btn-reschedule">Envoyer un rappel</button>
+              <button class="btn-act btn-reschedule">Modifier la date</button>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="session-card">
+            <div class="session-card-header">
+              <div class="student-badge-wrap">
+                <div class="student-pic" style="background: #f3e8ff; color: #7e22ce;">IH</div>
+                <div>
+                  <div class="student-name">Imane Hachimi</div>
+                  <div class="student-stream">Bac SVT • Tanger</div>
+                </div>
+              </div>
+              <span class="status-tag tag-upcoming">Jeudi 15 Mai</span>
+            </div>
+
+            <div class="session-agenda">
+              <div class="agenda-title">Débriefing Bilan RIASEC & Options ISPITS / Pharmacie</div>
+              Exploration des métiers de la santé et du paramédical suite aux résultats du test psychométrique.
+            </div>
+
+            <div class="session-meta-row">
+              <span>⏱ Durée : 45 min</span>
+              <span>🔗 Lien transmis par email</span>
+            </div>
+
+            <div class="session-actions">
+              <button class="btn-act btn-reschedule">Consulter le bilan</button>
+              <button class="btn-act btn-reschedule">Modifier</button>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>

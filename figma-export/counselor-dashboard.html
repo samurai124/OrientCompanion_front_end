@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espace Conseiller — OrientCompanion</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* Layout Frame */
+    .csl-layout {
+      display: flex;
+      min-height: 100vh;
+      width: 100vw;
+    }
+
+    /* Sidebar */
+    .csl-sidebar {
+      width: 260px;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      flex-shrink: 0;
+    }
+    .csl-sidebar-top { padding: 1.5rem 1.25rem; }
+    .csl-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      text-decoration: none;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .csl-brand-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #0284c7;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .csl-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .csl-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .csl-nav-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .csl-nav-item.active {
+      background: #f0f9ff;
+      color: #0284c7;
+      font-weight: 600;
+    }
+    .csl-nav-badge {
+      margin-left: auto;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    /* Sidebar Footer Profile */
+    .csl-profile-box {
+      padding: 1.25rem;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .csl-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #0284c7;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .csl-profile-info { flex: 1; }
+    .csl-profile-name { font-size: 0.82rem; font-weight: 600; color: #0f172a; }
+    .csl-profile-role { font-size: 0.72rem; color: #64748b; }
+
+    /* Main Content Area */
+    .csl-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header Bar */
+    .csl-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .csl-breadcrumb {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .csl-breadcrumb strong {
+      color: #0f172a;
+    }
+    .csl-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-csl {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-csl-primary {
+      background: #0284c7;
+      color: #ffffff;
+    }
+    .btn-csl-primary:hover { background: #0369a1; }
+    .btn-csl-outline {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+
+    /* Dashboard Body */
+    .csl-body {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* KPI Cards */
+    .csl-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .csl-kpi-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .csl-kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .csl-kpi-num {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .csl-kpi-sub {
+      font-size: 0.74rem;
+      color: #16a34a;
+      font-weight: 500;
+    }
+
+    /* Section Layout */
+    .csl-section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .csl-section-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .csl-section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* Session Table */
+    .csl-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    .csl-table th {
+      padding: 0.75rem 1.5rem;
+      background: #f8fafc;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 0.74rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .csl-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    .csl-student-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .csl-student-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      font-weight: 600;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #334155;
+    }
+    .csl-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .pill-confirmed { background: #dcfce7; color: #15803d; }
+    .pill-pending { background: #fef9c3; color: #854d0e; }
+    .btn-meet {
+      background: #0284c7;
+      color: #ffffff;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="csl-layout">
+    
+    <!-- Counselor Sidebar -->
+    <aside class="csl-sidebar">
+      <div class="csl-sidebar-top">
+        <a href="counselor-dashboard.html" class="csl-brand">
+          <div class="csl-brand-logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          Conseiller Orient
+        </a>
+
+        <nav class="csl-nav">
+          <a href="counselor-dashboard.html" class="csl-nav-item active">
+            <span>📊</span> Tableau de bord
+          </a>
+          <a href="counselor-sessions.html" class="csl-nav-item">
+            <span>📅</span> Mes Séances
+            <span class="csl-nav-badge">3</span>
+          </a>
+          <a href="#students" class="csl-nav-item">
+            <span>🎓</span> Mes Étudiants
+          </a>
+          <a href="#reviews" class="csl-nav-item">
+            <span>📝</span> Revues RIASEC
+            <span class="csl-nav-badge" style="background: #fef08a; color: #854d0e;">5</span>
+          </a>
+          <a href="#resources" class="csl-nav-item">
+            <span>📚</span> Guide & Seuils
+          </a>
+          <a href="#availability" class="csl-nav-item">
+            <span>⚙️</span> Disponibilités
+          </a>
+        </nav>
+      </div>
+
+      <div class="csl-profile-box">
+        <div class="csl-avatar">AB</div>
+        <div class="csl-profile-info">
+          <div class="csl-profile-name">Dr. Amine Benjelloun</div>
+          <div class="csl-profile-role">Conseiller Agréé (Casablanca)</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="csl-main">
+      
+      <!-- Header -->
+      <header class="csl-header">
+        <div class="csl-breadcrumb">
+          Conseiller / <strong>Tableau de bord</strong>
+        </div>
+        <div class="csl-header-actions">
+          <a href="dashboard.html" class="btn-csl btn-csl-outline">Vue Étudiant</a>
+          <a href="counselor-sessions.html" class="btn-csl btn-csl-primary">+ Planifier une séance</a>
+        </div>
+      </header>
+
+      <!-- Body -->
+      <main class="csl-body">
+        
+        <!-- KPI Cards -->
+        <div class="csl-kpi-grid">
+          <div class="csl-kpi-card">
+            <div class="csl-kpi-top">
+              <span>Étudiants Suivis</span>
+              <span>👥</span>
+            </div>
+            <div class="csl-kpi-num">42</div>
+            <div class="csl-kpi-sub">↑ +8 nouveaux ce mois</div>
+          </div>
+
+          <div class="csl-kpi-card">
+            <div class="csl-kpi-top">
+              <span>Séances de la Semaine</span>
+              <span>📅</span>
+            </div>
+            <div class="csl-kpi-num">12</div>
+            <div class="csl-kpi-sub" style="color: #0284c7;">3 programmées aujourd'hui</div>
+          </div>
+
+          <div class="csl-kpi-card">
+            <div class="csl-kpi-top">
+              <span>Bilans RIASEC à Valider</span>
+              <span>📋</span>
+            </div>
+            <div class="csl-kpi-num" style="color: #b45309;">5</div>
+            <div class="csl-kpi-sub" style="color: #b45309;">Requiert votre expertise</div>
+          </div>
+
+          <div class="csl-kpi-card">
+            <div class="csl-kpi-top">
+              <span>Note Moyenne</span>
+              <span>⭐</span>
+            </div>
+            <div class="csl-kpi-num">4.95 / 5</div>
+            <div class="csl-kpi-sub">Basé sur 84 évaluations</div>
+          </div>
+        </div>
+
+        <!-- Section: Prochaines Séances -->
+        <div class="csl-section">
+          <div class="csl-section-header">
+            <div class="csl-section-title">Séances de Mentorat — Aujourd'hui & À venir</div>
+            <a href="counselor-sessions.html" style="font-size: 0.78rem; color: #0284c7; text-decoration: none; font-weight: 600;">Voir tout le calendrier →</a>
+          </div>
+
+          <table class="csl-table">
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Série Bac & Lycée</th>
+                <th>Objectif & Filière</th>
+                <th>Horaire</th>
+                <th>Statut</th>
+                <th>Visioconférence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="csl-student-cell">
+                    <div class="csl-student-avatar">YE</div>
+                    <div>
+                      <strong>Youssef El Amrani</strong><br>
+                      <span style="font-size: 0.72rem; color: #64748b;">youssef.elamrani@gmail.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td>Bac Sciences Maths — Casablanca</td>
+                <td>Préparation Concours ENSAM & UM6P</td>
+                <td><strong>Aujourd'hui à 16:30</strong></td>
+                <td><span class="csl-status-pill pill-confirmed">Confirmée</span></td>
+                <td><a href="#" class="btn-meet">🎥 Rejoindre Meet</a></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="csl-student-cell">
+                    <div class="csl-student-avatar" style="background: #fdf2f8; color: #db2777;">SZ</div>
+                    <div>
+                      <strong>Salma Zerouali</strong><br>
+                      <span style="font-size: 0.72rem; color: #64748b;">salma.z@orient.ma</span>
+                    </div>
+                  </div>
+                </td>
+                <td>Bac PC — Rabat</td>
+                <td>Revue Dossier Faculté Médecine (FMP)</td>
+                <td><strong>Aujourd'hui à 18:00</strong></td>
+                <td><span class="csl-status-pill pill-confirmed">Confirmée</span></td>
+                <td><a href="#" class="btn-meet">🎥 Rejoindre Meet</a></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="csl-student-cell">
+                    <div class="csl-student-avatar" style="background: #f0fdf4; color: #16a34a;">OT</div>
+                    <div>
+                      <strong>Omar Tazi</strong><br>
+                      <span style="font-size: 0.72rem; color: #64748b;">omar.tazi@outlook.com</span>
+                    </div>
+                  </div>
+                </td>
+                <td>Bac Éco — Marrakech</td>
+                <td>Stratégie Concours TAFEM (ENCG)</td>
+                <td>Demain à 10:00</td>
+                <td><span class="csl-status-pill pill-pending">En attente confirmation</span></td>
+                <td><button class="btn-csl btn-csl-outline" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;">Valider</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Section: Bilans RIASEC en Attente -->
+        <div class="csl-section">
+          <div class="csl-section-header">
+            <div class="csl-section-title">Bilans RIASEC Soumis pour Validation Conseiller</div>
+            <span style="font-size: 0.76rem; color: #64748b;">5 bilans en attente</span>
+          </div>
+
+          <table class="csl-table">
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th>Profil RIASEC</th>
+                <th>Filière Recommandée</th>
+                <th>Date du Test</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Mehdi Benali</strong> (Tanger)</td>
+                <td><span style="font-weight: 700; color: #0284c7;">I - R - C</span> (Score 91%)</td>
+                <td>Génie Logiciel & Intelligence Artificielle</td>
+                <td>Il y a 2 heures</td>
+                <td>
+                  <button class="btn-csl btn-csl-primary" style="padding: 0.3rem 0.65rem; font-size: 0.74rem;">Émettre avis d'orientation</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Kenza Mansouri</strong> (Fès)</td>
+                <td><span style="font-weight: 700; color: #0284c7;">E - S - A</span> (Score 88%)</td>
+                <td>Marketing Stratégique & Management International</td>
+                <td>Hier à 19:15</td>
+                <td>
+                  <button class="btn-csl btn-csl-primary" style="padding: 0.3rem 0.65rem; font-size: 0.74rem;">Émettre avis d'orientation</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>
