@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+        - VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY:-}
+    container_name: orientcompanion-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
