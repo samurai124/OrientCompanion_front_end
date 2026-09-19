@@ -1,7 +1,4 @@
-/**
- * AuthSideHero — Panneau latéral animé pour Login et Inscription.
- * Design plein écran moderne avec illustration SVG animée et cartes flottantes.
- */
+
 export default function AuthSideHero({
   badgeText = "Orientation Intelligente",
   quoteTitle = "Façonnez votre parcours d'excellence académique.",
@@ -9,10 +6,9 @@ export default function AuthSideHero({
 }) {
   return (
     <div className="auth-hero-column" aria-hidden="true">
-      {/* Ambient background glow */}
+
       <div className="auth-hero-ambient-glow" />
 
-      {/* Background Circuit Grid Pattern */}
       <div className="auth-hero-pattern">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -31,17 +27,14 @@ export default function AuthSideHero({
       </div>
 
       <div className="auth-hero-content">
-        {/* Top Tag */}
+
         <div className="auth-hero-tag">
           <span className="auth-hero-tag-dot" />
           <span>{badgeText}</span>
         </div>
 
-        {/* =================================================================
-            ANIMATED ILLUSTRATION CONTAINER
-            ================================================================= */}
         <div className="auth-animated-scene">
-          {/* SVG Animated Orbital Rings and Center Gateway */}
+
           <div className="auth-orbit-center">
             <svg
               className="auth-orbit-svg"
@@ -61,7 +54,6 @@ export default function AuthSideHero({
                 </linearGradient>
               </defs>
 
-              {/* Outer Slow Rotating Dashed Ring */}
               <circle
                 className="orbit-ring-outer"
                 cx="200"
@@ -72,7 +64,6 @@ export default function AuthSideHero({
                 strokeDasharray="6 8"
               />
 
-              {/* Middle Counter-Rotating Ring */}
               <circle
                 className="orbit-ring-mid"
                 cx="200"
@@ -83,7 +74,6 @@ export default function AuthSideHero({
                 strokeDasharray="12 16"
               />
 
-              {/* Inner Pulsing Ring */}
               <circle
                 className="orbit-ring-inner"
                 cx="200"
@@ -93,7 +83,6 @@ export default function AuthSideHero({
                 strokeWidth="1.5"
               />
 
-              {/* Orbiting Satellite Dots */}
               <g className="orbit-satellites">
                 <circle cx="200" cy="30" r="4" fill="#ffffff" />
                 <circle cx="370" cy="200" r="3" fill="#a1a1aa" />
@@ -101,7 +90,6 @@ export default function AuthSideHero({
                 <circle cx="200" cy="325" r="4" fill="#ffffff" />
               </g>
 
-              {/* Central Glowing Diamond / Beacon */}
               <g className="orbit-core">
                 <rect
                   x="182"
@@ -117,7 +105,6 @@ export default function AuthSideHero({
             </svg>
           </div>
 
-          {/* Floating Glassmorphism Card 1 (Top Left) */}
           <div className="auth-floating-card auth-card-float-1">
             <div className="auth-float-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -133,7 +120,6 @@ export default function AuthSideHero({
             </div>
           </div>
 
-          {/* Floating Glassmorphism Card 2 (Right Center) */}
           <div className="auth-floating-card auth-card-float-2">
             <div className="auth-float-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -148,7 +134,6 @@ export default function AuthSideHero({
             </div>
           </div>
 
-          {/* Floating Glassmorphism Card 3 (Bottom Left) */}
           <div className="auth-floating-card auth-card-float-3">
             <div className="auth-float-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -166,7 +151,7 @@ export default function AuthSideHero({
           </div>
         </div>
 
-        {/* Bottom Inspiring Description & Stats */}
+        
         <div className="auth-hero-footer">
           <h3 className="auth-hero-title">{quoteTitle}</h3>
           <p className="auth-hero-desc">{quoteDesc}</p>

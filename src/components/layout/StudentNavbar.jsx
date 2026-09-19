@@ -49,7 +49,7 @@ export default function StudentNavbar() {
   };
 
   const handleLogout = () => {
-    logout();
+    if (logout) logout();
     navigate("/login", { replace: true });
   };
 
@@ -90,6 +90,40 @@ export default function StudentNavbar() {
         </nav>
 
         <div className="student-navbar-actions">
+          {user?.role === "ADMIN" && (
+            <NavLink
+              to="/admin/dashboard"
+              className="student-navbar-link"
+              style={{
+                fontWeight: 600,
+                backgroundColor: "var(--snb-text-primary)",
+                color: "var(--snb-bg)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+              }}
+            >
+              <span>Console Admin</span>
+            </NavLink>
+          )}
+
+          {user?.role === "COUNSELOR" && (
+            <NavLink
+              to="/counselor/dashboard"
+              className="student-navbar-link"
+              style={{
+                fontWeight: 600,
+                backgroundColor: "var(--snb-text-primary)",
+                color: "var(--snb-bg)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+              }}
+            >
+              <span>Espace Conseiller</span>
+            </NavLink>
+          )}
+
           <button
             className="student-navbar-theme-btn"
             onClick={toggleTheme}

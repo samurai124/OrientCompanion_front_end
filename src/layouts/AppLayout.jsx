@@ -4,11 +4,6 @@ import { AuthContext } from "../context/AuthContext";
 import StudentNavbar from "../components/layout/StudentNavbar";
 import "./AppLayout.css";
 
-/**
- * AppLayout — Layout partagé pour les pages de l'application.
- * Les étudiants utilisent la StudentNavbar unifiée (style shadcn/ui monochrome).
- * Les conseillers et administrateurs utilisent leurs menus dédiés.
- */
 export default function AppLayout() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -30,7 +25,7 @@ export default function AppLayout() {
   }, [theme]);
 
   const handleLogout = () => {
-    logout();
+    if (logout) logout();
     navigate("/login", { replace: true });
   };
 
@@ -38,7 +33,6 @@ export default function AppLayout() {
   const isCounselor = user?.role === "COUNSELOR";
   const isAdmin = user?.role === "ADMIN";
 
-  // ── ESPACE ÉTUDIANT (Navbar unifiée StudentNavbar) ──────────────────────────
   if (isStudent) {
     return (
       <div className="app-subpage-wrapper">
@@ -50,12 +44,11 @@ export default function AppLayout() {
     );
   }
 
-  // ── ESPACE CONSEILLER / ADMIN ──────────────────────────────────────────────
   return (
     <div className="app-subpage-wrapper">
       <header className="app-sub-navbar">
         <div className="app-sub-navbar-inner">
-          {/* ── Brand ── */}
+
           <div className="app-nav-left">
             <NavLink
               to={isCounselor ? "/counselor/sessions" : "/admin/fields"}
@@ -75,7 +68,6 @@ export default function AppLayout() {
               </span>
             </NavLink>
 
-            {/* ── Nav Links Conseiller / Admin ── */}
             <nav className="app-nav-menu" aria-label="Navigation principale">
               {isCounselor && (
                 <NavLink
@@ -119,7 +111,6 @@ export default function AppLayout() {
             </nav>
           </div>
 
-          {/* ── Actions ── */}
           <div className="app-nav-right">
             <button
               className="app-theme-btn"
@@ -177,7 +168,6 @@ export default function AppLayout() {
         </div>
       </header>
 
-      {/* Rendu de la page enfant active */}
       <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Outlet />
       </main>

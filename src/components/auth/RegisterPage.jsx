@@ -65,9 +65,9 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-page-wrapper" data-theme={theme}>
-      {/* ── LEFT COLUMN: FULL HEIGHT FORM ────────────────────────────── */}
+
       <div className="auth-form-column">
-        {/* Top brand header */}
+
         <div className="auth-top-brand">
           <Link to="/" className="auth-brand-link">
             <div className="auth-brand-icon">
@@ -90,7 +90,6 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        {/* Center form container */}
         <div className="auth-form-container">
           <div className="auth-form-header">
             <h1 className="auth-title">Créer un compte</h1>
@@ -161,13 +160,12 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Bottom subtle copyright */}
         <div className="auth-form-footer-note">
           © 2026 OrientCompanion. Plateforme d'orientation intelligente.
         </div>
       </div>
 
-      {/* ── RIGHT COLUMN: ANIMATED VISUAL HERO ───────────────────────── */}
+      
       <AuthSideHero
         badgeText="Inscription Candidat"
         quoteTitle="Votre avenir académique commence ici."

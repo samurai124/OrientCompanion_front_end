@@ -19,14 +19,6 @@ export function AuthProvider({ children }) {
       const jwtToken = response.token;
       const decoded = jwtDecode(jwtToken);
 
-      /**
-       * Résolution du rôle — ordre de priorité :
-       * 1. decoded.role        → claim JWT (ajouté par le backend fixé)
-       * 2. response.user?.role → corps de la réponse HTTP (fallback fiable)
-       * 3. decoded.authorities → format Spring Security alternatif
-       *
-       * La valeur est la valeur brute de l'enum Java : "STUDENT" | "COUNSELOR" | "ADMIN"
-       */
       const resolvedRole =
         decoded.role ||
         response.user?.role ||
@@ -45,13 +37,41 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", jwtToken);
       localStorage.setItem("user", JSON.stringify(userData));
 
-      // ⚠️ On retourne userData (pas juste true) pour que Login.jsx puisse
-      // lire le rôle IMMÉDIATEMENT sans attendre la mise à jour du state React.
       return userData;
     } catch (err) {
       setError(err.response?.data?.message || "Identifiants incorrects.");
       return null;
     }
+  };
+
+  const loginAsDemoAdmin = () => {
+    const demoUser = {
+      id: "admin-demo-1",
+      email: "admin@orientcompanion.ma",
+      fullName: "Administrateur Orient",
+      role: "ADMIN",
+    };
+    const demoToken = "demo-admin-token";
+    setToken(demoToken);
+    setUser(demoUser);
+    localStorage.setItem("token", demoToken);
+    localStorage.setItem("user", JSON.stringify(demoUser));
+    return demoUser;
+  };
+
+  const loginAsDemoCounselor = () => {
+    const demoUser = {
+      id: "csl-demo-1",
+      email: "a.senhaji@counselor.orientcompanion.ma",
+      fullName: "Dr. Amina Senhaji",
+      role: "COUNSELOR",
+    };
+    const demoToken = "demo-counselor-token";
+    setToken(demoToken);
+    setUser(demoUser);
+    localStorage.setItem("token", demoToken);
+    localStorage.setItem("user", JSON.stringify(demoUser));
+    return demoUser;
   };
 
   const logout = () => {
@@ -62,7 +82,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, error, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ token, user, error, login, logout, loginAsDemoAdmin, loginAsDemoCounselor, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );

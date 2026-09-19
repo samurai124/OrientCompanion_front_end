@@ -10,9 +10,6 @@ export function MentorshipProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // --- Student Actions ---
-
-  // Fetch available counselors (optionally filtered by field)
   const fetchAvailableCounselors = useCallback(async (fieldId) => {
     setLoading(true);
     setError(null);
@@ -28,7 +25,6 @@ export function MentorshipProvider({ children }) {
     }
   }, []);
 
-  // Request a new mentorship session
   const requestSession = async (counselorId) => {
     setLoading(true);
     setError(null);
@@ -44,7 +40,6 @@ export function MentorshipProvider({ children }) {
     }
   };
 
-  // Fetch requested sessions history for student
   const fetchMySessionsAsStudent = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -60,9 +55,6 @@ export function MentorshipProvider({ children }) {
     }
   }, []);
 
-  // --- Counselor Actions ---
-
-  // Fetch assigned sessions for counselor
   const fetchMySessionsAsCounselor = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -78,7 +70,6 @@ export function MentorshipProvider({ children }) {
     }
   }, []);
 
-  // Update session status or details (accept, reject, reschedule)
   const updateSession = async (sessionId, updateData) => {
     setLoading(true);
     setError(null);

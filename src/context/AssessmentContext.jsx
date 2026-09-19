@@ -8,13 +8,6 @@ export function AssessmentProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /**
-   * Charge le profil d'évaluation depuis le backend.
-   *
-   * Gestion du 404 : si l'étudiant n'a pas encore passé son bilan,
-   * le backend retourne 404 → on laisse profile = null sans afficher
-   * d'erreur (c'est un état normal, pas une vraie erreur).
-   */
   const fetchProfile = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -24,7 +17,7 @@ export function AssessmentProvider({ children }) {
     } catch (err) {
       const status = err?.response?.status;
       if (status === 404) {
-        // Pas de bilan existant → état normal, profile reste null
+
         setProfile(null);
       } else {
         setError("Erreur lors du chargement du profil.");
@@ -34,10 +27,6 @@ export function AssessmentProvider({ children }) {
     }
   }, []);
 
-  /**
-   * Soumet les scores du bilan au backend.
-   * Retourne true si succès, false sinon.
-   */
   const submitAssessment = async (assessmentData) => {
     setLoading(true);
     setError(null);
@@ -61,7 +50,7 @@ export function AssessmentProvider({ children }) {
         error,
         fetchProfile,
         submitAssessment,
-        // true uniquement si le profil est chargé ET contient des données réelles
+
         hasCompletedAssessment: Boolean(profile),
       }}
     >
