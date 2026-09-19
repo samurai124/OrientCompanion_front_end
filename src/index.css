@@ -6,7 +6,6 @@
   --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
 }
 
-/* Light Theme Variables */
 :root, [data-theme="light"] {
   --outer-bg: #f5f6f9;
   --canvas-bg: #f5f6f9;
@@ -36,7 +35,6 @@
   --circuit-color: #a8b0c2;
 }
 
-/* Dark Theme Variables */
 [data-theme="dark"] {
   --outer-bg: #0d0f17;
   --canvas-bg: #0d0f17;

@@ -1,7 +1,3 @@
-/* ==========================================================================
-   APP GLOBAL STYLES & SUB-PAGE NAVIGATION BAR
-   Frosted Glass / Crystal Embossed Aesthetic
-   ========================================================================== */
 
 .app-subpage-wrapper {
   width: 100%;
@@ -12,7 +8,6 @@
   flex-direction: column;
 }
 
-/* Unified Frosted Sub-Header */
 .app-sub-navbar {
   position: sticky;
   top: 0;
