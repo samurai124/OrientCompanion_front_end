@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import AdminIcons from "../components/admin/AdminIcons";
+import BrandLogo from "../components/common/BrandLogo";
 import "./AdminLayout.css";
 
 export default function AdminLayout() {
@@ -68,12 +69,7 @@ export default function AdminLayout() {
       <aside className={`adm-sidebar${sidebarOpen ? " open" : ""}`}>
         <NavLink to="/admin/dashboard" className="adm-sidebar-brand" onClick={() => setSidebarOpen(false)}>
           <div className="adm-brand-symbol">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
-            </svg>
+            <BrandLogo size={18} />
           </div>
           <div className="adm-brand-text">
             <span className="adm-brand-name">OrientCompanion</span>

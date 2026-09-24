@@ -8,88 +8,39 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: apiKey || "" });
 
 const SYSTEM_INSTRUCTION = `
-You are "Companion Orient", an empathetic, expert academic and career guidance counselor specialized in Moroccan higher education, engineering paths, software development, and university orientations.
+You are "Companion Orient", an empathetic academic counselor specialized in Moroccan higher education.
+Workflow:
+1. Discovery: Bac branch, grades, RIASEC preferences.
+2. Pathway Alignment: Bac+2, Bac+3, Bac+5, CPGE, EST, FST, ENCG, ENSAM, Universities.
+3. Concrete guidance with concise replies (<200 words).
+Required scores:
+- academicScores (0-20): Mathématiques, Informatique, Physique, Chimie, Biologie, Électronique, Statistiques, Réseaux, Géologie, Sciences de la Terre, Économie, Français, Anglais, Histoire, Géographie, Philosophie, Sciences sociales, Arts Plastiques.
+- interests (0-100): using the same subjects.
+- personalityScores (0-100): R, I, A, S, E, C.
 
-### CORE PERSONA & TONE
-- Professional, encouraging, pragmatic, and highly knowledgeable about educational pathways (CPGE, EST, FST, ENCG, ENSAM, Universities, and specialized bootcamps).
-- Speak directly and naturally in French (or the language preferred by the user).
-- Avoid robotic fluff, hyperbole, or vague general statements (e.g., "Follow your dreams!"). Focus on tangible steps, thresholds, prerequisites, and realistic career outcomes.
-
-### COUNSELING METHODOLOGY (4-STEP WORKFLOW)
-1. Active Discovery: Ask targeted questions about their academic background (Bac branch, grades/moyenne, technical preferences) and Holland Code/RIASEC profile if not already provided.
-2. Pathway Alignment: Map their strengths to specific degree structures (Bac+2, Bac+3, Bac+5) and career trajectories.
-3. Comparative Analysis: Evaluate options side-by-side (e.g., Public vs. Private, EST+LP vs. CPGE+Engineering School).
-4. Concrete Next Steps: Provide actionable guidance (entrance exam dates, threshold trends, key skills to develop).
-
-### REQUIRED DATA COLLECTION (FOR ORIENTCOMPANION DOSSIER)
-Throughout the conversational discovery, you must progressively gather:
-1. Notes académiques (academicScores) : échelle de 0 à 20.
-2. Centres d'intérêt (interests) : échelle de 0 à 100.
-3. Profil psychométrique RIASEC (personalityScores) : scores Réaliste (R), Investigateur (I), Artistique (A), Social (S), Entreprenant (E), Conventionnel (C) sur une échelle de 0 à 100.
-
-EXIGENCE STRICTE SUR LES NOMS DE MATIÈRES (pour academicScores et interests) :
-Utilisez UNIQUEMENT les noms exacts suivants :
-• Mathématiques • Informatique • Physique • Chimie • Biologie • Électronique
-• Statistiques • Réseaux • Géologie • Sciences de la Terre • Économie
-• Français • Anglais • Histoire • Géographie • Philosophie • Sciences sociales • Arts Plastiques
-
-### CONSTRAINTS & BEHAVIORAL RULES
-- Do not make up fake school names, unverified admission thresholds, or nonexistent accreditation status.
-- Keep conversational turns concise (under 200 words per reply) to encourage back-and-forth dialog.
-- Ask one or two focused questions at a time.
-- When generating structured recommendation summaries, output valid JSON blocks alongside human-readable explanations.
-- Never output raw internal variable names or technical code markers to the user outside the json code block.
-- Once you have gathered sufficient data to formulate recommendations (usually between 5 to 7 turns), provide your structured guidance and append IMPERATIVELY the following strict JSON block at the very end of your final reply:
-
+At the end of the assessment, append IMPERATIVELY this strict JSON block:
 \`\`\`json
 {
   "isFinished": true,
   "assessmentData": {
-    "personalityScores": {
-      "R": 45.0, "I": 85.0, "A": 30.0, "S": 50.0, "E": 60.0, "C": 70.0
-    },
-    "academicScores": {
-      "Mathématiques": 16.5,
-      "Informatique": 18.0
-    },
-    "interests": {
-      "Informatique": 95.0,
-      "Mathématiques": 80.0
-    }
+    "personalityScores": { "R": 0, "I": 0, "A": 0, "S": 0, "E": 0, "C": 0 },
+    "academicScores": {},
+    "interests": {}
   }
 }
 \`\`\`
-
-### OUTPUT STYLING
-- Use light bullet points and inline bolding for readability.
-- When summarizing recommended options, highlight: Degree Level, Duration, Key Skills Required, and Typical Career Roles.
 `;
 
-function cleanBotResponse(text) {
-  if (!text) return "";
-  return text.replace(/```json[\s\S]*?```/, "").trim();
-}
+const PERSONALITY_LABELS = {
+  R: "Réaliste",
+  I: "Investigateur",
+  A: "Artistique",
+  S: "Social",
+  E: "Entreprenant",
+  C: "Conventionnel",
+};
 
-function formatMessageContent(text) {
-  if (!text) return "";
-  const lines = text.split("\n");
-  return lines.map((line, lineIdx) => {
-    const isBullet = line.trim().startsWith("•") || line.trim().startsWith("-") || line.trim().startsWith("*");
-    const parts = line.split(/(\*\*.*?\*\*)/g);
-    const formattedLine = parts.map((part, partIdx) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={partIdx}>{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
-
-    return (
-      <div key={lineIdx} className={isBullet ? "chat-bullet-line" : "chat-text-line"}>
-        {formattedLine}
-      </div>
-    );
-  });
-}
+const cleanBotResponse = (text) => (text ? text.replace(/```json[\s\S]*?```/, "").trim() : "");
 
 export default function CompleteAssessmentChatbot() {
   const { submitAssessment, loading: contextSubmitting, error: contextError } = useContext(AssessmentContext);
@@ -101,17 +52,16 @@ export default function CompleteAssessmentChatbot() {
   const [loading, setLoading] = useState(false);
   const [chatSession, setChatSession] = useState(null);
   const [error, setError] = useState("");
-  const [isFinished, setIsFinished] = useState(false);
   const [assessmentResult, setAssessmentResult] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    const initChat = async () => {
-      if (!apiKey) {
-        setError("Clé API Gemini introuvable dans le fichier .env (VITE_GEMINI_API_KEY).");
-        return;
-      }
+    if (!apiKey) {
+      setError("Clé API Gemini manquante (VITE_GEMINI_API_KEY).");
+      return;
+    }
 
+    const startChat = async () => {
       try {
         setLoading(true);
         const session = ai.chats.create({
@@ -120,20 +70,19 @@ export default function CompleteAssessmentChatbot() {
         });
         setChatSession(session);
 
-        const response = await session.sendMessage({
-          message: "Bonjour ! Accueillez-moi en tant que Companion Orient et commencez notre entretien d'orientation selon votre méthodologie.",
+        const res = await session.sendMessage({
+          message: "Bonjour ! Accueillez-moi en tant que Companion Orient et démarrez l'entretien.",
         });
-
-        setMessages([{ sender: "bot", text: cleanBotResponse(response.text) }]);
+        setMessages([{ sender: "bot", text: cleanBotResponse(res.text) }]);
       } catch (err) {
-        console.error("Erreur d'initialisation Gemini:", err);
-        setError("Erreur lors de l'initialisation du conseiller Companion Orient. Vérifiez votre connexion internet.");
+        console.error("Init error:", err);
+        setError("Impossible de contacter le conseiller d'orientation.");
       } finally {
         setLoading(false);
       }
     };
 
-    initChat();
+    startChat();
   }, []);
 
   useEffect(() => {
@@ -142,255 +91,77 @@ export default function CompleteAssessmentChatbot() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || loading || contextSubmitting || !chatSession) return;
+    const query = input.trim();
+    if (!query || loading || contextSubmitting || !chatSession) return;
 
-    const userText = input;
     setInput("");
-
-    setMessages((prev) => [...prev, { sender: "user", text: userText }]);
+    setMessages((prev) => [...prev, { sender: "user", text: query }]);
     setLoading(true);
 
     try {
-      const response = await chatSession.sendMessage({ message: userText });
+      const response = await chatSession.sendMessage({ message: query });
       const rawText = response.text;
-
       setMessages((prev) => [...prev, { sender: "bot", text: cleanBotResponse(rawText) }]);
 
       const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
-        try {
-          const parsed = JSON.parse(jsonMatch[1]);
-          if (parsed.isFinished && parsed.assessmentData) {
-            setIsFinished(true);
-            setAssessmentResult(parsed.assessmentData);
-
-            const success = await submitAssessment(parsed.assessmentData);
-            if (success) {
-
-              const redirectTarget =
-                location.state?.redirectAfterAssessment ?? "/recommendations";
-              navigate(redirectTarget, { replace: true });
-            }
+        const parsed = JSON.parse(jsonMatch[1]);
+        if (parsed?.isFinished && parsed?.assessmentData) {
+          setAssessmentResult(parsed.assessmentData);
+          const ok = await submitAssessment(parsed.assessmentData);
+          if (ok) {
+            const redirect = location.state?.redirectAfterAssessment ?? "/recommendations";
+            navigate(redirect, { replace: true });
           }
-        } catch (pErr) {
-          console.error("Erreur de parsing du JSON d'évaluation:", pErr);
         }
       }
     } catch (err) {
-      console.error("Erreur de communication avec Gemini:", err);
-      setError("Délai d'attente dépassé ou erreur de communication avec l'IA. Veuillez renvoyer votre réponse.");
+      console.error("Chat error:", err);
+      setError("Erreur de connexion. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
   };
 
-  const personalityLabels = {
-    R: "Réaliste",
-    I: "Investigateur",
-    A: "Artistique",
-    S: "Social",
-    E: "Entreprenant",
-    C: "Conventionnel",
-  };
-
-  const [theme, setTheme] = useState(() => {
-    return (
-      document.documentElement.getAttribute("data-theme") ||
-      localStorage.getItem("orient_theme") ||
-      "light"
-    );
-  });
-
-  useEffect(() => {
-    const syncTheme = () => {
-      const activeTheme =
-        document.documentElement.getAttribute("data-theme") ||
-        localStorage.getItem("orient_theme") ||
-        "light";
-      setTheme(activeTheme);
-    };
-
-    syncTheme();
-
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        if (m.type === "attributes" && m.attributeName === "data-theme") {
-          syncTheme();
-        }
-      }
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    window.addEventListener("orient_theme_change", syncTheme);
-    window.addEventListener("storage", syncTheme);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("orient_theme_change", syncTheme);
-      window.removeEventListener("storage", syncTheme);
-    };
-  }, []);
+  const stepActive = (threshold) => (messages.length >= threshold ? "active" : "");
 
   return (
-    <div className="chat-page-root" data-theme={theme}>
-
-      <div className="chat-circuit-layer" aria-hidden="true">
-        <svg className="chat-circuit-svg" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="circuitGridChat" width="240" height="240" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 40 80 L 120 80 L 120 160 L 200 160 L 200 240" fill="none" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.12" />
-              <path d="M 0 120 L 80 120 L 80 200 L 160 200" fill="none" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.12" />
-              <circle cx="40" cy="80" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-              <circle cx="120" cy="160" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-              <circle cx="80" cy="200" r="3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.22" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#circuitGridChat)" />
-        </svg>
-      </div>
-
+    <div className="chat-page-root">
       <div className="chat-steps-bar">
-        <div className={`chat-nav-step-chip ${messages.length >= 0 ? "active" : ""}`}>
-          <span className="step-num">01</span>
-          <span>Découverte</span>
-        </div>
-        <div className={`chat-nav-step-chip ${messages.length > 2 ? "active" : ""}`}>
-          <span className="step-num">02</span>
-          <span>Filières</span>
-        </div>
-        <div className={`chat-nav-step-chip ${messages.length > 4 ? "active" : ""}`}>
-          <span className="step-num">03</span>
-          <span>Comparatif</span>
-        </div>
-        <div className={`chat-nav-step-chip ${messages.length > 6 ? "active" : ""}`}>
-          <span className="step-num">04</span>
-          <span>Recommandations</span>
-        </div>
+        {["Découverte", "Filières", "Comparatif", "Recommandations"].map((label, idx) => (
+          <div key={label} className={`chat-nav-step-chip ${stepActive(idx * 2)}`}>
+            <span className="step-num">0{idx + 1}</span>
+            <span>{label}</span>
+          </div>
+        ))}
       </div>
 
       <div className="chat-card-container">
-
         <div className="chat-messages-scroll">
           <div className="chat-messages-inner">
             {(error || contextError) && (
-              <div className="error-banner">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                <span>{error || contextError}</span>
+              <div className="error-banner">⚠️ {error || contextError}</div>
+            )}
+
+            {messages.map((msg, idx) => (
+              <ChatMessage key={idx} msg={msg} />
+            ))}
+
+            {loading && (
+              <div className="chat-typing-row">
+                <div className="chat-typing-bubble">
+                  <div className="chat-typing-dots"><span /><span /><span /></div>
+                  <span className="chat-typing-label">Companion Orient analyse vos options...</span>
+                </div>
               </div>
             )}
 
-          {messages.map((msg, idx) => {
-            const isBot = msg.sender === "bot";
-            return (
-              <div key={idx} className={`chat-msg-row ${isBot ? "bot" : "user"}`}>
-                <div className={`chat-msg-avatar ${isBot ? "avatar-bot" : "avatar-user"}`}>
-                  {isBot ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                    </svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                      <circle cx="12" cy="7" r="4" />
-                    </svg>
-                  )}
-                </div>
-
-                <div className="chat-bubble-card">
-                  {formatMessageContent(msg.text)}
-                </div>
-              </div>
-            );
-          })}
-
-          {loading && (
-            <div className="chat-typing-row">
-              <div className="chat-msg-avatar avatar-bot">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="12" cy="12" r="10" />
-                </svg>
-              </div>
-              <div className="chat-typing-bubble">
-                <div className="chat-typing-dots">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <span className="chat-typing-label">Companion Orient analyse vos options...</span>
-              </div>
-            </div>
-          )}
-
-          {contextSubmitting && (
-            <div className="chat-typing-row">
-              <div className="chat-typing-bubble" style={{ borderLeft: "4px solid #10b981" }}>
-                <span className="chat-typing-label">Enregistrement de votre profil d'orientation...</span>
-              </div>
-            </div>
-          )}
-
-          
-          {isFinished && assessmentResult && (
-            <div className="chat-completion-card">
-              <div className="completion-header">
-                <div className="completion-icon-trophy">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                    <path d="M4 22h16" />
-                    <path d="M10 14.66V17c0 .55-.45 1-1 1H7" />
-                    <path d="M14 14.66V17c0 .55.45 1 1 1h2" />
-                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3>Bilan d'orientation finalisé avec succès !</h3>
-                  <p>Vos scores Holland RIASEC et vos préférences académiques ont été enregistrés.</p>
-                </div>
-              </div>
-
-              {assessmentResult.personalityScores && (
-                <div className="riasec-scores-summary">
-                  <div className="riasec-scores-title">Profil Holland RIASEC</div>
-                  <div className="riasec-bars-grid">
-                    {Object.entries(assessmentResult.personalityScores).map(([key, score]) => (
-                      <div key={key} className="riasec-bar-item">
-                        <div className="riasec-bar-track">
-                          <div
-                            className="riasec-bar-fill"
-                            style={{ height: `${Math.min(Math.max(score, 10), 100)}%` }}
-                          ></div>
-                        </div>
-                        <span className="riasec-bar-letter">{key}</span>
-                        <span className="riasec-bar-value">{Math.round(score)}%</span>
-                        <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>
-                          {personalityLabels[key] || key}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="completion-actions">
-                <button className="btn-view-recs" onClick={() => navigate("/recommendations")}>
-                  <span>Découvrir mes écoles &amp; filières recommandées</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          )}
+            {assessmentResult && (
+              <RiasecCompletionCard
+                result={assessmentResult}
+                onNavigate={() => navigate("/recommendations")}
+              />
+            )}
 
             <div ref={chatEndRef} />
           </div>
@@ -411,15 +182,65 @@ export default function CompleteAssessmentChatbot() {
               disabled={loading || contextSubmitting || !input.trim() || !!error}
               className="chat-send-btn"
             >
-              <span>Envoyer</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
+              Envoyer
             </button>
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function ChatMessage({ msg }) {
+  const isBot = msg.sender === "bot";
+  return (
+    <div className={`chat-msg-row ${isBot ? "bot" : "user"}`}>
+      <div className={`chat-msg-avatar ${isBot ? "avatar-bot" : "avatar-user"}`}>
+        {isBot ? "🤖" : "👤"}
+      </div>
+      <div className="chat-bubble-card">
+        {msg.text.split("\n").map((line, lIdx) => {
+          const parts = line.split(/(\*\*.*?\*\*)/g);
+          return (
+            <div key={lIdx} className={line.trim().startsWith("-") || line.trim().startsWith("•") ? "chat-bullet-line" : "chat-text-line"}>
+              {parts.map((p, pIdx) =>
+                p.startsWith("**") && p.endsWith("**") ? <strong key={pIdx}>{p.slice(2, -2)}</strong> : p
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RiasecCompletionCard({ result, onNavigate }) {
+  return (
+    <div className="chat-completion-card">
+      <h3>🎉 Bilan d'orientation finalisé avec succès !</h3>
+      <p>Vos scores Holland RIASEC et vos préférences académiques ont été enregistrés.</p>
+
+      {result.personalityScores && (
+        <div className="riasec-bars-grid">
+          {Object.entries(result.personalityScores).map(([key, score]) => (
+            <div key={key} className="riasec-bar-item">
+              <div className="riasec-bar-track">
+                <div
+                  className="riasec-bar-fill"
+                  style={{ height: `${Math.min(Math.max(score, 10), 100)}%` }}
+                />
+              </div>
+              <span className="riasec-bar-letter">{key}</span>
+              <span className="riasec-bar-value">{Math.round(score)}%</span>
+              <small>{PERSONALITY_LABELS[key] || key}</small>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button className="btn-view-recs" onClick={onNavigate}>
+        Découvrir mes écoles &amp; filières recommandées →
+      </button>
     </div>
   );
 }

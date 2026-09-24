@@ -1,250 +1,341 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import BrandLogo from "../common/BrandLogo";
 import "./OrientLandingPage.css";
 
-const BrandLogoIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="3" width="7" height="7" rx="2" fill="currentColor" />
-    <rect x="14" y="3" width="7" height="7" rx="2" fill="currentColor" opacity="0.6" />
-    <rect x="3" y="14" width="7" height="7" rx="2" fill="currentColor" opacity="0.6" />
-    <rect x="14" y="14" width="7" height="7" rx="2" fill="currentColor" />
-    <path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" stroke="currentColor" strokeWidth="1.2" />
+/* ==========================================================================
+   SVG ICONS & LOGOS (Dribbble Design Faithful)
+   ========================================================================== */
+
+const SchoolLogoIcon = () => <BrandLogo size={28} />;
+
+const ArrowUpRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 17L17 7M17 7H7M17 7V17" />
   </svg>
 );
 
-const RIASEC_DIMENSIONS = [
-  {
-    key: "I",
-    name: "Investigateur",
-    icon: "🔬",
-    subtitle: "Analytique, Scientifique & Curieux",
-    score: 92,
-    desc: "Vous aimez comprendre les lois régissant les phénomènes, résoudre des énigmes mathématiques et concevoir des modèles abstraits pour percer des problèmes complexes.",
-    strengths: ["Raisonnement logique", "Esprit critique", "Curiosité scientifique", "Rigueur d'analyse"],
-    careers: ["Data Scientist", "Ingénieur R&D IA", "Chercheur en Biotechnologie", "Médecin Spécialiste"],
-    schools: ["UM6P Benguerir (CS)", "CPGE (MPSI / PCSI)", "FMP Médecine", "ENSA Réseau Informatique"],
-    sampleQuestion: "« Aimez-vous modéliser mathématiquement un problème complexe avant de programmer sa solution ? »",
-    image: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1000&q=80"
-  },
-  {
-    key: "R",
-    name: "Réaliste",
-    icon: "⚙️",
-    subtitle: "Pratique, Technique & Concret",
-    score: 84,
-    desc: "Vous privilégiez l'action directe, l'expérimentation matérielle, les systèmes mécaniques, la robotique et les technologies industrielles appliquées.",
-    strengths: ["Pragmatisme", "Sens spatial", "Ingéniosité technique", "Habileté opératoire"],
-    careers: ["Ingénieur Aéronautique", "Roboticien", "Chef de Projet BTP", "Architecte Systèmes Embarqués"],
-    schools: ["ENSAM Casablanca & Meknès", "EHTP Casablanca", "AIAC Mohammed VI", "ENSA Génie Civil"],
-    sampleQuestion: "« Préférez-vous concevoir un prototype physique tangible plutôt qu'étudier un concept théorique ? »",
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80"
-  },
-  {
-    key: "A",
-    name: "Artistique",
-    icon: "🎨",
-    subtitle: "Créatif, Intuitif & Expressif",
-    score: 68,
-    desc: "Vous ressentez le besoin d'inventer de nouvelles formes, d'innover visuellement et de concevoir des expériences singulières affranchies des carcans conventionnels.",
-    strengths: ["Sensibilité esthétique", "Pensée divergente", "Originalité", "Conception UI/UX"],
-    careers: ["Architecte DPLG", "Directeur Artistique", "Designer Produit", "Concepteur Multimédia"],
-    schools: ["ENA Rabat (Architecture)", "ESAV Marrakech", "Beaux-Arts Casablanca", "Artcom' Sup"],
-    sampleQuestion: "« Accordez-vous une importance primordiale à l'émotion visuelle et à l'harmonie des formes dans un projet ? »",
-    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80"
-  },
-  {
-    key: "S",
-    name: "Social",
-    icon: "🤝",
-    subtitle: "Humain, Empathique & Pédagogue",
-    score: 74,
-    desc: "Votre motivation profonde réside dans l'entraide, le soin, l'enseignement, le conseil et le développement du potentiel humain et collectif.",
-    strengths: ["Intelligence relationnelle", "Écoute active", "Pédagogie", "Accompagnement d'équipe"],
-    careers: ["Médecin / Chirurgien", "Pharmacien Clinicien", "Consultant RH & Coaching", "Professeur Agrégé"],
-    schools: ["FMP / FMD (Facultés de Médecine)", "ISPITS Santé", "ENS Rabat", "Facultés des Sciences de l'Éducation"],
-    sampleQuestion: "« Trouveriez-vous un sens profond à guider, écouter et soigner des personnes au quotidien ? »",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1000&q=80"
-  },
-  {
-    key: "E",
-    name: "Entreprenant",
-    icon: "⚡",
-    subtitle: "Leader, Stratège & Décideur",
-    score: 79,
-    desc: "Vous êtes animé par le sens du défi, la négociation commerciale, la conduite d'équipes et la création de valeur à fort impact économique.",
-    strengths: ["Leadership naturel", "Persuasion & Éloquence", "Esprit d'initiative", "Gestion des risques"],
-    careers: ["Fondateur de Startup", "Directeur Financier", "Consultant en Stratégie", "Product Manager Tech"],
-    schools: ["ISCAE Casablanca", "Réseau ENCG (Settat, Casa...)", "ESCA Business School", "HEM Rabat"],
-    sampleQuestion: "« Aimez-vous piloter un projet collectif ambitieux et négocier avec des partenaires exigeants ? »",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80"
-  },
-  {
-    key: "C",
-    name: "Conventionnel",
-    icon: "📋",
-    subtitle: "Méthodique, Structuré & Fiable",
-    score: 71,
-    desc: "Vous appréciez l'organisation méthodique, le respect rigoureux des normes, la vérification chiffrée et la gouvernance de flux d'informations.",
-    strengths: ["Précision millimétrée", "Organisation sans faille", "Respect des protocoles", "Fiabilité totale"],
-    careers: ["Auditeur Financier", "Expert-Comptable", "Data Compliance Officer", "Actuaire en Assurance"],
-    schools: ["ENCG Audit & Contrôle", "FSJES Droit des Affaires", "ISCAE Finance", "INSEA Rabat"],
-    sampleQuestion: "« Prenez-vous plaisir à ordonner des données complexes et traquer la moindre anomalie de calcul ? »",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80"
-  }
+const ArrowRightIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
+
+const QuoteWatermarkIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" opacity="0.25">
+    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+  </svg>
+);
+
+/* Academic Program Icons */
+const BookOpenIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+  </svg>
+);
+
+const SpeedometerIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const FeatherPenIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 19l7-7 3 3-7 7-3-3z" />
+    <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+    <path d="M2 2l7.586 7.586" />
+    <circle cx="11" cy="11" r="2" />
+  </svg>
+);
+
+const BeakerIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 2v7.31a2 2 0 0 1-.37 1.17L4.35 18A2 2 0 0 0 6 21h12a2 2 0 0 0 1.65-3l-5.28-7.52A2 2 0 0 1 14 9.31V2" />
+    <path d="M8.5 2h7" />
+    <path d="M7 16h10" />
+  </svg>
+);
+
+/* Moroccan Higher Education Emblems / Logos in Grid */
+const EnsamLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="12" cy="12" r="10" fillOpacity="0.15" />
+    <path d="M12 6L7 16h10L12 6zm0 3.2l2.6 5.3H9.4L12 9.2z" />
+  </svg>
+);
+
+const Um6pLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="3" y="3" width="8" height="8" rx="2" fillOpacity="0.25" />
+    <rect x="13" y="3" width="8" height="8" rx="2" />
+    <rect x="3" y="13" width="8" height="8" rx="2" />
+    <rect x="13" y="13" width="8" height="8" rx="2" fillOpacity="0.25" />
+  </svg>
+);
+
+const EncgLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v10M8 10h8" />
+  </svg>
+);
+
+const EnsaLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" />
+  </svg>
+);
+
+const FmpLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7V2z" />
+  </svg>
+);
+
+const CpgeLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2L2 20h20L12 2zm0 5.5l5.5 10.5h-11L12 7.5z" />
+  </svg>
+);
+
+const IscaeLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="8" width="18" height="8" rx="4" fill="currentColor" fillOpacity="0.2" />
+    <circle cx="9" cy="12" r="2" fill="currentColor" />
+  </svg>
+);
+
+const EhtpLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M7 17L17 7M17 7H9M17 7V15" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="19" cy="5" r="1.5" fill="currentColor" />
+  </svg>
+);
+
+const InseaLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="18" x2="20" y2="18" />
+  </svg>
+);
+
+const AiacLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2L2 12h5v8h10v-8h5L12 2z" />
+  </svg>
+);
+
+const EnaLogo = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" />
+    <line x1="12" y1="12" x2="19" y2="7" />
+  </svg>
+);
+
+/* Social Icons */
+const LinkedInIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+  </svg>
+);
+
+const InstagramIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="2" width="20" height="20" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+  </svg>
+);
+
+const FacebookIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const XTwitterIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+const YouTubeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
+/* ==========================================================================
+   DATA SPECIFICATIONS (Adapted to OrientCompanion Post-Bac Platform)
+   ========================================================================== */
+
+const PARTNER_LOGOS = [
+  { name: "ENSAM", icon: <EnsamLogo /> },
+  { name: "UM6P", icon: <Um6pLogo /> },
+  { name: "ENCG", icon: <EncgLogo /> },
+  { name: "ENSA", icon: <EnsaLogo /> },
+  { name: "FMP", icon: <FmpLogo /> },
+  { name: "CPGE", icon: <CpgeLogo /> },
+  { name: "ISCAE", icon: <IscaeLogo /> },
+  { name: "EHTP", icon: <EhtpLogo /> },
+  { name: "INSEA", icon: <InseaLogo /> },
+  { name: "AIAC", icon: <AiacLogo /> },
+  { name: "ENA", icon: <EnaLogo /> },
+  { name: "+ 30 Autres", isTextBadge: true },
 ];
 
-const SCHOOLS_DATA = [
+const ACADEMIC_PROGRAMS = [
   {
-    id: "ensam",
-    name: "ENSAM Casablanca & Meknès",
-    category: "ingenierie",
-    categoryLabel: "Ingénierie & Tech",
-    badge: "Public • Cycle Prépa Intégré",
-    threshold: 15.80,
-    thresholdFormula: "75% National + 25% Régional",
-    details: "Maths: 14.50 • PC/SVT: 15.80",
-    exam: "Écrit QCM (Maths & Physique)",
-    duration: "5 ans (2 ans prépa + 3 ans ingénieur)",
-    filieres: ["Génie Informatique", "Génie Mécanique", "Mécatronique", "Génie Industriel"],
-    image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80"
+    icon: <BookOpenIcon />,
+    title: "Bilan Psychométrique RIASEC",
+    desc: "Une cartographie scientifique de vos aptitudes et motivations professionnelles selon le modèle officiel de John Holland.",
   },
   {
-    id: "um6p",
-    name: "UM6P Benguerir & Rabat",
-    category: "excellence",
-    categoryLabel: "Universités d'Élite",
-    badge: "Fondation • Bourses au Mérite",
-    threshold: 16.00,
-    thresholdFormula: "Dossier d'excellence + Épreuves spécifiques",
-    details: "Bourses à 100% selon mérite et critères sociaux",
-    exam: "Test d'admission + Entretien de personnalité",
-    duration: "3 à 5 ans",
-    filieres: ["School of Computer Science", "EMINES Génie Industriel", "FGSES Sciences Po"],
-    image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80"
+    icon: <SpeedometerIcon />,
+    title: "Simulateur de Seuils Concours",
+    desc: "Évaluez vos probabilités d'admission en temps réel avec la formule officielle ministérielle (75% National + 25% Régional).",
   },
   {
-    id: "encg",
-    name: "Réseau ENCG Maroc (12 Villes)",
-    category: "commerce",
-    categoryLabel: "Commerce & Gestion",
-    badge: "Public • Réseau National",
-    threshold: 13.75,
-    thresholdFormula: "Selon filière Bac (Eco: 13.00, SM: 13.50, PC: 14.50)",
-    details: "Moyenne pondérée TAFEM",
-    exam: "Test d'Admissibilité TAFEM",
-    duration: "5 ans (Master Grande École)",
-    filieres: ["Audit & Contrôle", "Finance de Marché", "Marketing Digital", "Management Stratégique"],
-    image: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80"
+    icon: <FeatherPenIcon />,
+    title: "Stratégie de Candidature & Vœux",
+    desc: "Un accompagnement sur-mesure pour ordonner vos vœux et aborder sereinement les épreuves écrites et orales de sélection.",
   },
   {
-    id: "fmp",
-    name: "FMP - Facultés de Médecine & Pharmacie",
-    category: "medecine",
-    categoryLabel: "Médecine & Santé",
-    badge: "Public • Concours Décentralisé",
-    threshold: 12.00,
-    thresholdFormula: "Seuil unique national décentralisé",
-    details: "Moyenne générale Bac requise pour l'écrit",
-    exam: "QCM National (SVT, Physique, Chimie, Maths)",
-    duration: "6 ans (Médecine) / 5 ans (Pharmacie)",
-    filieres: ["Médecine Générale", "Pharmacie", "Médecine Dentaire (FMD)"],
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"
+    icon: <BeakerIcon />,
+    title: "Mentorat Visio 1-on-1 Direct",
+    desc: "Échangez en direct avec des lauréats et étudiants aînés en cursus dans les Grandes Écoles de vos rêves pour des conseils ciblés.",
   },
-  {
-    id: "ensa",
-    name: "Réseau ENSA Maroc (13 Villes)",
-    category: "ingenierie",
-    categoryLabel: "Ingénierie & Tech",
-    badge: "Public • Réseau National",
-    threshold: 14.80,
-    thresholdFormula: "75% National + 25% Régional",
-    details: "Seuil unique national pour tout le réseau",
-    exam: "Concours commun écrit 4 épreuves",
-    duration: "5 ans (Diplôme d'Ingénieur d'État)",
-    filieres: ["Génie Logiciel", "Cybersécurité", "Télécoms", "IA & Big Data"],
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "cpge",
-    name: "CPGE Maroc (Classes Préparatoires)",
-    category: "ingenierie",
-    categoryLabel: "Grandes Écoles",
-    badge: "Public • Voie d'Excellence",
-    threshold: 15.50,
-    thresholdFormula: "Formule ministérielle CNO (Matières phares)",
-    details: "Sélection sur dossier national",
-    exam: "Accès direct sur dossier -> CNC en 2e année",
-    duration: "2 ans préparatoires",
-    filieres: ["MPSI (Maths-Physique)", "PCSI (Physique-Chimie)", "TSI (Technologie)", "ECS / ECT"],
-    image: "https://images.unsplash.com/photo-1525921429624-479b6a26d84d?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "iscae",
-    name: "ISCAE Casablanca & Rabat",
-    category: "commerce",
-    categoryLabel: "Commerce d'Élite",
-    badge: "Public • Grande École de Management",
-    threshold: 16.50,
-    thresholdFormula: "Présélection nationale Post-Bac / CPGE",
-    details: "Grande École de Commerce de référence",
-    exam: "Épreuves écrites rigoureuses + Grand Oral",
-    duration: "3 à 5 ans",
-    filieres: ["Finance d'Entreprise", "Commerce International", "Marketing & Communication"],
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"
-  },
-  {
-    id: "ena",
-    name: "ENA Rabat (Architecture)",
-    category: "excellence",
-    categoryLabel: "Architecture & Design",
-    badge: "Public • Concours National",
-    threshold: 16.20,
-    thresholdFormula: "75% National + 25% Régional",
-    details: "Seuil élevé + Épreuve de dessin et culture générale",
-    exam: "Épreuves écrites + Test d'aptitude plastique",
-    duration: "6 ans (Diplôme d'Architecte)",
-    filieres: ["Architecture & Urbanisme", "Patrimoine & Restauration", "Design Spatial & Paysage"],
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
-  }
 ];
 
-const FAQ_ITEMS = [
+const FACILITIES_DATA = [
   {
-    question: "Comment fonctionne le bilan RIASEC avec le conseiller IA ?",
-    answer: "Notre algorithme applique la méthode psychométrique officielle de John Holland (RIASEC). Lors d'un échange conversationnel guidé de 5 minutes, notre conseiller IA explore vos préférences spontanées, vos points forts scolaires et vos valeurs professionnelles pour générer votre profil dominant (ex: IRS, SEC, ERA) et cartographier les filières et métiers à plus forte affinité."
+    title: "LABORATOIRES DE RECHERCHE",
+    image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+    className: "facility-science",
   },
   {
-    question: "Les seuils de présélection affichés sont-ils officiels ?",
-    answer: "Absolument. Les données de seuils (2022-2025) sont issues des communications officielles du Ministère de l'Enseignement Supérieur du Maroc et des avis des concours des réseaux ENSAM, ENSA, FMP, ENCG, CPGE, etc. Notre simulateur intègre la formule ministérielle officielle (75% National + 25% Régional)."
+    title: "MÉDIATHÈQUES & BIBLIOTHÈQUES",
+    image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80",
+    className: "facility-library",
   },
   {
-    question: "Comment réserver et se déroule une séance de mentorat ?",
-    answer: "Depuis votre cockpit ou la page mentorat, vous pouvez choisir un étudiant lauréat actuellement en 3e, 4e ou 5e année dans l'école ciblée (ENSAM, UM6P, ENCG, FMP...) et réserver un créneau de visioconférence de 45 minutes pour obtenir des retours d'expérience authentiques, des astuces concours et des fiches de révision."
+    title: "COMPLEXES SPORTIFS OLYMPIQUES",
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+    className: "facility-sports",
   },
   {
-    question: "La plateforme Orient Companion est-elle gratuite ?",
-    answer: "Oui, l'accès au bilan RIASEC guidé par l'IA, le simulateur de note, la consultation de l'annuaire des écoles et les indices de probabilité d'admission sont 100% gratuits pour tous les lycéens et étudiants."
+    title: "ESPACES DE COWORKING & CLUBS",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+    className: "facility-corner",
   },
   {
-    question: "Puis-je suivre l'avancement de plusieurs candidatures à la fois ?",
-    answer: "Oui. Votre cockpit unifié vous permet d'ajouter vos écoles et filières favorites en tant que vœux prioritaires (Vœu 1, 2, 3...), d'afficher le taux d'affinité RIASEC, le statut du dossier et les dates précises des épreuves écrites et orales."
-  }
+    title: "CENTRES INFORMATIQUES & IA",
+    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
+    className: "facility-computer",
+  },
+  {
+    title: "PARCS & CAMPUS D'EXCELLENCE",
+    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+    className: "facility-park",
+  },
 ];
 
-const getSchoolEligibility = (threshold, userScore) => {
-  if (typeof threshold !== "number") {
-    return { type: "admissible", label: "Dossier & Concours" };
-  }
-  const diff = userScore - threshold;
-  if (diff >= 0.3) {
-    return { type: "admissible", label: `Admissible (+${diff.toFixed(2)})` };
-  } else if (diff >= -0.5) {
-    return { type: "warning", label: `Zone seuil (${diff.toFixed(2)})` };
-  } else {
-    return { type: "selective", label: `Très sélectif (${diff.toFixed(2)})` };
-  }
-};
+const ACHIEVEMENTS_DATA = [
+  {
+    award: "Major du Concours National ENSAM Casablanca",
+    name: "Amine Benali - Promotion 2025",
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    award: "Bourse d'Excellence UM6P School of CS",
+    name: "Salma Tazi - Promotion 2025",
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    award: "1er Prix National Olympiades de Mathématiques",
+    name: "Yassine Mansouri - Promotion 2024",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    award: "Admise Concours Médecine FMP Rabat (Mention TB)",
+    name: "Kenza Chraibi - Promotion 2024",
+    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+  },
+  {
+    award: "Admission CPGE MPSI vers Concours Grandes Écoles",
+    name: "Mehdi Berrada - Promotion 2023",
+    badgeNumber: "19.42 / 20",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+  },
+];
+
+const TESTIMONIALS_DATA = [
+  {
+    name: "Youssef El Alami",
+    cohort: "ENSAM Casablanca • Génie Informatique",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
+    text: "OrientCompanion m'a permis de canaliser mon profil RIASEC vers le génie informatique. Les simulations de seuils et les astuces partagées par mon mentor ont été déterminantes pour réussir les épreuves écrites de l'ENSAM.",
+  },
+  {
+    name: "Nour Benjelloun",
+    cohort: "UM6P Benguerir • CS & Data Science",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+    text: "J'hésitais entre plusieurs filières d'ingénierie d'excellence. Le bilan m'a donné des certitudes objectives et le mentorat m'a préparée avec brio aux entretiens de sélection de l'UM6P et à l'obtention de ma bourse.",
+  },
+  {
+    name: "Karim Idrissi",
+    cohort: "ENCG Settat • Finance & Audit",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+    text: "Un outil indispensable pour tout bachelier ambitieux. Grâce au suivi régulier des seuils et à la préparation au test TAFEM, j'ai abordé les concours avec une sérénité totale et intégré mon premier vœu.",
+  },
+];
+
+const NEWS_FEATURED = [
+  {
+    date: "2026-05-15",
+    title: "Ouverture des Inscriptions aux Concours Nationaux d'Ingénierie",
+    excerpt: "Consultez le calendrier ministériel officiel, les seuils indicatifs 2026 et les modalités d'admission pour les réseaux ENSAM et ENSA.",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    date: "2026-04-28",
+    title: "UM6P : Nouveaux Programmes en Intelligence Artificielle & Green Tech",
+    excerpt: "L'université d'élite dévoile ses nouvelles filières post-bac et son programme d'attribution des bourses d'excellence au mérite.",
+    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1000&q=80",
+  },
+];
+
+const NEWS_RECENT = [
+  {
+    date: "2026-04-10",
+    title: "Guide Pratique : Réussir les Concours des Facultés de Médecine (FMP)",
+    excerpt: "Méthodologie détaillée pour aborder les QCM scientifiques décentralisés et optimiser votre gestion du temps d'épreuve.",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    date: "2026-03-22",
+    title: "Webinaire Exclusif : Choisir entre CPGE et Prépa Intégrée",
+    excerpt: "Nos lauréats mentors comparent les rythmes de travail, les perspectives de double diplôme et les débouchés professionnels.",
+    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    date: "2026-03-05",
+    title: "Publication de l'Observatoire des Seuils Post-Bac (2022-2025)",
+    excerpt: "Analyse rétrospective des notes minimales d'admissibilité par filière de baccalauréat (Sciences Maths, PC, SVT, Éco).",
+    image: "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+/* ==========================================================================
+   MAIN COMPONENT
+   ========================================================================== */
 
 export default function OrientLandingPage() {
   const navigate = useNavigate();
@@ -260,6 +351,10 @@ export default function OrientLandingPage() {
     return localStorage.getItem("orient_theme") || "light";
   });
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
@@ -267,137 +362,77 @@ export default function OrientLandingPage() {
     document.documentElement.setAttribute("data-theme", nextTheme);
   };
 
-  const PROTECTED_PATHS = new Set([
-    "/assessment", "/recommendations", "/mentorship",
-    "/dashboard", "/admin/fields", "/admin/schools", "/counselor/sessions",
-  ]);
+  const [activeTestimonialDot, setActiveTestimonialDot] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAdmissionsModal, setShowAdmissionsModal] = useState(false);
+  const [showAchievementsModal, setShowAchievementsModal] = useState(false);
 
   const handleNav = (target) => {
-    const routeMap = {
-      dashboard: "/dashboard",
-      chat: "/assessment",
-      test: "/assessment",
-      recommendations: "/recommendations",
-      recs: "/recommendations",
-      landing: "/",
-      home: "/",
-      schools: "/admin/schools",
-      school: "/admin/schools",
-      fields: "/admin/fields",
-      field: "/admin/fields",
-      mentor: "/mentorship",
-      mentorship: "/mentorship",
-      login: "/login",
-      register: "/register",
-    };
-    const path = routeMap[target] ?? "/";
-
-    if (PROTECTED_PATHS.has(path) && !isAuthenticated) {
-      navigate("/login", { state: { from: { pathname: path } } });
-      return;
-    }
-    navigate(path);
-  };
-
-  const [activeRiasec, setActiveRiasec] = useState("I");
-  const [nationalGrade, setNationalGrade] = useState(16.5);
-  const [regionalGrade, setRegionalGrade] = useState(15.0);
-  const [schoolCategory, setSchoolCategory] = useState("all");
-  const [activeCockpitTab, setActiveCockpitTab] = useState("candidatures");
-  const [selectedSchool, setSelectedSchool] = useState("ensam");
-  const [openFaq, setOpenFaq] = useState(null);
-
-  const toggleFaq = (idx) => {
-    setOpenFaq(openFaq === idx ? null : idx);
-  };
-
-  const simulatedScore = Number((nationalGrade * 0.75 + regionalGrade * 0.25).toFixed(2));
-  const currentRiasec = RIASEC_DIMENSIONS.find((d) => d.key === activeRiasec) || RIASEC_DIMENSIONS[0];
-  const filteredSchools = schoolCategory === "all"
-    ? SCHOOLS_DATA
-    : SCHOOLS_DATA.filter((s) => s.category === schoolCategory);
-
-  const schoolDetails = {
-    ensam: {
-      name: "ENSAM Casablanca",
-      sub: "Génie Informatique & Systèmes Mécaniques",
-      threshold: "Seuil 2025 : 15.80 / 20",
-      match: "96.8% Affinité",
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80",
-      stats: [
-        { label: "Maths", value: "17.5", pct: "88%" },
-        { label: "Physique", value: "16.0", pct: "80%" },
-        { label: "Informatique", value: "18.5", pct: "93%" },
-        { label: "Français", value: "15.0", pct: "75%" },
-        { label: "Anglais", value: "17.0", pct: "85%" }
-      ]
-    },
-    um6p: {
-      name: "UM6P Benguerir",
-      sub: "School of Computer Science & EMINES",
-      threshold: "Sélection dossier & concours spécifique",
-      match: "94.2% Affinité",
-      image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80",
-      stats: [
-        { label: "Maths", value: "18.0", pct: "90%" },
-        { label: "Physique", value: "15.5", pct: "78%" },
-        { label: "Informatique", value: "19.0", pct: "95%" },
-        { label: "Français", value: "16.5", pct: "83%" },
-        { label: "Anglais", value: "18.0", pct: "90%" }
-      ]
-    },
-    encg: {
-      name: "ENCG Settat",
-      sub: "Gestion, Audit & Finance de Marché",
-      threshold: "Concours TAFEM : Seuil 14.50",
-      match: "91.5% Affinité",
-      image: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80",
-      stats: [
-        { label: "Maths", value: "15.5", pct: "78%" },
-        { label: "Économie", value: "17.5", pct: "88%" },
-        { label: "Français", value: "16.0", pct: "80%" },
-        { label: "Anglais", value: "17.0", pct: "85%" },
-        { label: "Philosophie", value: "14.5", pct: "73%" }
-      ]
+    setMobileMenuOpen(false);
+    if (target === "admissions") {
+      navigate("/assessment");
+    } else if (target === "login") {
+      navigate("/login");
+    } else if (target === "register") {
+      navigate("/register");
+    } else if (target === "assessment") {
+      navigate("/assessment");
+    } else if (target === "recommendations") {
+      navigate("/recommendations");
+    } else if (target === "mentorship") {
+      navigate("/mentorship");
+    } else if (target.startsWith("#")) {
+      const el = document.querySelector(target);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
   return (
-    <div className="shadcn-root" data-theme={theme}>
+    <div className="dribbble-landing-root" data-theme={theme}>
 
-      <div className="shadcn-dot-pattern" aria-hidden="true" />
+      {/* ====================================================================
+          TOP NAVBAR
+          ==================================================================== */}
+      <header className="dribbble-navbar">
+        <div className="dribbble-nav-container">
 
-      <header className="shadcn-navbar">
-        <div className="shadcn-nav-container">
-          <div className="shadcn-nav-brand" onClick={() => handleNav("landing")}>
-            <div className="shadcn-brand-icon">
-              <BrandLogoIcon />
+          {/* BRAND LOGO */}
+          <div className="dribbble-brand" onClick={() => handleNav("#hero")}>
+            <div className="dribbble-brand-symbol">
+              <SchoolLogoIcon />
             </div>
-            <span className="shadcn-brand-name">Orient Companion</span>
+            <div className="dribbble-brand-text">
+              <span className="dribbble-brand-name">OrientCompanion</span>
+              <span className="dribbble-brand-sub">Post-Bac & Concours</span>
+            </div>
           </div>
 
-          <nav className="shadcn-nav-menu">
-            <a href="#bilan" className="shadcn-nav-link">Bilan RIASEC</a>
-            <a href="#seuils" className="shadcn-nav-link">Écoles & Seuils</a>
-            <a href="#compatibilite" className="shadcn-nav-link">Compatibilité</a>
-            <a href="#campus-life" className="shadcn-nav-link">Vie de Campus</a>
-            <a href="#tableau-de-bord" className="shadcn-nav-link">Cockpit Étudiant</a>
-            <a href="#faq" className="shadcn-nav-link">FAQ</a>
+          {/* DESKTOP NAVIGATION LINKS */}
+          <nav className="dribbble-nav-links">
+            <a href="#about" onClick={(e) => { e.preventDefault(); handleNav("#about"); }}>Bilan RIASEC</a>
+            <a href="#programmes" onClick={(e) => { e.preventDefault(); handleNav("#programmes"); }}>Simulateur</a>
+            <a href="#ecoles" onClick={(e) => { e.preventDefault(); handleNav("#ecoles"); }}>Grandes Écoles</a>
+            <a href="#campus" onClick={(e) => { e.preventDefault(); handleNav("#campus"); }}>Campus & Vie</a>
+            <a href="#laureats" onClick={(e) => { e.preventDefault(); handleNav("#laureats"); }}>Mentorat</a>
+            <a href="#actualites" onClick={(e) => { e.preventDefault(); handleNav("#actualites"); }}>Actualités</a>
           </nav>
 
-          <div className="shadcn-nav-actions">
+          {/* ACTIONS: THEME TOGGLE & AUTH */}
+          <div className="dribbble-nav-actions">
             <button
-              className="ui-btn ui-btn-outline ui-btn-icon"
+              className="dribbble-theme-toggle"
               onClick={toggleTheme}
-              title={theme === "light" ? "Mode sombre" : "Mode clair"}
-              aria-label="Toggle theme"
+              title={theme === "light" ? "Activer le mode sombre" : "Activer le mode clair"}
+              aria-label="Changer le thème"
             >
               {theme === "light" ? (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               ) : (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="5" />
                   <line x1="12" y1="1" x2="12" y2="3" />
                   <line x1="12" y1="21" x2="12" y2="23" />
@@ -412,1043 +447,673 @@ export default function OrientLandingPage() {
             </button>
 
             <button
-              className="ui-btn ui-btn-ghost ui-btn-sm"
+              className="dribbble-btn-text"
               onClick={() => handleNav("login")}
             >
-              Se connecter
+              Connexion
             </button>
 
             <button
-              className="ui-btn ui-btn-default ui-btn-sm"
-              onClick={() => handleNav("chat")}
+              className="dribbble-btn-pill-dark"
+              onClick={() => handleNav("admissions")}
             >
-              <span>Lancer l'IA</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
+              <span>Lancer le Bilan</span>
+              <ArrowRightIcon />
+            </button>
+
+            {/* MOBILE MENU TOGGLE */}
+            <button
+              className="dribbble-mobile-toggle"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Menu de navigation"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {mobileMenuOpen ? (
+                  <path d="M18 6L6 18M6 6l12 12" />
+                ) : (
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
           </div>
         </div>
-      </header>
 
-      <section className="shadcn-hero-section">
-        <div className="shadcn-hero-content">
-          <div className="ui-badge ui-badge-secondary shadcn-hero-badge" onClick={() => handleNav("chat")}>
-            <span className="shadcn-pulse-dot" />
-            <span>Orientation Post-Bac & Concours 2026 au Maroc</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </div>
-
-          <h1 className="shadcn-hero-title">
-            Révélez Votre Vocation.<br />
-            Conquérez les Meilleures Écoles.
-          </h1>
-
-          <p className="shadcn-hero-subtitle">
-            Lycéens et étudiants : maximisez vos chances d'admission grâce au bilan psychométrique RIASEC
-            guidé par l'IA, explorez les campus d'excellence et anticipez les seuils de concours 2026.
-          </p>
-
-          <div className="shadcn-hero-cta-group">
-            <button
-              className="ui-btn ui-btn-default ui-btn-lg"
-              onClick={() => handleNav("chat")}
-            >
-              <span>Passer le Bilan RIASEC Gratuit</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button
-              className="ui-btn ui-btn-outline ui-btn-lg"
-              onClick={() => handleNav("recommendations")}
-            >
-              Explorer les Écoles Partenaires
-            </button>
-          </div>
-
-          <div className="shadcn-trust-pills">
-            <span>✓ +4,500 lycéens orientés</span>
-            <span className="dot-sep">•</span>
-            <span>✓ Seuils officiels certifiés</span>
-            <span className="dot-sep">•</span>
-            <span>✓ Conseiller IA disponible 24/7</span>
-          </div>
-        </div>
-      </section>
-
-      <div className="shadcn-container" id="apercu">
-        <div className="shadcn-hero-frame">
-          <img
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=85"
-            alt="Campus universitaire et étudiants en réussite"
-            className="shadcn-hero-banner-img"
-          />
-          <div className="shadcn-hero-banner-overlay" />
-
-          <div className="shadcn-hero-frame-body">
-            <div className="ui-badge ui-badge-secondary mb-3">
-              <span>Plateforme Nationale d'Orientation Augmentée</span>
-            </div>
-            <h2 className="shadcn-banner-headline">
-              L'excellence académique marocaine à votre portée
-            </h2>
-            <p className="shadcn-banner-caption">
-              Du bilan psychométrique Holland RIASEC jusqu'aux concours finaux : des données fiables,
-              un accompagnement d'experts et des sessions de mentorat en direct.
-            </p>
-
-            <div className="shadcn-frame-stats-row">
-              <div className="shadcn-stat-box">
-                <span className="shadcn-stat-val">+120</span>
-                <span className="shadcn-stat-sub">Grandes Écoles Référencées</span>
-              </div>
-              <div className="shadcn-stat-sep" />
-              <div className="shadcn-stat-box">
-                <span className="shadcn-stat-val">98.4%</span>
-                <span className="shadcn-stat-sub">Taux d'Admission Ciblé</span>
-              </div>
-              <div className="shadcn-stat-sep" />
-              <div className="shadcn-stat-box">
-                <span className="shadcn-stat-val">24/7</span>
-                <span className="shadcn-stat-sub">Conseiller IA Conversationnel</span>
-              </div>
-              <div className="shadcn-stat-sep" />
-              <div className="shadcn-stat-box">
-                <span className="shadcn-stat-val">4.98/5</span>
-                <span className="shadcn-stat-sub">Note Moyenne Mentorat</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="shadcn-glass-card glass-pos-tr">
-            <div className="shadcn-glass-icon">🏛️</div>
-            <div className="shadcn-glass-info">
-              <strong>ENSAM Casablanca</strong>
-              <span className="text-emerald-500">Affinité 96.8% • Admissible</span>
-            </div>
-          </div>
-
-          <div className="shadcn-glass-card glass-pos-bl">
-            <div className="shadcn-glass-icon">⭐</div>
-            <div className="shadcn-glass-info">
-              <strong>Mentorat 1-on-1 Direct</strong>
-              <span>+450 lauréats disponibles</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="shadcn-trio-grid">
-          <div className="ui-card ui-card-hover shadcn-trio-card" onClick={() => handleNav("chat")}>
-            <img
-              src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80"
-              alt="Conseiller IA RIASEC"
-              className="shadcn-card-img-bg"
-            />
-            <div className="shadcn-card-scrim" />
-            <div className="shadcn-card-overlay-content">
-              <span className="ui-badge ui-badge-secondary w-fit mb-2">IA Psychométrique</span>
-              <h3 className="text-xl font-bold text-white mb-1">Bilan RIASEC Intelligent</h3>
-              <p className="text-sm text-zinc-300 mb-3">
-                Évaluez vos affinités réelles selon le modèle Holland pour cibler les meilleures filières.
-              </p>
-              <div className="flex items-center gap-1 text-xs font-semibold text-white">
-                <span>Commencer le bilan</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="ui-card ui-card-hover shadcn-trio-card" onClick={() => handleNav("recommendations")}>
-            <img
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80"
-              alt="Campus UM6P Benguerir"
-              className="shadcn-card-img-bg"
-            />
-            <div className="shadcn-card-scrim" />
-            <div className="shadcn-card-overlay-content">
-              <span className="ui-badge ui-badge-secondary w-fit mb-2">Grandes Écoles</span>
-              <h3 className="text-xl font-bold text-white mb-1">Référentiel des Écoles</h3>
-              <p className="text-sm text-zinc-300 mb-3">
-                Seuils officiels 2022-2025, filières d'avenir et modalités d'admissibilité au Maroc.
-              </p>
-              <div className="flex items-center gap-1 text-xs font-semibold text-white">
-                <span>Explorer les écoles</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="ui-card ui-card-hover shadcn-trio-card" onClick={() => handleNav("mentor")}>
-            <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80"
-              alt="Mentorat étudiant"
-              className="shadcn-card-img-bg"
-            />
-            <div className="shadcn-card-scrim" />
-            <div className="shadcn-card-overlay-content">
-              <span className="ui-badge ui-badge-secondary w-fit mb-2">Accompagnement</span>
-              <h3 className="text-xl font-bold text-white mb-1">Mentorat Visio 1-on-1</h3>
-              <p className="text-sm text-zinc-300 mb-3">
-                Échangez directement avec des étudiants aînés ayant réussi les concours que vous visez.
-              </p>
-              <div className="flex items-center gap-1 text-xs font-semibold text-white">
-                <span>Réserver un créneau</span>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <section className="shadcn-section" id="bilan">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Évaluation Psychométrique Holland</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Bilan RIASEC : Cartographiez Votre Vocation
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Chaque profil est unique. Sélectionnez une dimension pour découvrir les vocations,
-            les campus et les métiers d'excellence associés.
-          </p>
-        </div>
-
-        <div className="shadcn-tabs-wrapper">
-          <div className="ui-tabs-list">
-            {RIASEC_DIMENSIONS.map((dim) => (
-              <button
-                key={dim.key}
-                className={`ui-tabs-trigger ${activeRiasec === dim.key ? "active" : ""}`}
-                onClick={() => setActiveRiasec(dim.key)}
-              >
-                <span className="font-bold mr-1.5">{dim.key}</span>
-                <span>{dim.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {currentRiasec && (
-          <div className="ui-card shadcn-riasec-card">
-            <div className="shadcn-riasec-grid">
-
-              <div className="shadcn-riasec-photo-wrap">
-                <img
-                  src={currentRiasec.image}
-                  alt={currentRiasec.name}
-                  className="shadcn-riasec-photo"
-                  loading="lazy"
-                />
-                <div className="shadcn-riasec-photo-overlay" />
-                <div className="shadcn-riasec-photo-chip">
-                  <span className="text-xl mr-2">{currentRiasec.icon}</span>
-                  <div>
-                    <strong className="block text-sm font-semibold text-white">Dimension {currentRiasec.name}</strong>
-                    <span className="text-xs text-emerald-400 font-medium">{currentRiasec.score}% d'affinité naturelle</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="shadcn-riasec-info-wrap">
-                <div className="flex items-center justify-between pb-4 border-b border-border">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="ui-badge ui-badge-secondary font-bold text-sm px-2 py-0.5">{currentRiasec.key}</span>
-                      <h3 className="text-2xl font-bold tracking-tight text-foreground">{currentRiasec.name}</h3>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{currentRiasec.subtitle}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-muted-foreground uppercase font-semibold">Affinité</span>
-                    <span className="block text-2xl font-bold tracking-tight text-foreground leading-none">{currentRiasec.score}%</span>
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {currentRiasec.desc}
-                </p>
-
-                <div className="p-3.5 rounded-lg bg-muted/60 border border-border text-xs text-foreground italic">
-                  <span className="block font-semibold not-italic text-muted-foreground mb-1">Exemple de question posée par l'IA :</span>
-                  {currentRiasec.sampleQuestion}
-                </div>
-
-                <div className="space-y-3 pt-1">
-                  <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
-                      Points forts & Tempérament
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {currentRiasec.strengths.map((st, i) => (
-                        <span key={i} className="ui-badge ui-badge-outline text-xs">✓ {st}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
-                      Grandes Écoles phares au Maroc
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {currentRiasec.schools.map((sc, i) => (
-                        <span key={i} className="ui-badge ui-badge-secondary text-xs">🏛️ {sc}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
-                      Métiers & Carrières
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {currentRiasec.careers.map((cr, i) => (
-                        <span key={i} className="ui-badge ui-badge-outline text-xs">💼 {cr}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button className="ui-btn ui-btn-default ui-btn-md w-full sm:w-auto" onClick={() => handleNav("chat")}>
-                    <span>Démarrer l'évaluation RIASEC Complète</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+        {/* MOBILE MENU DRAWER */}
+        {mobileMenuOpen && (
+          <div className="dribbble-mobile-menu">
+            <a href="#about" onClick={() => handleNav("#about")}>Bilan RIASEC</a>
+            <a href="#programmes" onClick={() => handleNav("#programmes")}>Simulateur & Seuils</a>
+            <a href="#ecoles" onClick={() => handleNav("#ecoles")}>Grandes Écoles</a>
+            <a href="#campus" onClick={() => handleNav("#campus")}>Campus & Vie</a>
+            <a href="#laureats" onClick={() => handleNav("#laureats")}>Mentorat</a>
+            <a href="#actualites" onClick={() => handleNav("#actualites")}>Actualités Concours</a>
+            <div className="dribbble-mobile-actions">
+              <button className="dribbble-btn-outline w-full" onClick={() => handleNav("login")}>Se connecter</button>
+              <button className="dribbble-btn-pill-dark w-full" onClick={() => handleNav("admissions")}>Lancer le Bilan RIASEC</button>
             </div>
           </div>
         )}
-      </section>
+      </header>
 
-      <section className="shadcn-section" id="compatibilite">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Analyse par Matière & Affinité</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Compatibilité Pédagogique par Établissement
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Visualisez vos coefficients de réussite et les exigences académiques spécifiques à chaque Grande École.
-          </p>
-        </div>
+      {/* ====================================================================
+          HERO SECTION
+          ==================================================================== */}
+      <section className="dribbble-hero-section" id="hero">
+        <div className="dribbble-container">
 
-        <div className="shadcn-tabs-wrapper mb-6">
-          <div className="ui-tabs-list">
-            <button
-              className={`ui-tabs-trigger ${selectedSchool === "ensam" ? "active" : ""}`}
-              onClick={() => setSelectedSchool("ensam")}
-            >
-              ENSAM Casablanca
-            </button>
-            <button
-              className={`ui-tabs-trigger ${selectedSchool === "um6p" ? "active" : ""}`}
-              onClick={() => setSelectedSchool("um6p")}
-            >
-              UM6P Benguerir
-            </button>
-            <button
-              className={`ui-tabs-trigger ${selectedSchool === "encg" ? "active" : ""}`}
-              onClick={() => setSelectedSchool("encg")}
-            >
-              ENCG Settat
-            </button>
-          </div>
-        </div>
-
-        <div className="ui-card p-6 md:p-8 max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-
-            <div className="relative h-64 rounded-xl overflow-hidden border border-border">
-              <img
-                src={schoolDetails[selectedSchool].image}
-                alt={schoolDetails[selectedSchool].name}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="ui-badge ui-badge-success mb-2">{schoolDetails[selectedSchool].match}</span>
-                <h4 className="text-xl font-bold">{schoolDetails[selectedSchool].name}</h4>
-                <p className="text-xs text-zinc-300 mt-0.5">{schoolDetails[selectedSchool].sub}</p>
-                <span className="text-xs font-semibold text-emerald-400 block mt-1">{schoolDetails[selectedSchool].threshold}</span>
-              </div>
+          {/* TOP ASYMMETRIC ROW */}
+          <div className="dribbble-hero-top-grid">
+            <div className="dribbble-hero-title-col">
+              <h1 className="dribbble-hero-headline">
+                Révélez votre vocation et conquérez les meilleures Grandes Écoles
+              </h1>
             </div>
 
-            <div className="space-y-3.5">
-              <h4 className="text-sm font-bold text-foreground">Exigences & Pondération par Matière</h4>
-              {schoolDetails[selectedSchool].stats.map((s, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex justify-between text-xs font-medium">
-                    <span className="text-foreground">{s.label}</span>
-                    <span className="text-muted-foreground font-bold">{s.value} / 20</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-500"
-                      style={{ width: s.pct }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              <div className="pt-2">
-                <button className="ui-btn ui-btn-outline ui-btn-sm w-full" onClick={() => handleNav("recommendations")}>
-                  Voir toutes les conditions d'accès ➔
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="shadcn-section" id="seuils">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Campus & Données Officielles</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Écoles & Seuils de Présélection
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Consultez les seuils historiques réels (2022-2025) et testez immédiatement votre éligibilité
-            selon la formule officielle (75% National + 25% Régional).
-          </p>
-        </div>
-
-        <div className="ui-card p-6 md:p-8 mb-8 max-w-4xl mx-auto">
-          <div className="flex items-center justify-between flex-wrap gap-4 pb-6 border-b border-border">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="ui-badge ui-badge-secondary font-bold text-xs">Simulateur</span>
-                <h3 className="text-xl font-bold tracking-tight text-foreground">Calculateur de Note de Présélection</h3>
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">Ajustez vos notes prévisionnelles pour évaluer votre éligibilité en temps réel.</p>
-            </div>
-            <div className="text-right bg-muted/60 px-4 py-2 rounded-lg border border-border">
-              <span className="text-xs font-semibold text-muted-foreground uppercase block">Note Pondérée</span>
-              <span className="text-2xl font-extrabold tracking-tight text-foreground">{simulatedScore.toFixed(2)} <small className="text-sm font-normal text-muted-foreground">/ 20</small></span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6 border-b border-border">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm font-medium">
-                <label htmlFor="nat-slider" className="text-foreground">Examen National (75%)</label>
-                <span className="text-foreground font-bold">{Number(nationalGrade).toFixed(2)} / 20</span>
-              </div>
-              <input
-                id="nat-slider"
-                type="range"
-                min="10"
-                max="20"
-                step="0.25"
-                value={nationalGrade}
-                onChange={(e) => setNationalGrade(parseFloat(e.target.value))}
-                className="shadcn-slider"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm font-medium">
-                <label htmlFor="reg-slider" className="text-foreground">Examen Régional (25%)</label>
-                <span className="text-foreground font-bold">{Number(regionalGrade).toFixed(2)} / 20</span>
-              </div>
-              <input
-                id="reg-slider"
-                type="range"
-                min="10"
-                max="20"
-                step="0.25"
-                value={regionalGrade}
-                onChange={(e) => setRegionalGrade(parseFloat(e.target.value))}
-                className="shadcn-slider"
-              />
-            </div>
-          </div>
-
-          <div className="pt-4 text-xs text-muted-foreground leading-relaxed flex items-center gap-2">
-            <span className="text-base">📊</span>
-            <span>
-              Formule officielle : <strong>({Number(nationalGrade).toFixed(2)} × 0.75) + ({Number(regionalGrade).toFixed(2)} × 0.25) = {simulatedScore.toFixed(2)} / 20</strong>.
-              {simulatedScore >= 15.5
-                ? " Profil très compétitif : éligible pour la majorité des Grandes Écoles d'ingénieurs et de commerce !"
-                : simulatedScore >= 13.5
-                ? " Profil solide : accès favorable aux concours communs ENSA, ENCG et universités."
-                : " Accès aux concours décentralisés (FMP, EST, BTS, Licences d'excellence)."}
-            </span>
-          </div>
-        </div>
-
-        <div className="shadcn-tabs-wrapper mb-8">
-          <div className="ui-tabs-list">
-            {[
-              { key: "all", label: "Toutes les Écoles" },
-              { key: "ingenierie", label: "Ingénierie & Tech" },
-              { key: "commerce", label: "Commerce & Gestion" },
-              { key: "medecine", label: "Médecine & Santé" },
-              { key: "excellence", label: "Grandes Écoles d'Élite" }
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                className={`ui-tabs-trigger ${schoolCategory === tab.key ? "active" : ""}`}
-                onClick={() => setSchoolCategory(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="shadcn-cards-grid">
-          {filteredSchools.map((sch) => {
-            const elig = getSchoolEligibility(sch.threshold, simulatedScore);
-            return (
-              <div key={sch.id} className="ui-card ui-card-hover shadcn-school-card">
-
-                <div className="shadcn-school-img-wrap">
-                  <img
-                    src={sch.image}
-                    alt={sch.name}
-                    className="shadcn-school-img"
-                    loading="lazy"
-                  />
-                  <div className="shadcn-school-img-scrim" />
-                  <span className="ui-badge ui-badge-secondary shadcn-badge-top-left">
-                    {sch.badge}
-                  </span>
-                  <span className={`ui-badge shadcn-badge-bottom-right ${
-                    elig.type === "admissible"
-                      ? "ui-badge-success"
-                      : elig.type === "warning"
-                      ? "ui-badge-warning"
-                      : "ui-badge-destructive"
-                  }`}>
-                    {elig.label}
-                  </span>
-                </div>
-
-                <div className="p-5 flex flex-col gap-3.5 flex-1">
-                  <h3 className="font-bold text-base tracking-tight text-foreground leading-snug">
-                    {sch.name}
-                  </h3>
-
-                  <div className="p-3 rounded-lg bg-muted/60 border border-border flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground block">Seuil 2025</span>
-                      <span className="text-base font-extrabold text-foreground">
-                        {typeof sch.threshold === "number" ? `${sch.threshold.toFixed(2)} / 20` : sch.threshold}
-                      </span>
-                    </div>
-                    <div className="text-right text-xs text-muted-foreground">
-                      <span className="block font-medium text-foreground">{sch.thresholdFormula}</span>
-                      <span className="text-[11px]">{sch.details}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-xs space-y-1.5 text-muted-foreground">
-                    <div className="flex justify-between">
-                      <span>Format concours :</span>
-                      <strong className="text-foreground">{sch.exam}</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Cursus :</span>
-                      <strong className="text-foreground">{sch.duration}</strong>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-border flex flex-wrap gap-1 mt-auto">
-                    {sch.filieres.map((f, idx) => (
-                      <span key={idx} className="ui-badge ui-badge-outline text-[11px] font-normal py-0.5">
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex justify-center mt-6">
-          <button className="ui-btn ui-btn-outline ui-btn-md" onClick={() => handleNav("recommendations")}>
-            <span>Consulter le Référentiel Complet des Écoles Partenaires</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-      <section className="shadcn-section" id="matching">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="ui-card p-6 flex flex-col gap-3">
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-foreground">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-lg text-foreground">Bilan IA Personnalisé</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Un entretien conversationnel fluide de 5 minutes avec notre conseiller IA
-              pour cerner vos forces académiques et vos centres d'intérêt profonds.
-            </p>
-          </div>
-
-          <div className="ui-card p-6 flex flex-col gap-3">
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-foreground">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-lg text-foreground">Historique des Seuils</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Accédez aux seuils d'admissibilité officiels (2020-2025) pour plus de 120
-              écoles publiques et privées au Maroc (CPGE, ENSAM, ENCG, FMP, UM6P).
-            </p>
-          </div>
-
-          <div className="ui-card p-6 flex flex-col gap-3">
-            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center text-foreground">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <h3 className="font-bold text-lg text-foreground">Mentorat Visio 1-on-1</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Prenez rendez-vous directement avec des étudiants aînés actuellement en cursus
-              dans l'école de vos rêves pour des conseils authentiques sans filtre.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="shadcn-section" id="campus-life">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Immersion & Vie de Campus</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Projetez-vous Dans Votre Futur Quotidien
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Les Grandes Écoles au Maroc allient infrastructures de niveau international,
-            innovation technologique et réseau d'alumni mondial.
-          </p>
-        </div>
-
-        <div className="shadcn-gallery-grid">
-          <div className="ui-card ui-card-hover shadcn-gallery-card card-span-2">
-            <img
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80"
-              alt="Campus UM6P Benguerir"
-              className="shadcn-gallery-img"
-              loading="lazy"
-            />
-            <div className="shadcn-gallery-scrim" />
-            <div className="shadcn-gallery-text">
-              <span className="ui-badge ui-badge-secondary mb-1.5 w-fit">Infrastructures d'Élite</span>
-              <h3 className="text-xl font-bold text-white mb-1">Campus & Laboratoires R&D Futuristes</h3>
-              <p className="text-xs text-zinc-300">Des équipements pensés pour repousser les frontières de l'intelligence artificielle et des énergies propres.</p>
-            </div>
-          </div>
-
-          <div className="ui-card ui-card-hover shadcn-gallery-card">
-            <img
-              src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80"
-              alt="Hackathons et robotique"
-              className="shadcn-gallery-img"
-              loading="lazy"
-            />
-            <div className="shadcn-gallery-scrim" />
-            <div className="shadcn-gallery-text">
-              <span className="ui-badge ui-badge-secondary mb-1.5 w-fit">Innovation & Projets</span>
-              <h3 className="text-lg font-bold text-white mb-1">Hackathons & Robotique</h3>
-              <p className="text-xs text-zinc-300">Concevez des prototypes concrets dès les premières années de formation.</p>
-            </div>
-          </div>
-
-          <div className="ui-card ui-card-hover shadcn-gallery-card">
-            <img
-              src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"
-              alt="Simulation clinique"
-              className="shadcn-gallery-img"
-              loading="lazy"
-            />
-            <div className="shadcn-gallery-scrim" />
-            <div className="shadcn-gallery-text">
-              <span className="ui-badge ui-badge-secondary mb-1.5 w-fit">Santé & Médecine</span>
-              <h3 className="text-lg font-bold text-white mb-1">Simulation Clinique & CHU</h3>
-              <p className="text-xs text-zinc-300">Formez-vous aux gestes médicaux au sein de centres hospitaliers modernes.</p>
-            </div>
-          </div>
-
-          <div className="ui-card ui-card-hover shadcn-gallery-card card-span-2">
-            <img
-              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80"
-              alt="Diplôme et carrière"
-              className="shadcn-gallery-img"
-              loading="lazy"
-            />
-            <div className="shadcn-gallery-scrim" />
-            <div className="shadcn-gallery-text">
-              <span className="ui-badge ui-badge-secondary mb-1.5 w-fit">Carrière & Réussite</span>
-              <h3 className="text-xl font-bold text-white mb-1">Diplôme d'État & Rayonnement International</h3>
-              <p className="text-xs text-zinc-300">Accédez aux plus grandes entreprises mondiales ou créez votre propre startup à fort impact.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="shadcn-section" id="tableau-de-bord">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Cockpit Étudiant Unifié</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Pilotez Vos Candidatures en Temps Réel
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Centralisez vos vœux, vos prédictions de concours et vos sessions de mentorat
-            sur une interface sobre et structurée.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="ui-card p-5 space-y-2">
-            <div className="text-xl">🎯</div>
-            <h4 className="font-bold text-sm text-foreground">Matching & IA</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">Calcul continu de votre taux d'affinité avec chaque filière et estimation des chances d'admission.</p>
-          </div>
-          <div className="ui-card p-5 space-y-2">
-            <div className="text-xl">📅</div>
-            <h4 className="font-bold text-sm text-foreground">Alertes Concours</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">Ne manquez aucun calendrier officiel (Tawjihi, ENSA, FMP, UM6P) grâce aux rappels intelligents.</p>
-          </div>
-          <div className="ui-card p-5 space-y-2">
-            <div className="text-xl">📈</div>
-            <h4 className="font-bold text-sm text-foreground">Objectif Notes Bac</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">Identifiez la note minimale à décrocher au Bac National pour sécuriser votre école favorite.</p>
-          </div>
-          <div className="ui-card p-5 space-y-2">
-            <div className="text-xl">👥</div>
-            <h4 className="font-bold text-sm text-foreground">Mentorat Visio</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">Réservez un échange direct avec des étudiants aînés actuellement en cursus.</p>
-          </div>
-        </div>
-
-        <div className="ui-card p-6 md:p-8">
-          <div className="flex justify-between items-center pb-6 border-b border-border flex-wrap gap-4 mb-6">
-            <div className="ui-tabs-list">
-              <button
-                className={`ui-tabs-trigger ${activeCockpitTab === "candidatures" ? "active" : ""}`}
-                onClick={() => setActiveCockpitTab("candidatures")}
-              >
-                Suivi des Vœux (3 actifs)
-              </button>
-              <button
-                className={`ui-tabs-trigger ${activeCockpitTab === "prediction" ? "active" : ""}`}
-                onClick={() => setActiveCockpitTab("prediction")}
-              >
-                Analyse Prédictive IA
-              </button>
-              <button
-                className={`ui-tabs-trigger ${activeCockpitTab === "mentorat" ? "active" : ""}`}
-                onClick={() => setActiveCockpitTab("mentorat")}
-              >
-                Mentorat Connecté
-              </button>
-            </div>
-            <button className="ui-btn ui-btn-outline ui-btn-sm" onClick={() => handleNav("dashboard")}>
-              <span>Ouvrir Mon Tableau de bord</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </button>
-          </div>
-
-          {activeCockpitTab === "candidatures" && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {[
-                {
-                  rank: "Vœu 1",
-                  name: "ENSAM Casablanca",
-                  filiere: "Génie Mécanique & Systèmes Automatisés",
-                  match: "96.8%",
-                  status: "Dossier Validé",
-                  statusType: "ui-badge-success",
-                  date: "Concours : 22 Juil. 2026",
-                  image: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80"
-                },
-                {
-                  rank: "Vœu 2",
-                  name: "ENSA Marrakech",
-                  filiere: "Génie Informatique & Cybersécurité",
-                  match: "94.2%",
-                  status: "Convoqué Écrit",
-                  statusType: "ui-badge-secondary",
-                  date: "Concours : 25 Juil. 2026",
-                  image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80"
-                },
-                {
-                  rank: "Vœu 3",
-                  name: "UM6P Benguerir",
-                  filiere: "School of Computer Science",
-                  match: "91.5%",
-                  status: "En Examen",
-                  statusType: "ui-badge-warning",
-                  date: "Oral : 03 Août 2026",
-                  image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=600&q=80"
-                }
-              ].map((v, i) => (
-                <div key={i} className="ui-card overflow-hidden flex flex-col">
-                  <div className="relative h-36 w-full">
-                    <img src={v.image} alt={v.name} className="h-full w-full object-cover" />
-                    <span className="ui-badge ui-badge-secondary absolute top-2 left-2 text-[11px]">
-                      {v.rank}
-                    </span>
-                    <span className="ui-badge ui-badge-success absolute bottom-2 right-2 text-[11px] font-bold">
-                      {v.match}
-                    </span>
-                  </div>
-                  <div className="p-4 flex flex-col gap-2 flex-1">
-                    <strong className="text-sm font-bold text-foreground">{v.name}</strong>
-                    <span className="text-xs text-muted-foreground">{v.filiere}</span>
-                    <div className="pt-3 border-t border-border mt-auto flex items-center justify-between">
-                      <span className={`ui-badge text-[11px] ${v.statusType}`}>{v.status}</span>
-                      <span className="text-[11px] text-muted-foreground font-medium">{v.date}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeCockpitTab === "prediction" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <div className="p-6 rounded-xl bg-muted/50 border border-border">
-                <span className="text-xs font-semibold uppercase text-muted-foreground block mb-2">Indice de Confiance Global</span>
-                <span className="text-5xl font-extrabold tracking-tight text-emerald-500 block mb-3">94.6%</span>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Votre profil académique vous positionne au-dessus des seuils de présélection dans <strong>54 des 68 écoles</strong> répertoriées.
-                </p>
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-bold text-sm text-foreground">Leviers d'optimisation préconisés :</h4>
-                <div className="p-3 rounded-lg border border-border flex justify-between text-xs">
-                  <span>Mathématiques (National)</span>
-                  <strong className="text-emerald-500">+0.75 pt au score global / point gagné</strong>
-                </div>
-                <div className="p-3 rounded-lg border border-border flex justify-between text-xs">
-                  <span>Physique-Chimie (National)</span>
-                  <strong className="text-emerald-500">+0.50 pt au seuil ENSAM / ENSA</strong>
-                </div>
-                <p className="text-xs text-muted-foreground italic p-2.5 rounded bg-muted/40 border border-border">
-                  « Focus conseillé : consolider les équations différentielles et l'analyse complexe pour sécuriser la mention Très Bien. »
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeCockpitTab === "mentorat" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <div className="relative h-60 rounded-xl overflow-hidden border border-border">
-                <img
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80"
-                  alt="Session de mentorat"
-                  className="h-full w-full object-cover"
-                />
-                <span className="ui-badge ui-badge-secondary absolute top-3 left-3 text-xs">
-                  Visio 1-on-1 Interactive
-                </span>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                    alt="Amine El Fassi"
-                    className="w-14 h-14 rounded-full object-cover border-2 border-border"
-                  />
-                  <div>
-                    <h4 className="text-base font-bold text-foreground">Amine El Fassi</h4>
-                    <p className="text-xs text-muted-foreground">4e Année ENSAM Casablanca • Majeur Concours</p>
-                    <span className="ui-badge ui-badge-warning text-[10px] mt-1">★ 4.98 (24 sessions)</span>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  « Disponible pour débriefer les épreuves types de physique, partager mes fiches de révision et vous expliquer la réalité des études à l'ENSAM. »
-                </p>
-                <div className="text-xs font-semibold text-foreground">
-                  Prochain créneau : Jeudi 18h00 (Visio 45 min)
-                </div>
-                <button className="ui-btn ui-btn-default ui-btn-sm" onClick={() => handleNav("mentor")}>
-                  Réserver ma session avec Amine
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-8 pt-6 border-t border-border flex justify-between items-center flex-wrap gap-4">
-            <div>
-              <h4 className="font-bold text-base text-foreground">Prêt à Prendre le Contrôle de Votre Orientation ?</h4>
-              <p className="text-xs text-muted-foreground mt-0.5">Créez votre profil en 2 minutes pour ouvrir votre cockpit complet.</p>
-            </div>
-            <div className="flex gap-2">
-              <button className="ui-btn ui-btn-default ui-btn-sm" onClick={() => handleNav("dashboard")}>
-                Accéder au Cockpit ↗
-              </button>
-              <button className="ui-btn ui-btn-outline ui-btn-sm" onClick={() => handleNav("chat")}>
-                Lancer le Bilan RIASEC
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="shadcn-section" id="faq">
-        <div className="shadcn-section-header">
-          <div className="ui-badge ui-badge-secondary mb-3">
-            <span>Questions Fréquentes</span>
-          </div>
-          <h2 className="shadcn-section-title">
-            Tout Ce Que Vous Devez Savoir
-          </h2>
-          <p className="shadcn-section-subtitle">
-            Des réponses claires pour vous accompagner sereinement dans vos choix d'orientation post-Bac au Maroc.
-          </p>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-3">
-          {FAQ_ITEMS.map((item, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <div key={idx} className="ui-card overflow-hidden transition-all">
+            <div className="dribbble-hero-desc-col">
+              <p className="dribbble-hero-paragraph">
+                Notre plateforme d'orientation intelligente accompagne les lycéens et bacheliers vers la réussite de leur projet post-bac. Bilan psychométrique RIASEC guidé par l'IA, anticipation des seuils ministériels et mentorat avec des lauréats.
+              </p>
+              <div className="dribbble-hero-btn-wrap">
                 <button
-                  className="w-full p-4 md:p-5 text-left flex justify-between items-center gap-4 bg-transparent border-0 cursor-pointer font-sans"
-                  onClick={() => toggleFaq(idx)}
-                  aria-expanded={isOpen}
+                  className="dribbble-btn-pill-dark hero-btn"
+                  onClick={() => setShowAdmissionsModal(true)}
                 >
-                  <span className="font-bold text-sm md:text-base text-foreground tracking-tight">
-                    {item.question}
-                  </span>
-                  <span className="text-muted-foreground text-lg font-light shrink-0 transition-transform duration-200" style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0)" }}>
-                    ↓
-                  </span>
+                  <span>Consulter les Seuils 2026</span>
+                  <ArrowUpRightIcon />
                 </button>
-                {isOpen && (
-                  <div className="px-4 pb-5 md:px-5 md:pb-5 text-xs md:text-sm text-muted-foreground leading-relaxed border-t border-border pt-3">
-                    {item.answer}
+              </div>
+            </div>
+          </div>
+
+          {/* LARGE HERO ARCHITECTURAL PHOTO */}
+          <div className="dribbble-hero-banner-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1800&q=85"
+              alt="Campus Universitaire d'Excellence au Maroc"
+              className="dribbble-hero-banner-img"
+              loading="eager"
+            />
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          ABOUT SECTION WITH SIGNATURE BLUE PIXEL / MOSAIC PATTERN
+          ==================================================================== */}
+      <section className="dribbble-about-section" id="about">
+
+        {/* GEOMETRIC MOSAIC / PIXEL BLOCKS (App Accent Blue) */}
+        <div className="mosaic-accent-grid" aria-hidden="true">
+          {/* Top Right Cluster */}
+          <div className="mosaic-box mb-tr-1" />
+          <div className="mosaic-box mb-tr-2" />
+          <div className="mosaic-box mb-tr-3" />
+          <div className="mosaic-box mb-tr-4" />
+          <div className="mosaic-box mb-tr-5" />
+          <div className="mosaic-box mb-tr-6" />
+          <div className="mosaic-box mb-tr-7" />
+
+          {/* Left Mid/Lower Cluster */}
+          <div className="mosaic-box mb-ml-1" />
+          <div className="mosaic-box mb-ml-2" />
+          <div className="mosaic-box mb-ml-3" />
+          <div className="mosaic-box mb-ml-4" />
+          <div className="mosaic-box mb-ml-5" />
+          <div className="mosaic-box mb-ml-6" />
+          <div className="mosaic-box mb-ml-7" />
+          <div className="mosaic-box mb-ml-8" />
+        </div>
+
+        <div className="dribbble-container about-inner-container">
+
+          <div className="about-label-row">
+            <span className="dribbble-section-tag">NOTRE MISSION</span>
+          </div>
+
+          {/* MANIFESTO STATEMENT WITH EMPHASIZED KEYWORDS */}
+          <h2 className="about-manifesto-text">
+            Fondée pour démocratiser l'excellence, <span className="highlight-text">OrientCompanion</span> est la plateforme dédiée à <span className="highlight-text">l'orientation post-bac</span>, combinant le <span className="highlight-text">bilan psychométrique RIASEC</span>, la simulation des concours et le <span className="highlight-text">mentorat personnalisé</span> pour guider chaque <span className="highlight-text">élève</span> vers son plein potentiel.
+          </h2>
+
+          {/* 4 STATS CARDS (CARD 1 IS SOLID APP BLUE) */}
+          <div className="about-stats-grid">
+
+            {/* Solid Accent Card */}
+            <div className="stat-card-solid-blue">
+              <h3 className="stat-card-title">+4 500<br />Bacheliers Orientés</h3>
+              <p className="stat-card-desc">Accompagnement certifié vers l'excellence</p>
+            </div>
+
+            {/* Standard Stat Card 2 */}
+            <div className="stat-card-standard">
+              <h3 className="stat-card-title">+120 Écoles<br />Référencées</h3>
+              <p className="stat-card-desc">ENSAM, UM6P, ENCG, FMP, ENSA, CPGE...</p>
+            </div>
+
+            {/* Standard Stat Card 3 */}
+            <div className="stat-card-standard">
+              <h3 className="stat-card-title">98.4% Taux<br />de Satisfaction</h3>
+              <p className="stat-card-desc">Évaluations lycéens et conseillers certifiés</p>
+            </div>
+
+            {/* Standard Stat Card 4 */}
+            <div className="stat-card-standard">
+              <h3 className="stat-card-title">+450 Lauréats<br />Mentors Actifs</h3>
+              <p className="stat-card-desc">Étudiants aînés mobilisés en visioconférence</p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          UNIVERSITY ADMISSIONS / PARTNER LOGOS GRID
+          ==================================================================== */}
+      <section className="dribbble-partners-section" id="ecoles">
+        <div className="dribbble-container">
+
+          <div className="partners-title-wrap">
+            <span className="partners-subheading">NOS ÉLÈVES SONT ADMIS DANS LES PLUS GRANDES ÉCOLES</span>
+          </div>
+
+          <div className="partners-logo-grid">
+            {PARTNER_LOGOS.map((item, idx) => (
+              <div key={idx} className={`partner-logo-cell ${item.isTextBadge ? "partner-cell-badge" : ""}`}>
+                {item.isTextBadge ? (
+                  <span className="partner-more-text">{item.name}</span>
+                ) : (
+                  <div className="partner-logo-inner">
+                    <span className="partner-logo-icon">{item.icon}</span>
+                    <span className="partner-logo-name">{item.name}</span>
                   </div>
                 )}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
         </div>
       </section>
 
-      <section className="shadcn-section pt-0">
-        <div className="shadcn-cta-card">
-          <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=85"
-            alt="Orientation réussie"
-            className="shadcn-cta-bg"
-          />
-          <div className="shadcn-cta-scrim" />
-          <div className="shadcn-cta-content">
-            <span className="ui-badge ui-badge-secondary mb-3">Rejoignez l'Excellence</span>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-3">
-              Prêt à Décrocher l'École de Vos Rêves ?
+      {/* ====================================================================
+          ACADEMIC PROGRAM EXCELLENCE (Piliers d'Accompagnement)
+          ==================================================================== */}
+      <section className="dribbble-academic-section" id="programmes">
+        <div className="dribbble-container">
+
+          {/* HEADER ROW */}
+          <div className="academic-header-grid">
+            <h2 className="academic-headline">
+              Piliers Fondamentaux<br />de Votre Réussite
             </h2>
-            <p className="text-sm md:text-base text-zinc-300 max-w-xl mx-auto mb-6">
-              Rejoignez des milliers de lycéens et étudiants qui construisent leur avenir académique avec Orient Companion.
+            <p className="academic-subtext">
+              Un écosystème méthodologique complet conçu pour transformer le doute en stratégie d'admission gagnante dans les filières d'élite.
             </p>
-            <div className="flex items-center gap-3 justify-center flex-wrap">
-              <button className="ui-btn ui-btn-default ui-btn-lg" onClick={() => handleNav("chat")}>
-                <span>Lancer Mon Bilan RIASEC</span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
-              <button className="ui-btn ui-btn-outline ui-btn-lg bg-zinc-900/60 border-zinc-700 text-white hover:bg-zinc-800" onClick={() => handleNav("register")}>
-                Créer un Compte Étudiant
-              </button>
-            </div>
           </div>
+
+          {/* 4 CARDS ROW */}
+          <div className="academic-cards-grid">
+            {ACADEMIC_PROGRAMS.map((prog, idx) => (
+              <div key={idx} className="academic-program-card">
+                <div className="academic-card-icon">
+                  {prog.icon}
+                </div>
+                <h3 className="academic-card-title">{prog.title}</h3>
+                <p className="academic-card-desc">{prog.desc}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
-      <footer className="shadcn-footer">
-        <div className="shadcn-container">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-border text-sm">
+      {/* ====================================================================
+          SCHOOL FACILITIES (Campus & Infrastructures d'Élite)
+          ==================================================================== */}
+      <section className="dribbble-facilities-section" id="campus">
+        <div className="dribbble-container">
 
-            <div className="space-y-3 md:col-span-1">
-              <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleNav("landing")}>
-                <div className="shadcn-brand-icon">
-                  <BrandLogoIcon />
+          <div className="facilities-header">
+            <h2 className="facilities-headline">
+              Vie de Campus &<br />Infrastructures d'Élite
+            </h2>
+          </div>
+
+          {/* BENTO GRID OF HIGH QUALITY ARCHITECTURE & AMENITIES */}
+          <div className="facilities-bento-grid">
+
+            <div className="facility-card science-lab">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[0].image}
+                  alt={FACILITIES_DATA[0].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[0].title}</span>
+            </div>
+
+            <div className="facility-card library">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[1].image}
+                  alt={FACILITIES_DATA[1].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[1].title}</span>
+            </div>
+
+            <div className="facility-card sports-area">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[2].image}
+                  alt={FACILITIES_DATA[2].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[2].title}</span>
+            </div>
+
+            <div className="facility-card student-corner">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[3].image}
+                  alt={FACILITIES_DATA[3].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[3].title}</span>
+            </div>
+
+            <div className="facility-card computer-lab">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[4].image}
+                  alt={FACILITIES_DATA[4].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[4].title}</span>
+            </div>
+
+            <div className="facility-card campus-park">
+              <div className="facility-img-wrap">
+                <img
+                  src={FACILITIES_DATA[5].image}
+                  alt={FACILITIES_DATA[5].title}
+                  className="facility-photo"
+                  loading="lazy"
+                />
+              </div>
+              <span className="facility-caption">{FACILITIES_DATA[5].title}</span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          OUR PROUD STUDENTS' ACHIEVEMENTS (Nos Lauréats & Fiertés)
+          ==================================================================== */}
+      <section className="dribbble-achievements-section" id="laureats">
+        <div className="dribbble-container">
+
+          <div className="achievements-header">
+            <h2 className="achievements-headline">
+              Les Réussites Remarquables de Nos Élèves
+            </h2>
+          </div>
+
+          {/* 5 AWARDS PORTRAIT CARDS */}
+          <div className="achievements-cards-grid">
+            {ACHIEVEMENTS_DATA.map((item, idx) => (
+              <div key={idx} className="achievement-card">
+                <div className="achievement-photo-frame">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="achievement-photo"
+                    loading="lazy"
+                  />
+                  {item.badgeNumber && (
+                    <div className="achievement-timer-overlay">
+                      {item.badgeNumber}
+                    </div>
+                  )}
                 </div>
-                <span className="font-bold text-base tracking-tight text-foreground">Orient Companion</span>
+                <div className="achievement-info">
+                  <h4 className="achievement-award-title">{item.award}</h4>
+                  <p className="achievement-student-meta">{item.name}</p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Plateforme marocaine d'orientation augmentée par l'IA. Bilan RIASEC, analyse des seuils officiels et mentorat d'excellence.
+            ))}
+          </div>
+
+          <div className="achievements-btn-wrap">
+            <button
+              className="dribbble-btn-outline-pill"
+              onClick={() => setShowAchievementsModal(true)}
+            >
+              Découvrir le Palmarès des Admis
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          GRADUATE PERSPECTIVES (Retours d'Expérience)
+          ==================================================================== */}
+      <section className="dribbble-perspectives-section">
+        <div className="dribbble-container">
+
+          <div className="perspectives-header-grid">
+            <h2 className="perspectives-headline">
+              Perspectives des<br />Lauréats & Mentors
+            </h2>
+            <div className="perspectives-right-col">
+              <p className="perspectives-subtext">
+                Découvrez comment nos mentors et anciens bacheliers ont concrétisé leurs ambitions dans les meilleures écoles.
               </p>
+              <button
+                className="dribbble-btn-outline-pill"
+                onClick={() => handleNav("mentorship")}
+              >
+                Réserver une Séance de Mentorat
+              </button>
+            </div>
+          </div>
+
+          {/* 3 TESTIMONIAL CARDS */}
+          <div className="perspectives-cards-grid">
+            {TESTIMONIALS_DATA.map((item, idx) => (
+              <div key={idx} className="perspective-card">
+                <div className="perspective-card-top">
+                  <div className="perspective-author">
+                    <img
+                      src={item.avatar}
+                      alt={item.name}
+                      className="perspective-avatar"
+                      loading="lazy"
+                    />
+                    <div className="perspective-author-info">
+                      <h4 className="perspective-author-name">{item.name}</h4>
+                      <span className="perspective-author-cohort">{item.cohort}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="perspective-body">
+                  <p className="perspective-text">{item.text}</p>
+                  <div className="perspective-quote-icon">
+                    <QuoteWatermarkIcon />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* CAROUSEL DOT INDICATORS */}
+          <div className="perspectives-carousel-dots">
+            {[0, 1, 2].map((dot) => (
+              <button
+                key={dot}
+                className={`carousel-dot ${activeTestimonialDot === dot ? "active" : ""}`}
+                onClick={() => setActiveTestimonialDot(dot)}
+                aria-label={`Témoignage ${dot + 1}`}
+              />
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          LATEST NEWS (Actualités Concours & Formations)
+          ==================================================================== */}
+      <section className="dribbble-news-section" id="actualites">
+        <div className="dribbble-container">
+
+          <div className="news-header-row">
+            <h2 className="news-headline">Actualités Concours & Formations</h2>
+            <button
+              className="dribbble-link-action"
+              onClick={() => handleNav("recommendations")}
+            >
+              <span>Voir Toutes les Actualités</span>
+            </button>
+          </div>
+
+          {/* TOP 2 FEATURED NEWS CARDS */}
+          <div className="news-featured-grid">
+            {/* Featured Card 1: Full-height image with dark text overlay */}
+            <div className="news-card-featured-overlay">
+              <img
+                src={NEWS_FEATURED[0].image}
+                alt={NEWS_FEATURED[0].title}
+                className="news-featured-photo"
+                loading="lazy"
+              />
+              <div className="news-featured-gradient-overlay" />
+              <div className="news-featured-overlay-content">
+                <span className="news-date-badge date-light">{NEWS_FEATURED[0].date}</span>
+                <h3 className="news-featured-title text-light">{NEWS_FEATURED[0].title}</h3>
+                <p className="news-featured-excerpt text-light-dim">{NEWS_FEATURED[0].excerpt}</p>
+              </div>
             </div>
 
-            <div className="space-y-2 text-xs">
-              <span className="font-bold uppercase tracking-wider text-foreground block mb-2">Orientation</span>
-              <a href="#bilan" className="block text-muted-foreground hover:text-foreground transition-colors">Bilan RIASEC Holland</a>
-              <a href="#seuils" className="block text-muted-foreground hover:text-foreground transition-colors">Seuils Officiels 2025</a>
-              <a href="#compatibilite" className="block text-muted-foreground hover:text-foreground transition-colors">Compatibilité par École</a>
-              <a href="#campus-life" className="block text-muted-foreground hover:text-foreground transition-colors">Vie de Campus</a>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <span className="font-bold uppercase tracking-wider text-foreground block mb-2">Services</span>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("chat")}>Conseiller IA 24/7</button>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("recommendations")}>Grandes Écoles Partenaires</button>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("mentor")}>Mentorat Visio 1-on-1</button>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("dashboard")}>Cockpit Candidat</button>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <span className="font-bold uppercase tracking-wider text-foreground block mb-2">Espace Candidat</span>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("login")}>Connexion Compte</button>
-              <button className="block text-left text-muted-foreground hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer text-xs" onClick={() => handleNav("register")}>Inscription Gratuite</button>
-              <div className="pt-2">
-                <button className="ui-btn ui-btn-outline ui-btn-sm text-xs gap-1.5" onClick={toggleTheme}>
-                  <span>{theme === "light" ? "Mode Sombre 🌙" : "Mode Clair ☀️"}</span>
-                </button>
+            {/* Featured Card 2: Image on top, text underneath */}
+            <div className="news-card-featured-standard">
+              <div className="news-featured-img-top-wrap">
+                <img
+                  src={NEWS_FEATURED[1].image}
+                  alt={NEWS_FEATURED[1].title}
+                  className="news-featured-photo"
+                  loading="lazy"
+                />
+              </div>
+              <div className="news-featured-standard-content">
+                <span className="news-date-badge">{NEWS_FEATURED[1].date}</span>
+                <h3 className="news-featured-title text-dark">{NEWS_FEATURED[1].title}</h3>
+                <p className="news-featured-excerpt text-dim">{NEWS_FEATURED[1].excerpt}</p>
               </div>
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
-            <span>© 2026 Orient Companion. Tous droits réservés.</span>
-            <div className="flex gap-4 text-xs">
-              <a href="#seuils" className="hover:text-foreground transition-colors">Données Ministérielles</a>
-              <a href="#faq" className="hover:text-foreground transition-colors">FAQ & Support</a>
-              <a href="#apercu" className="hover:text-foreground transition-colors">Haut de page ↑</a>
+          {/* BOTTOM 3 NEWS CARDS */}
+          <div className="news-recent-grid">
+            {NEWS_RECENT.map((item, idx) => (
+              <div key={idx} className="news-card-recent">
+                <div className="news-recent-img-wrap">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="news-recent-photo"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="news-recent-content">
+                  <span className="news-date-badge dark-mode-date">{item.date}</span>
+                  <h4 className="news-recent-title">{item.title}</h4>
+                  <p className="news-recent-excerpt">{item.excerpt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          FOOTER (Matching Dribbble Layout & App Colors)
+          ==================================================================== */}
+      <footer className="dribbble-footer" id="contact">
+        <div className="dribbble-container">
+
+          <div className="dribbble-footer-main-grid">
+
+            {/* COLUMN 1: MISSION STATEMENT & SOCIAL ICONS */}
+            <div className="footer-col-mission">
+              <h3 className="footer-mission-text">
+                OrientCompanion s'engage à accompagner chaque bachelier vers l'épanouissement académique, le discernement vocationnel et la réussite des concours d'excellence.
+              </h3>
+              <div className="footer-social-row">
+                <a href="#linkedin" aria-label="LinkedIn" className="footer-social-circle"><LinkedInIcon /></a>
+                <a href="#instagram" aria-label="Instagram" className="footer-social-circle"><InstagramIcon /></a>
+                <a href="#facebook" aria-label="Facebook" className="footer-social-circle"><FacebookIcon /></a>
+                <a href="#twitter" aria-label="X" className="footer-social-circle"><XTwitterIcon /></a>
+                <a href="#youtube" aria-label="YouTube" className="footer-social-circle"><YouTubeIcon /></a>
+              </div>
+            </div>
+
+            {/* COLUMN 2: NAVIGATION LINKS */}
+            <div className="footer-col-nav">
+              <span className="footer-col-heading">NAVIGATION</span>
+              <ul className="footer-links-list">
+                <li><a href="#about" onClick={(e) => { e.preventDefault(); handleNav("#about"); }}>Bilan RIASEC</a></li>
+                <li><a href="#programmes" onClick={(e) => { e.preventDefault(); handleNav("#programmes"); }}>Simulateur de Seuils</a></li>
+                <li><a href="#ecoles" onClick={(e) => { e.preventDefault(); handleNav("#ecoles"); }}>Grandes Écoles & Cursus</a></li>
+                <li><a href="#campus" onClick={(e) => { e.preventDefault(); handleNav("#campus"); }}>Campus & Infrastructures</a></li>
+                <li><a href="#laureats" onClick={(e) => { e.preventDefault(); handleNav("#laureats"); }}>Mentorat avec des Lauréats</a></li>
+              </ul>
+            </div>
+
+            {/* COLUMN 3: CONTACT INFORMATION */}
+            <div className="footer-col-contact">
+              <span className="footer-col-heading">CONTACT</span>
+              <div className="footer-contact-details">
+                <div className="contact-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <a href="mailto:contact@orientcompanion.ma">contact@orientcompanion.ma</a>
+                </div>
+                <div className="contact-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <span>+212 5 22 98 44 00</span>
+                </div>
+                <div className="contact-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span>14 Boulevard de l'Avenir, Quartier Anfa, Casablanca, Maroc</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* BOTTOM COPYRIGHT & LEGAL BAR */}
+          <div className="dribbble-footer-bottom-bar">
+            <span className="footer-copy-text">© 2026 OrientCompanion. Tous droits réservés.</span>
+            <div className="footer-legal-links">
+              <a href="#privacy">Politique de Confidentialité</a>
+              <a href="#terms">Conditions d'Utilisation</a>
             </div>
           </div>
+
         </div>
       </footer>
+
+      {/* ====================================================================
+          MODALS / POPUPS (Admissions & Achievements Interactive Views)
+          ==================================================================== */}
+      {showAdmissionsModal && (
+        <div className="dribbble-modal-backdrop" onClick={() => setShowAdmissionsModal(false)}>
+          <div className="dribbble-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button className="dribbble-modal-close" onClick={() => setShowAdmissionsModal(false)}>✕</button>
+            <span className="dribbble-section-tag">POST-BAC MAROC 2026 - 2027</span>
+            <h3 className="modal-title">Simulateur & Seuils d'Admission</h3>
+            <p className="modal-desc">
+              Anticipez vos chances d'admissibilité dans les filières d'excellence (ENSAM, UM6P, ENCG, FMP, ENSA, CPGE) grâce à la formule officielle et au bilan psychométrique.
+            </p>
+            <div className="modal-steps-list">
+              <div className="modal-step">
+                <span className="step-num">1</span>
+                <div>
+                  <strong>Bilan Psychométrique RIASEC (5 min)</strong>
+                  <p>Déterminez vos 3 dimensions dominantes Holland avec notre conseiller IA conversationnel.</p>
+                </div>
+              </div>
+              <div className="modal-step">
+                <span className="step-num">2</span>
+                <div>
+                  <strong>Simulation avec Calcul 75/25</strong>
+                  <p>Intégrez vos notes d'examen National et Régional pour comparer vos scores aux seuils 2022-2025.</p>
+                </div>
+              </div>
+              <div className="modal-step">
+                <span className="step-num">3</span>
+                <div>
+                  <strong>Mentorat Direct avec un Lauréat</strong>
+                  <p>Réservez une séance visio avec un étudiant aîné pour des retours d'expérience authentiques.</p>
+                </div>
+              </div>
+            </div>
+            <div className="modal-actions-row">
+              <button
+                className="dribbble-btn-pill-dark w-full"
+                onClick={() => {
+                  setShowAdmissionsModal(false);
+                  navigate("/assessment");
+                }}
+              >
+                <span>Démarrer Mon Évaluation Gratuite</span>
+                <ArrowRightIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAchievementsModal && (
+        <div className="dribbble-modal-backdrop" onClick={() => setShowAchievementsModal(false)}>
+          <div className="dribbble-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button className="dribbble-modal-close" onClick={() => setShowAchievementsModal(false)}>✕</button>
+            <span className="dribbble-section-tag">PALMARÈS DES ADMISSIONS</span>
+            <h3 className="modal-title">Les Succès de Nos Élèves</h3>
+            <p className="modal-desc">
+              Chaque année, plus de 98% des bacheliers accompagnés intègrent l'un de leurs trois premiers vœux dans les plus grandes écoles d'ingénieurs, de commerce et de médecine.
+            </p>
+            <div className="modal-achievements-list">
+              <div className="achieve-row">
+                <span className="achieve-badge gold">Major</span>
+                <div>
+                  <strong>ENSAM Casablanca • Génie Informatique</strong>
+                  <p>Amine Benali - 1ère place au concours écrit et oral 2025</p>
+                </div>
+              </div>
+              <div className="achieve-row">
+                <span className="achieve-badge gold">Bourse</span>
+                <div>
+                  <strong>UM6P Benguerir • School of Computer Science</strong>
+                  <p>Salma Tazi - Attribution de la Bourse d'Excellence Fondation 100%</p>
+                </div>
+              </div>
+              <div className="achieve-row">
+                <span className="achieve-badge silver">Top 5</span>
+                <div>
+                  <strong>Concours Commun TAFEM ENCG</strong>
+                  <p>Yassine Mansouri - Rang 4 national sur plus de 18 000 candidats</p>
+                </div>
+              </div>
+            </div>
+            <div className="modal-actions-row">
+              <button
+                className="dribbble-btn-pill-dark w-full"
+                onClick={() => setShowAchievementsModal(false)}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

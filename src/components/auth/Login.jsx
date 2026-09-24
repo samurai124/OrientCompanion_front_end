@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import LoginForm from "../../forms/LoginForm";
 import AuthSideHero from "./AuthSideHero";
+import BrandLogo from "../common/BrandLogo";
 import "./Auth.css";
 
 function getHomeByRole(role) {
@@ -15,7 +16,7 @@ function getHomeByRole(role) {
 }
 
 export default function LoginPage() {
-  const { login, loginAsDemoAdmin, loginAsDemoCounselor, error: contextError } = useContext(AuthContext);
+  const { login, error: contextError } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -43,24 +44,26 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page-wrapper" data-theme={theme}>
-
       <div className="auth-form-column">
-
         <div className="auth-top-brand">
           <Link to="/" className="auth-brand-link">
             <div className="auth-brand-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" />
-                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6" />
-                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6" />
-                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" />
-              </svg>
+              <BrandLogo size={18} />
             </div>
             <span>OrientCompanion</span>
           </Link>
 
           <Link to="/" className="auth-back-link">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
@@ -90,61 +93,6 @@ export default function LoginPage() {
               S'inscrire gratuitement
             </Link>
           </div>
-
-          <div style={{ marginTop: "1rem", paddingTop: "0.85rem", borderTop: "1px solid var(--border-subtle, rgba(128,128,128,0.18))" }}>
-            <button
-              type="button"
-              onClick={() => {
-                if (loginAsDemoAdmin) loginAsDemoAdmin();
-                navigate("/admin/dashboard", { replace: true });
-              }}
-              style={{
-                width: "100%",
-                padding: "0.5rem 0.85rem",
-                borderRadius: "6px",
-                border: "1px dashed var(--adm-border-strong, #a1a1aa)",
-                background: "transparent",
-                color: "inherit",
-                fontSize: "0.76rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.45rem",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <span>⚡ Aperçu Console Administrateur (Mode Démo)</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (loginAsDemoCounselor) loginAsDemoCounselor();
-                navigate("/counselor/dashboard", { replace: true });
-              }}
-              style={{
-                width: "100%",
-                marginTop: "0.5rem",
-                padding: "0.5rem 0.85rem",
-                borderRadius: "6px",
-                border: "1px dashed var(--csl-border-strong, #a1a1aa)",
-                background: "transparent",
-                color: "inherit",
-                fontSize: "0.76rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.45rem",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <span>🎓 Aperçu Espace Conseiller (Mode Démo)</span>
-            </button>
-          </div>
         </div>
 
         <div className="auth-form-footer-note">
@@ -152,7 +100,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-      
       <AuthSideHero
         badgeText="Cockpit d'orientation"
         quoteTitle="Retrouvez vos bilans, écoles et mentorats."

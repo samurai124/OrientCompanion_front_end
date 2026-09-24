@@ -5,19 +5,6 @@ import { AdminApi } from "../../api/AdminApi";
 import { useFetch } from "../../hooks/useFetch";
 import "./Admin.css";
 
-function Loading() {
-  return <div style={{ padding: "3rem", textAlign: "center", color: "var(--adm-text-muted)" }}>Chargement...</div>;
-}
-
-function ErrorBox({ message, onRetry }) {
-  return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <p style={{ color: "var(--adm-text-muted)", marginBottom: "0.75rem" }}>⚠️ {message}</p>
-      <button className="adm-btn adm-btn-secondary" onClick={onRetry}>Réessayer</button>
-    </div>
-  );
-}
-
 const EMPTY_FORM = {
   name: "",
   city: "",
@@ -36,124 +23,60 @@ export default function AdminSchools() {
     []
   );
 
-  const fieldsFetch = useFetch(
+  const { data: fieldsData } = useFetch(
     useCallback(() => AdminApi.getFields(), []),
     []
   );
 
-  const fields = useMemo(() => {
-    return Array.isArray(fieldsFetch.data) ? fieldsFetch.data : fieldsFetch.data?.content ?? [];
-  }, [fieldsFetch.data]);
+  const schools = useMemo(() => (Array.isArray(data) ? data : data?.content ?? []), [data]);
+  const fields = useMemo(() => (Array.isArray(fieldsData) ? fieldsData : fieldsData?.content ?? []), [fieldsData]);
 
-  const [search, setSearch]         = useState("");
+  const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const [modalOpen, setModalOpen]   = useState(false);
-  const [editTarget, setEditTarget] = useState(null);
-  const [form, setForm]             = useState(EMPTY_FORM);
-  const [saving, setSaving]         = useState(false);
-  const [localList, setLocalList]   = useState(null);
+  const [modalTarget, setModalTarget] = useState(null); // null: fermée, "NEW": création, objet: édition
 
-  const list = useMemo(() => {
-    if (localList) return localList;
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [localList, data]);
-
-  const filtered = useMemo(() => list.filter((s) => {
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      (s.name ?? "").toLowerCase().includes(q) ||
-      (s.city ?? "").toLowerCase().includes(q) ||
-      (s.country ?? "").toLowerCase().includes(q);
-    const matchType = typeFilter === "ALL" || s.type === typeFilter;
-    return matchSearch && matchType;
-  }), [list, search, typeFilter]);
-
-  const openModal = useCallback((school = null) => {
-    setEditTarget(school);
-    setForm(school ? {
-      name: school.name ?? "",
-      city: school.city ?? "",
-      country: school.country ?? "Maroc",
-      type: school.type ?? "public",
-      fieldId: school.fieldId ?? (fields[0]?.id || ""),
-      website: school.website ?? "",
-      description: school.description ?? "",
-    } : {
-      ...EMPTY_FORM,
-      fieldId: fields[0]?.id || "",
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return schools.filter((s) => {
+      const matchSearch = !q || [s.name, s.city, s.country].some((val) => (val ?? "").toLowerCase().includes(q));
+      const matchType = typeFilter === "ALL" || s.type === typeFilter;
+      return matchSearch && matchType;
     });
-    setModalOpen(true);
-  }, [fields]);
+  }, [schools, search, typeFilter]);
 
   useEffect(() => {
     if (location.state?.openNew) {
-      openModal();
+      setModalTarget("NEW");
       window.history.replaceState({}, document.title);
     }
-  }, [location.state, openModal]);
+  }, [location.state]);
 
-  useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === "Escape" && modalOpen) {
-        setModalOpen(false);
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [modalOpen]);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!form.fieldId) {
-      alert("Veuillez sélectionner une filière de rattachement.");
-      return;
-    }
-    setSaving(true);
-    const payload = {
-      ...form,
-      fieldId: Number(form.fieldId),
-    };
-    try {
-      if (editTarget) {
-        const updated = await AdminApi.updateSchool(editTarget.id, payload);
-        setLocalList(list.map((s) => s.id === editTarget.id ? updated : s));
-      } else {
-        const created = await AdminApi.createSchool(payload);
-        setLocalList([created, ...list]);
-      }
-      setModalOpen(false);
-    } catch (err) {
-      alert(err?.response?.data?.message || "Erreur lors de la sauvegarde.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleDelete(id) {
-    if (!window.confirm("Supprimer cette école ?")) return;
-    setLocalList(list.filter((s) => s.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Supprimer cette école définitivement ?")) return;
     try {
       await AdminApi.deleteSchool(id);
-    } catch {
-      setLocalList(null);
       reload();
+    } catch {
+      alert("Impossible de supprimer cet établissement.");
     }
-  }
+  };
 
   return (
     <div className="adm-view-container">
+      {/* En-tête */}
       <div className="adm-page-header">
         <div className="adm-header-title-block">
           <span className="adm-page-badge"><span className="adm-status-dot-green" /> Référentiel</span>
           <h1 className="adm-page-title">Établissements & Universités</h1>
-          <p className="adm-page-subtitle">{list.length} établissements dans le système.</p>
+          <p className="adm-page-subtitle">{schools.length} établissements répertoriés.</p>
         </div>
-        <button className="adm-btn adm-btn-primary" onClick={() => openModal()}>
+        <button className="adm-btn adm-btn-primary" onClick={() => setModalTarget("NEW")}>
           <AdminIcons.Plus width="13" height="13" />
           <span>Nouvelle école</span>
         </button>
       </div>
 
+      {/* Barre de filtres */}
       <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
         <input
           className="adm-search-input"
@@ -169,9 +92,15 @@ export default function AdminSchools() {
         </select>
       </div>
 
+      {/* Tableau */}
       <div className="adm-card">
-        {loading && <Loading />}
-        {error   && <ErrorBox message={error} onRetry={reload} />}
+        {loading && <div style={{ padding: "3rem", textAlign: "center", color: "var(--adm-text-muted)" }}>Chargement...</div>}
+        {error && (
+          <div style={{ padding: "2rem", textAlign: "center" }}>
+            <p style={{ color: "var(--adm-text-muted)", marginBottom: "0.75rem" }}>⚠️ {error}</p>
+            <button className="adm-btn adm-btn-secondary" onClick={reload}>Réessayer</button>
+          </div>
+        )}
 
         {!loading && !error && (
           <div className="adm-table-container">
@@ -180,8 +109,8 @@ export default function AdminSchools() {
                 <tr>
                   <th>Établissement</th>
                   <th>Type</th>
-                  <th>Filière de rattachement</th>
-                  <th>Ville / Pays</th>
+                  <th>Filière</th>
+                  <th>Localisation</th>
                   <th>Site Web</th>
                   <th>Actions</th>
                 </tr>
@@ -200,7 +129,7 @@ export default function AdminSchools() {
                         <strong style={{ fontSize: "0.84rem" }}>{s.name}</strong>
                         {s.description && (
                           <div style={{ fontSize: "0.72rem", color: "var(--adm-text-muted)", marginTop: "0.15rem" }}>
-                            {s.description.slice(0, 80)}{s.description.length > 80 ? "…" : ""}
+                            {s.description.slice(0, 75)}{s.description.length > 75 ? "…" : ""}
                           </div>
                         )}
                       </td>
@@ -232,7 +161,7 @@ export default function AdminSchools() {
                       </td>
                       <td>
                         <div style={{ display: "flex", gap: "0.4rem" }}>
-                          <button className="adm-btn adm-btn-secondary adm-btn-sm" onClick={() => openModal(s)} title="Modifier">
+                          <button className="adm-btn adm-btn-secondary adm-btn-sm" onClick={() => setModalTarget(s)} title="Modifier">
                             <AdminIcons.Edit width="12" height="12" />
                           </button>
                           <button className="adm-btn adm-btn-danger adm-btn-sm" onClick={() => handleDelete(s.id)} title="Supprimer">
@@ -249,95 +178,156 @@ export default function AdminSchools() {
         )}
       </div>
 
-      {modalOpen && (
-        <div className="adm-modal-backdrop" onClick={() => setModalOpen(false)}>
-          <div className="adm-modal-dialog" onClick={(e) => e.stopPropagation()}>
-            <div className="adm-modal-header">
-              <h3 className="adm-modal-title">{editTarget ? "Modifier l'établissement" : "Nouvel établissement"}</h3>
-              <button type="button" className="adm-modal-close" onClick={() => setModalOpen(false)}>✕</button>
+      {/* Modale d'ajout/modification */}
+      {modalTarget && (
+        <SchoolModal
+          target={modalTarget === "NEW" ? null : modalTarget}
+          fields={fields}
+          onClose={() => setModalTarget(null)}
+          onSuccess={() => { setModalTarget(null); reload(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function SchoolModal({ target, fields, onClose, onSuccess }) {
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(() => (
+    target
+      ? { ...EMPTY_FORM, ...target, fieldId: target.fieldId ?? fields[0]?.id ?? "" }
+      : { ...EMPTY_FORM, fieldId: fields[0]?.id ?? "" }
+  ));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.fieldId) {
+      alert("Veuillez sélectionner une filière.");
+      return;
+    }
+
+    setSaving(true);
+    const payload = { ...form, fieldId: Number(form.fieldId) };
+
+    try {
+      if (target?.id) {
+        await AdminApi.updateSchool(target.id, payload);
+      } else {
+        await AdminApi.createSchool(payload);
+      }
+      onSuccess();
+    } catch (err) {
+      alert(err?.response?.data?.message || "Erreur lors de la sauvegarde.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="adm-modal-backdrop" onClick={onClose}>
+      <div className="adm-modal-dialog" onClick={(e) => e.stopPropagation()}>
+        <div className="adm-modal-header">
+          <h3 className="adm-modal-title">{target ? "Modifier l'établissement" : "Nouvel établissement"}</h3>
+          <button type="button" className="adm-modal-close" onClick={onClose}>✕</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="adm-modal-form">
+          <div className="adm-modal-body">
+            <div className="adm-form-row">
+              <div className="adm-form-group">
+                <label className="adm-form-label">Nom de l'établissement *</label>
+                <input
+                  className="adm-form-input"
+                  required
+                  placeholder="Ex: EMI, ENSAM, ENCG..."
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
+              <div className="adm-form-group">
+                <label className="adm-form-label">Type *</label>
+                <select
+                  className="adm-form-select"
+                  value={form.type}
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
+                >
+                  <option value="public">Public</option>
+                  <option value="private">Privé</option>
+                </select>
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="adm-modal-form">
-              <div className="adm-modal-body">
-                <div className="adm-form-row">
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Nom de l'établissement *</label>
-                    <input className="adm-form-input" required value={form.name}
-                      placeholder="Ex: École Mohammadia d'Ingénieurs (EMI)"
-                      onChange={(e) => setForm({ ...form, name: e.target.value })} />
-                  </div>
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Type d'établissement *</label>
-                    <select className="adm-form-select" value={form.type}
-                      onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                      <option value="public">Public</option>
-                      <option value="private">Privé</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="adm-form-row">
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Filière de rattachement *</label>
-                    <select
-                      className="adm-form-select"
-                      required
-                      value={form.fieldId}
-                      onChange={(e) => setForm({ ...form, fieldId: e.target.value })}
-                    >
-                      <option value="">Sélectionner une filière...</option>
-                      {fields.map((f) => (
-                        <option key={f.id} value={f.id}>
-                          {f.name} ({f.category || "Général"})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Ville *</label>
-                    <input className="adm-form-input" required value={form.city}
-                      placeholder="Ex: Rabat, Casablanca..."
-                      onChange={(e) => setForm({ ...form, city: e.target.value })} />
-                  </div>
-                </div>
-
-                <div className="adm-form-row">
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Pays</label>
-                    <input className="adm-form-input" value={form.country}
-                      placeholder="Ex: Maroc"
-                      onChange={(e) => setForm({ ...form, country: e.target.value })} />
-                  </div>
-                  <div className="adm-form-group">
-                    <label className="adm-form-label">Site Web officiel</label>
-                    <input className="adm-form-input" type="url"
-                      placeholder="https://..."
-                      value={form.website}
-                      onChange={(e) => setForm({ ...form, website: e.target.value })} />
-                  </div>
-                </div>
-
-                <div className="adm-form-group">
-                  <label className="adm-form-label">Description & Formations</label>
-                  <textarea className="adm-form-textarea" rows={3}
-                    placeholder="Présentation synthétique de l'école et de ses filières..."
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })} />
-                </div>
+            <div className="adm-form-row">
+              <div className="adm-form-group">
+                <label className="adm-form-label">Filière de rattachement *</label>
+                <select
+                  className="adm-form-select"
+                  required
+                  value={form.fieldId}
+                  onChange={(e) => setForm({ ...form, fieldId: e.target.value })}
+                >
+                  <option value="">Sélectionner une filière...</option>
+                  {fields.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name} ({f.category || "Général"})
+                    </option>
+                  ))}
+                </select>
               </div>
-
-              <div className="adm-modal-footer">
-                <button type="button" className="adm-btn adm-btn-secondary" onClick={() => setModalOpen(false)}>
-                  Annuler
-                </button>
-                <button type="submit" className="adm-btn adm-btn-primary" disabled={saving}>
-                  {saving ? "Enregistrement..." : editTarget ? "Mettre à jour" : "Créer l'établissement"}
-                </button>
+              <div className="adm-form-group">
+                <label className="adm-form-label">Ville *</label>
+                <input
+                  className="adm-form-input"
+                  required
+                  placeholder="Ex: Rabat, Casablanca..."
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                />
               </div>
-            </form>
+            </div>
+
+            <div className="adm-form-row">
+              <div className="adm-form-group">
+                <label className="adm-form-label">Pays</label>
+                <input
+                  className="adm-form-input"
+                  placeholder="Maroc"
+                  value={form.country}
+                  onChange={(e) => setForm({ ...form, country: e.target.value })}
+                />
+              </div>
+              <div className="adm-form-group">
+                <label className="adm-form-label">Site Web officiel</label>
+                <input
+                  className="adm-form-input"
+                  type="url"
+                  placeholder="https://..."
+                  value={form.website}
+                  onChange={(e) => setForm({ ...form, website: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="adm-form-group">
+              <label className="adm-form-label">Description</label>
+              <textarea
+                className="adm-form-textarea"
+                rows={3}
+                placeholder="Présentation synthétique..."
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          <div className="adm-modal-footer">
+            <button type="button" className="adm-btn adm-btn-secondary" onClick={onClose}>Annuler</button>
+            <button type="submit" className="adm-btn adm-btn-primary" disabled={saving}>
+              {saving ? "Enregistrement..." : target ? "Mettre à jour" : "Créer l'établissement"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

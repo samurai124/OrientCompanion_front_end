@@ -4,6 +4,43 @@ import { AdminApi } from "../../api/AdminApi";
 import { useFetch } from "../../hooks/useFetch";
 import "./Admin.css";
 
+// Icônes vectorielles SVG professionnelles
+const TabIcons = {
+  Cpu: ({ size = 14 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <rect x="9" y="9" width="6" height="6" />
+      <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" />
+    </svg>
+  ),
+  Sliders: ({ size = 14 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" />
+    </svg>
+  ),
+  Shield: ({ size = 14 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  Database: ({ size = 14 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+    </svg>
+  ),
+  RefreshCw: ({ size = 13 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </svg>
+  ),
+};
+
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState("AI");
   const [toastMessage, setToastMessage] = useState("");
@@ -15,7 +52,7 @@ export default function AdminSettings() {
     `Tu es le conseiller d'orientation expert OrientCompanion, spécialisé dans l'enseignement supérieur au Maroc (Grandes Écoles d'Ingénieurs, Universités, Facultés de Médecine, Écoles de Commerce). Ton objectif est de conduire un entretien psychométrique bienveillant basé sur les 6 dimensions RIASEC de John Holland (Réaliste, Investigateur, Artistique, Social, Entreprenant, Conventionnel). Pose des questions ouvertes adaptées au profil du bachelier marocain.`
   );
 
-  const [academicYear, setAcademicYear] = useState("2025 - 2026");
+  const [academicYear, setAcademicYear] = useState("2026 - 2027");
   const [registrationsOpen, setRegistrationsOpen] = useState(true);
   const [autoActivateAccounts, setAutoActivateAccounts] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -38,14 +75,14 @@ export default function AdminSettings() {
     );
   }, [auditLogs, auditCategory]);
 
-  const handleSaveSettings = (e) => {
-    e.preventDefault();
-    showToast("Paramètres sauvegardés et synchronisés avec succès.");
-  };
-
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3500);
+  };
+
+  const handleSaveSettings = (e) => {
+    e.preventDefault();
+    showToast("Paramètres sauvegardés et synchronisés avec succès.");
   };
 
   const handleExportData = () => {
@@ -106,26 +143,34 @@ export default function AdminSettings() {
         <button
           className={`adm-tab-pill${activeTab === "AI" ? " active" : ""}`}
           onClick={() => setActiveTab("AI")}
+          style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
         >
-          🤖 Moteur IA Gemini & RIASEC
+          <TabIcons.Cpu size={14} />
+          <span>Moteur IA Gemini & RIASEC</span>
         </button>
         <button
           className={`adm-tab-pill${activeTab === "PLATFORM" ? " active" : ""}`}
           onClick={() => setActiveTab("PLATFORM")}
+          style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
         >
-          ⚙️ Paramètres Plateforme
+          <TabIcons.Sliders size={14} />
+          <span>Paramètres Plateforme</span>
         </button>
         <button
           className={`adm-tab-pill${activeTab === "AUDIT" ? " active" : ""}`}
           onClick={() => setActiveTab("AUDIT")}
+          style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
         >
-          🛡️ Journal d'Audit & Sécurité
+          <TabIcons.Shield size={14} />
+          <span>Journal d'Audit & Sécurité</span>
         </button>
         <button
           className={`adm-tab-pill${activeTab === "DATA" ? " active" : ""}`}
           onClick={() => setActiveTab("DATA")}
+          style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem" }}
         >
-          💾 Données & Sauvegardes
+          <TabIcons.Database size={14} />
+          <span>Données & Sauvegardes</span>
         </button>
       </div>
 
@@ -251,7 +296,7 @@ export default function AdminSettings() {
                 <div>
                   <strong style={{ fontSize: "0.85rem" }}>Ouverture des Inscriptions Étudiants</strong>
                   <div style={{ fontSize: "0.75rem", color: "var(--adm-text-secondary)" }}>
-                    Permet aux lycéens marocains de créer un compte librement.
+                    Permet aux lycéens de créer un compte librement.
                   </div>
                 </div>
                 <input
@@ -352,30 +397,15 @@ export default function AdminSettings() {
             </div>
 
             <div className="adm-tab-pills">
-              <button
-                className={`adm-tab-pill${auditCategory === "ALL" ? " active" : ""}`}
-                onClick={() => setAuditCategory("ALL")}
-              >
-                Tous
-              </button>
-              <button
-                className={`adm-tab-pill${auditCategory === "Écoles" ? " active" : ""}`}
-                onClick={() => setAuditCategory("Écoles")}
-              >
-                Écoles
-              </button>
-              <button
-                className={`adm-tab-pill${auditCategory === "Filières" ? " active" : ""}`}
-                onClick={() => setAuditCategory("Filières")}
-              >
-                Filières
-              </button>
-              <button
-                className={`adm-tab-pill${auditCategory === "Système" ? " active" : ""}`}
-                onClick={() => setAuditCategory("Système")}
-              >
-                Système
-              </button>
+              {["ALL", "Écoles", "Filières", "Système"].map((cat) => (
+                <button
+                  key={cat}
+                  className={`adm-tab-pill${auditCategory === cat ? " active" : ""}`}
+                  onClick={() => setAuditCategory(cat)}
+                >
+                  {cat === "ALL" ? "Tous" : cat}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -475,7 +505,7 @@ export default function AdminSettings() {
                 </p>
               </div>
               <button className="adm-btn adm-btn-secondary" onClick={handlePurgeCache}>
-                <AdminIcons.Dashboard width="13" height="13" />
+                <TabIcons.RefreshCw size={13} />
                 <span>Purger le cache IA</span>
               </button>
             </div>
