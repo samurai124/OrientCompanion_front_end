@@ -16,7 +16,7 @@ const CAMPUS_PRESETS = {
   fmp: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80",
   fst: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80",
   ena: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
-  fsjes: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80",
+  fsjes: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
   generic: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80",
 };
 
@@ -64,9 +64,13 @@ export default function StudentRecommendedSchools() {
   const [selectedSector, setSelectedSector] = useState("ALL");
 
   useEffect(() => {
-    fetchSchools(selectedFieldId || null);
     if (fetchFields) fetchFields();
-  }, [fetchSchools, fetchFields, selectedFieldId]);
+  }, []);
+
+  useEffect(() => {
+    fetchSchools(selectedFieldId || null);
+  }, [selectedFieldId]);
+
 
   const filteredSchools = useMemo(() => {
     return (schools || []).filter((school) => {

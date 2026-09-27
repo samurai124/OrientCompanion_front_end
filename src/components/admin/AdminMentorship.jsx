@@ -1,7 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
 
 function Loading() {
@@ -31,16 +30,22 @@ function formatDateTime(isoString) {
 }
 
 export default function AdminMentorship() {
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => AdminApi.getMentorshipSessions(), []),
-    []
-  );
+  const {
+    adminSessions,
+    loading,
+    error,
+    fetchAdminSessions,
+    updateAdminSessionStatus,
+  } = useContext(AdminContext);
 
-  const sessions = useMemo(() => {
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [data]);
+  useEffect(() => {
+    fetchAdminSessions();
+  }, []);
+
+  const sessions = adminSessions;
 
   const [searchTerm, setSearchTerm] = useState("");
+
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selectedSession, setSelectedSession] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
@@ -70,19 +75,18 @@ export default function AdminMentorship() {
 
   const handleUpdateStatus = async (sessionId, newStatus) => {
     setUpdating(true);
-    try {
-      await AdminApi.updateMentorshipSessionStatus(sessionId, newStatus);
+    const success = await updateAdminSessionStatus(sessionId, newStatus);
+    if (success) {
       showToast(`Statut de la séance mis à jour : ${newStatus}`);
-      reload();
       if (selectedSession && selectedSession.id === sessionId) {
         setSelectedSession((prev) => ({ ...prev, status: newStatus }));
       }
-    } catch {
+    } else {
       alert("Erreur lors de la mise à jour du statut de la séance.");
-    } finally {
-      setUpdating(false);
     }
+    setUpdating(false);
   };
+
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -196,9 +200,10 @@ export default function AdminMentorship() {
 
       <div className="adm-card">
         {loading && <Loading />}
-        {error && <ErrorBox message={error} onRetry={reload} />}
+        {error && <ErrorBox message={error} onRetry={fetchAdminSessions} />}
 
         {!loading && !error && (
+
           <div className="adm-table-container">
             <table className="adm-table">
               <thead>

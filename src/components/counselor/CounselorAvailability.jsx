@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import CounselorIcons from "./CounselorIcons";
-import { CounselorApi } from "../../api/CounselorApi";
+import { CounselorContext } from "../../context/CounselorContext";
 import "./Counselor.css";
 
 const DEFAULT_SLOTS = [
@@ -13,32 +13,22 @@ const DEFAULT_SLOTS = [
 ];
 
 export default function CounselorAvailability() {
-  const [profile, setProfile] = useState({
-    fullName: "Conseiller d'Orientation",
-    title: "Conseiller Spécialiste Orientation Supérieure",
-    email: "conseiller@orientcompanion.ma",
-    phone: "+212 5 22 00 00 00",
-    bio: "Accompagnement personnalisé des bacheliers et préparation aux concours des grandes écoles marocaines et internationales.",
-    specialties: ["Grandes Écoles d'Ingénieurs", "CPGE & Universités", "Commerce & Gestion"],
-  });
+  const { profile: contextProfile, fetchProfile } = useContext(CounselorContext);
 
   useEffect(() => {
-    CounselorApi.getProfile()
-      .then((res) => {
-        if (res) {
-          setProfile((prev) => ({
-            ...prev,
-            fullName: res.fullName || prev.fullName,
-            title: res.title || prev.title,
-            email: res.email || prev.email,
-            phone: res.phone || prev.phone,
-            bio: res.bio || prev.bio,
-            specialties: res.specialties || prev.specialties,
-          }));
-        }
-      })
-      .catch(() => {});
+    fetchProfile();
   }, []);
+
+  const profile = {
+    fullName: contextProfile?.fullName || "Conseiller d'Orientation",
+    title: contextProfile?.title || "Conseiller Spécialiste Orientation Supérieure",
+    email: contextProfile?.email || "conseiller@orientcompanion.ma",
+    phone: contextProfile?.phone || "+212 5 22 00 00 00",
+    bio: contextProfile?.bio || "Accompagnement personnalisé des bacheliers et préparation aux concours des grandes écoles marocaines et internationales.",
+    specialties: contextProfile?.specialties || ["Grandes Écoles d'Ingénieurs", "CPGE & Universités", "Commerce & Gestion"],
+  };
+
+
 
   const [slots, setSlots] = useState(DEFAULT_SLOTS);
   const [toastMessage, setToastMessage] = useState("");

@@ -1,7 +1,6 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import CounselorIcons from "./CounselorIcons";
-import { CounselorApi } from "../../api/CounselorApi";
-import { useFetch } from "../../hooks/useFetch";
+import { CounselorContext } from "../../context/CounselorContext";
 import "./Counselor.css";
 
 function Loading() {
@@ -26,30 +25,40 @@ const RIASEC_LABELS = {
 };
 
 export default function CounselorStudents() {
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => CounselorApi.getStudents(), []),
-    []
-  );
+  const {
+    students: contextStudents,
+    loading,
+    error,
+    fetchStudents,
+  } = useContext(CounselorContext);
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
   const [search, setSearch]           = useState("");
   const [levelFilter, setLevelFilter] = useState("ALL");
   const [selected, setSelected]       = useState(null);
 
-  const students = useMemo(() => {
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [data]);
+  const students = Array.isArray(contextStudents) ? contextStudents : [];
 
-  const filtered = useMemo(() => students.filter((s) => {
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      (s.fullName      ?? "").toLowerCase().includes(q) ||
-      (s.email         ?? "").toLowerCase().includes(q) ||
-      (s.city          ?? "").toLowerCase().includes(q);
-    const matchLevel = levelFilter === "ALL" || s.educationLevel === levelFilter;
-    return matchSearch && matchLevel;
-  }), [students, search, levelFilter]);
+  const filtered = useMemo(() => {
+    const list = Array.isArray(contextStudents) ? contextStudents : [];
+    return list.filter((s) => {
+      const q = search.toLowerCase();
+      const matchSearch = !q ||
+        (s.fullName      ?? "").toLowerCase().includes(q) ||
+        (s.email         ?? "").toLowerCase().includes(q) ||
+        (s.city          ?? "").toLowerCase().includes(q);
+      const matchLevel = levelFilter === "ALL" || s.educationLevel === levelFilter;
+      return matchSearch && matchLevel;
+    });
+  }, [contextStudents, search, levelFilter]);
 
-  const levels = useMemo(() => [...new Set(students.map((s) => s.educationLevel).filter(Boolean))], [students]);
+  const levels = useMemo(() => {
+    const list = Array.isArray(contextStudents) ? contextStudents : [];
+    return [...new Set(list.map((s) => s.educationLevel).filter(Boolean))];
+  }, [contextStudents]);
 
   return (
     <div className="csl-view-container">
@@ -77,9 +86,10 @@ export default function CounselorStudents() {
       </div>
 
       {loading && <Loading />}
-      {error   && <ErrorBox message={error} onRetry={reload} />}
+      {error   && <ErrorBox message={error} onRetry={fetchStudents} />}
 
       {!loading && !error && (
+
         filtered.length === 0 ? (
           <p style={{ color: "var(--csl-text-muted)", textAlign: "center", padding: "2rem" }}>
             Aucun étudiant trouvé.

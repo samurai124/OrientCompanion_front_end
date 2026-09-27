@@ -1,34 +1,40 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { GoogleGenAI } from "@google/genai";
 import { AssessmentContext } from "../context/AssessmentContext";
 import "./RiasecAiChatbot.css";
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey || "" });
-
+// --- MVP JURY DEMO : ÉVALUATION ULTRA-RAPIDE (2 ÉCHANGES) ---
 const SYSTEM_INSTRUCTION = `
-You are "Companion Orient", an empathetic academic counselor specialized in Moroccan higher education.
-Workflow:
-1. Discovery: Bac branch, grades, RIASEC preferences.
-2. Pathway Alignment: Bac+2, Bac+3, Bac+5, CPGE, EST, FST, ENCG, ENSAM, Universities.
-3. Concrete guidance with concise replies (<200 words).
-Required scores:
-- academicScores (0-20): Mathématiques, Informatique, Physique, Chimie, Biologie, Électronique, Statistiques, Réseaux, Géologie, Sciences de la Terre, Économie, Français, Anglais, Histoire, Géographie, Philosophie, Sciences sociales, Arts Plastiques.
-- interests (0-100): using the same subjects.
-- personalityScores (0-100): R, I, A, S, E, C.
+You are "Companion Orient", an AI counselor for Moroccan higher education.
+This is a live jury demo (MVP): be concise, fast, and finish within 2 to 3 user turns max.
 
-At the end of the assessment, append IMPERATIVELY this strict JSON block:
+CONSTRAINTS:
+- Keep your conversational answers very short (1 to 2 sentences, <40 words).
+- Never ask long lists of questions. Ask at most 1 single direct question per reply.
+- DO NOT ask the user to self-grade or calculate their scores. YOU must compute and infer all values.
+
+FLOW (Target: Complete in 2 user replies):
+1. First message: Welcome the student and ask only: Bac branch + main grades.
+2. After user's 1st reply: Acknowledge briefly and ask 1 short question about work preference (e.g., "Aimez-vous créer des logiciels/machines concrètes ou analyser des données théoriques ?").
+3. After user's 2nd reply (or immediately if the user already provided branch, grades, and passions): Conclude warmly in 1 sentence and APPEND THE STRICT JSON BLOCK BELOW.
+
+REQUIRED JSON SUBJECT KEYS:
+academicScores (0-20): Mathématiques, Informatique, Physique, Chimie, Biologie, Électronique, Statistiques, Réseaux, Géologie, Sciences de la Terre, Économie, Français, Anglais, Histoire, Géographie, Philosophie, Sciences sociales, Arts Plastiques.
+interests (0-100): same keys.
+personalityScores (0-100): R, I, A, S, E, C.
+
+FINAL OUTPUT BLOCK (Must be strictly valid JSON):
 \`\`\`json
 {
   "isFinished": true,
   "assessmentData": {
-    "personalityScores": { "R": 0, "I": 0, "A": 0, "S": 0, "E": 0, "C": 0 },
-    "academicScores": {},
-    "interests": {}
+    "personalityScores": { "R": 85, "I": 90, "A": 30, "S": 55, "E": 65, "C": 50 },
+    "academicScores": { "Mathématiques": 17, "Informatique": 18, "Physique": 15 },
+    "interests": { "Informatique": 95, "Mathématiques": 85, "Réseaux": 70 }
   }
 }
 \`\`\`
+(Replace the values with your actual inferred scores based on the conversation).
 `;
 
 const PERSONALITY_LABELS = {
@@ -42,6 +48,39 @@ const PERSONALITY_LABELS = {
 
 const cleanBotResponse = (text) => (text ? text.replace(/```json[\s\S]*?```/, "").trim() : "");
 
+async function callGeminiDirect(history, userPrompt) {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Clé API Gemini introuvable (VITE_GEMINI_API_KEY manquante dans le fichier .env).");
+  }
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
+
+  const contents = [
+    ...history.map((msg) => ({
+      role: msg.sender === "bot" ? "model" : "user",
+      parts: [{ text: msg.rawText || msg.text }],
+    })),
+    { role: "user", parts: [{ text: userPrompt }] },
+  ];
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+      contents,
+    }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error?.message || "Erreur de communication avec l'API Gemini.");
+  }
+
+  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+}
+
 export default function CompleteAssessmentChatbot() {
   const { submitAssessment, loading: contextSubmitting, error: contextError } = useContext(AssessmentContext);
   const navigate = useNavigate();
@@ -50,39 +89,35 @@ export default function CompleteAssessmentChatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [chatSession, setChatSession] = useState(null);
   const [error, setError] = useState("");
   const [assessmentResult, setAssessmentResult] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (!apiKey) {
-      setError("Clé API Gemini manquante (VITE_GEMINI_API_KEY).");
-      return;
-    }
+    let isMounted = true;
 
-    const startChat = async () => {
+    const initChat = async () => {
       try {
         setLoading(true);
-        const session = ai.chats.create({
-          model: "gemini-3.6-flash",
-          config: { systemInstruction: SYSTEM_INSTRUCTION },
-        });
-        setChatSession(session);
+        // Prompt concis pour démarrer immédiatement sur la question 1
+        const startPrompt = "Démarre l'entretien avec une salutation courte (1 phrase) et demande ma filière de Bac ainsi que mes matières fortes.";
+        const rawText = await callGeminiDirect([], startPrompt);
 
-        const res = await session.sendMessage({
-          message: "Bonjour ! Accueillez-moi en tant que Companion Orient et démarrez l'entretien.",
-        });
-        setMessages([{ sender: "bot", text: cleanBotResponse(res.text) }]);
+        if (isMounted) {
+          setMessages([{ sender: "bot", text: cleanBotResponse(rawText), rawText }]);
+        }
       } catch (err) {
-        console.error("Init error:", err);
-        setError("Impossible de contacter le conseiller d'orientation.");
+        if (isMounted) {
+          console.error("Init Gemini Error:", err);
+          setError(err.message || "Impossible de joindre le conseiller virtuel.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    startChat();
+    initChat();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
@@ -92,32 +127,39 @@ export default function CompleteAssessmentChatbot() {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     const query = input.trim();
-    if (!query || loading || contextSubmitting || !chatSession) return;
+    if (!query || loading || contextSubmitting) return;
 
+    const nextHistory = [...messages, { sender: "user", text: query, rawText: query }];
     setInput("");
-    setMessages((prev) => [...prev, { sender: "user", text: query }]);
+    setMessages(nextHistory);
     setLoading(true);
+    setError("");
 
     try {
-      const response = await chatSession.sendMessage({ message: query });
-      const rawText = response.text;
-      setMessages((prev) => [...prev, { sender: "bot", text: cleanBotResponse(rawText) }]);
+      const rawText = await callGeminiDirect(messages, query);
+      const displayMessage = { sender: "bot", text: cleanBotResponse(rawText), rawText };
+      setMessages([...nextHistory, displayMessage]);
 
       const jsonMatch = rawText.match(/```json\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[1]);
-        if (parsed?.isFinished && parsed?.assessmentData) {
-          setAssessmentResult(parsed.assessmentData);
-          const ok = await submitAssessment(parsed.assessmentData);
-          if (ok) {
-            const redirect = location.state?.redirectAfterAssessment ?? "/recommendations";
-            navigate(redirect, { replace: true });
+        try {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed?.isFinished && parsed?.assessmentData) {
+            setAssessmentResult(parsed.assessmentData);
+            const ok = await submitAssessment(parsed.assessmentData);
+            if (ok) {
+              const redirect = location.state?.redirectAfterAssessment ?? "/recommendations";
+              navigate(redirect, { replace: true });
+            }
           }
+        } catch (jsonErr) {
+          console.error("Erreur parsing JSON:", jsonErr);
+          setError("Erreur lors de la génération du profil d'orientation.");
         }
       }
     } catch (err) {
       console.error("Chat error:", err);
-      setError("Erreur de connexion. Veuillez réessayer.");
+      setError(err.message || "Erreur de connexion avec l'IA.");
     } finally {
       setLoading(false);
     }
@@ -151,7 +193,7 @@ export default function CompleteAssessmentChatbot() {
               <div className="chat-typing-row">
                 <div className="chat-typing-bubble">
                   <div className="chat-typing-dots"><span /><span /><span /></div>
-                  <span className="chat-typing-label">Companion Orient analyse vos options...</span>
+                  <span className="chat-typing-label">Companion Orient analyse votre profil (Scoring 60/40)...</span>
                 </div>
               </div>
             )}
@@ -173,13 +215,13 @@ export default function CompleteAssessmentChatbot() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Posez votre question ou répondez à Companion Orient..."
+              placeholder="Ex: Bac SM, 17 en Maths, passionné par le code..."
               className="chat-text-input"
-              disabled={loading || contextSubmitting || !!error}
+              disabled={loading || contextSubmitting}
             />
             <button
               type="submit"
-              disabled={loading || contextSubmitting || !input.trim() || !!error}
+              disabled={loading || contextSubmitting || !input.trim()}
               className="chat-send-btn"
             >
               Envoyer
@@ -202,9 +244,16 @@ function ChatMessage({ msg }) {
         {msg.text.split("\n").map((line, lIdx) => {
           const parts = line.split(/(\*\*.*?\*\*)/g);
           return (
-            <div key={lIdx} className={line.trim().startsWith("-") || line.trim().startsWith("•") ? "chat-bullet-line" : "chat-text-line"}>
+            <div
+              key={lIdx}
+              className={line.trim().startsWith("-") || line.trim().startsWith("•") ? "chat-bullet-line" : "chat-text-line"}
+            >
               {parts.map((p, pIdx) =>
-                p.startsWith("**") && p.endsWith("**") ? <strong key={pIdx}>{p.slice(2, -2)}</strong> : p
+                p.startsWith("**") && p.endsWith("**") ? (
+                  <strong key={pIdx}>{p.slice(2, -2)}</strong>
+                ) : (
+                  p
+                )
               )}
             </div>
           );
@@ -217,8 +266,8 @@ function ChatMessage({ msg }) {
 function RiasecCompletionCard({ result, onNavigate }) {
   return (
     <div className="chat-completion-card">
-      <h3>🎉 Bilan d'orientation finalisé avec succès !</h3>
-      <p>Vos scores Holland RIASEC et vos préférences académiques ont été enregistrés.</p>
+      <h3>🎉 Bilan d'orientation finalisé en temps record !</h3>
+      <p>L'algorithme de fusion 60/40 a calculé vos scores RIASEC et académiques.</p>
 
       {result.personalityScores && (
         <div className="riasec-bars-grid">
@@ -239,7 +288,7 @@ function RiasecCompletionCard({ result, onNavigate }) {
       )}
 
       <button className="btn-view-recs" onClick={onNavigate}>
-        Découvrir mes écoles &amp; filières recommandées →
+        Voir mes recommandations personnalisées →
       </button>
     </div>
   );

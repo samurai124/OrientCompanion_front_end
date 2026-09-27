@@ -4,10 +4,6 @@ import { AuthContext } from "../../context/AuthContext";
 import BrandLogo from "../common/BrandLogo";
 import "./OrientLandingPage.css";
 
-/* ==========================================================================
-   SVG ICONS & LOGOS (Dribbble Design Faithful)
-   ========================================================================== */
-
 const SchoolLogoIcon = () => <BrandLogo size={28} />;
 
 const ArrowUpRightIcon = () => (
@@ -28,7 +24,6 @@ const QuoteWatermarkIcon = () => (
   </svg>
 );
 
-/* Academic Program Icons */
 const BookOpenIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -60,7 +55,6 @@ const BeakerIcon = () => (
   </svg>
 );
 
-/* Moroccan Higher Education Emblems / Logos in Grid */
 const EnsamLogo = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
     <circle cx="12" cy="12" r="10" fillOpacity="0.15" />
@@ -139,7 +133,6 @@ const EnaLogo = () => (
   </svg>
 );
 
-/* Social Icons */
 const LinkedInIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
@@ -171,10 +164,6 @@ const YouTubeIcon = () => (
     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
   </svg>
 );
-
-/* ==========================================================================
-   DATA SPECIFICATIONS (Adapted to OrientCompanion Post-Bac Platform)
-   ========================================================================== */
 
 const PARTNER_LOGOS = [
   { name: "ENSAM", icon: <EnsamLogo /> },
@@ -333,10 +322,6 @@ const NEWS_RECENT = [
   },
 ];
 
-/* ==========================================================================
-   MAIN COMPONENT
-   ========================================================================== */
-
 export default function OrientLandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
@@ -392,13 +377,9 @@ export default function OrientLandingPage() {
   return (
     <div className="dribbble-landing-root" data-theme={theme}>
 
-      {/* ====================================================================
-          TOP NAVBAR
-          ==================================================================== */}
       <header className="dribbble-navbar">
         <div className="dribbble-nav-container">
 
-          {/* BRAND LOGO */}
           <div className="dribbble-brand" onClick={() => handleNav("#hero")}>
             <div className="dribbble-brand-symbol">
               <SchoolLogoIcon />
@@ -409,7 +390,6 @@ export default function OrientLandingPage() {
             </div>
           </div>
 
-          {/* DESKTOP NAVIGATION LINKS */}
           <nav className="dribbble-nav-links">
             <a href="#about" onClick={(e) => { e.preventDefault(); handleNav("#about"); }}>Bilan RIASEC</a>
             <a href="#programmes" onClick={(e) => { e.preventDefault(); handleNav("#programmes"); }}>Simulateur</a>
@@ -419,7 +399,6 @@ export default function OrientLandingPage() {
             <a href="#actualites" onClick={(e) => { e.preventDefault(); handleNav("#actualites"); }}>Actualités</a>
           </nav>
 
-          {/* ACTIONS: THEME TOGGLE & AUTH */}
           <div className="dribbble-nav-actions">
             <button
               className="dribbble-theme-toggle"
@@ -461,7 +440,6 @@ export default function OrientLandingPage() {
               <ArrowRightIcon />
             </button>
 
-            {/* MOBILE MENU TOGGLE */}
             <button
               className="dribbble-mobile-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -478,7 +456,6 @@ export default function OrientLandingPage() {
           </div>
         </div>
 
-        {/* MOBILE MENU DRAWER */}
         {mobileMenuOpen && (
           <div className="dribbble-mobile-menu">
             <a href="#about" onClick={() => handleNav("#about")}>Bilan RIASEC</a>
@@ -495,13 +472,9 @@ export default function OrientLandingPage() {
         )}
       </header>
 
-      {/* ====================================================================
-          HERO SECTION
-          ==================================================================== */}
       <section className="dribbble-hero-section" id="hero">
         <div className="dribbble-container">
 
-          {/* TOP ASYMMETRIC ROW */}
           <div className="dribbble-hero-top-grid">
             <div className="dribbble-hero-title-col">
               <h1 className="dribbble-hero-headline">
@@ -525,7 +498,6 @@ export default function OrientLandingPage() {
             </div>
           </div>
 
-          {/* LARGE HERO ARCHITECTURAL PHOTO */}
           <div className="dribbble-hero-banner-wrap">
             <img
               src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1800&q=85"
@@ -538,14 +510,10 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          ABOUT SECTION WITH SIGNATURE BLUE PIXEL / MOSAIC PATTERN
-          ==================================================================== */}
       <section className="dribbble-about-section" id="about">
 
-        {/* GEOMETRIC MOSAIC / PIXEL BLOCKS (App Accent Blue) */}
         <div className="mosaic-accent-grid" aria-hidden="true">
-          {/* Top Right Cluster */}
+          
           <div className="mosaic-box mb-tr-1" />
           <div className="mosaic-box mb-tr-2" />
           <div className="mosaic-box mb-tr-3" />
@@ -554,7 +522,6 @@ export default function OrientLandingPage() {
           <div className="mosaic-box mb-tr-6" />
           <div className="mosaic-box mb-tr-7" />
 
-          {/* Left Mid/Lower Cluster */}
           <div className="mosaic-box mb-ml-1" />
           <div className="mosaic-box mb-ml-2" />
           <div className="mosaic-box mb-ml-3" />
@@ -571,33 +538,27 @@ export default function OrientLandingPage() {
             <span className="dribbble-section-tag">NOTRE MISSION</span>
           </div>
 
-          {/* MANIFESTO STATEMENT WITH EMPHASIZED KEYWORDS */}
           <h2 className="about-manifesto-text">
             Fondée pour démocratiser l'excellence, <span className="highlight-text">OrientCompanion</span> est la plateforme dédiée à <span className="highlight-text">l'orientation post-bac</span>, combinant le <span className="highlight-text">bilan psychométrique RIASEC</span>, la simulation des concours et le <span className="highlight-text">mentorat personnalisé</span> pour guider chaque <span className="highlight-text">élève</span> vers son plein potentiel.
           </h2>
 
-          {/* 4 STATS CARDS (CARD 1 IS SOLID APP BLUE) */}
           <div className="about-stats-grid">
 
-            {/* Solid Accent Card */}
             <div className="stat-card-solid-blue">
               <h3 className="stat-card-title">+4 500<br />Bacheliers Orientés</h3>
               <p className="stat-card-desc">Accompagnement certifié vers l'excellence</p>
             </div>
 
-            {/* Standard Stat Card 2 */}
             <div className="stat-card-standard">
               <h3 className="stat-card-title">+120 Écoles<br />Référencées</h3>
               <p className="stat-card-desc">ENSAM, UM6P, ENCG, FMP, ENSA, CPGE...</p>
             </div>
 
-            {/* Standard Stat Card 3 */}
             <div className="stat-card-standard">
               <h3 className="stat-card-title">98.4% Taux<br />de Satisfaction</h3>
               <p className="stat-card-desc">Évaluations lycéens et conseillers certifiés</p>
             </div>
 
-            {/* Standard Stat Card 4 */}
             <div className="stat-card-standard">
               <h3 className="stat-card-title">+450 Lauréats<br />Mentors Actifs</h3>
               <p className="stat-card-desc">Étudiants aînés mobilisés en visioconférence</p>
@@ -608,9 +569,6 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          UNIVERSITY ADMISSIONS / PARTNER LOGOS GRID
-          ==================================================================== */}
       <section className="dribbble-partners-section" id="ecoles">
         <div className="dribbble-container">
 
@@ -636,13 +594,9 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          ACADEMIC PROGRAM EXCELLENCE (Piliers d'Accompagnement)
-          ==================================================================== */}
       <section className="dribbble-academic-section" id="programmes">
         <div className="dribbble-container">
 
-          {/* HEADER ROW */}
           <div className="academic-header-grid">
             <h2 className="academic-headline">
               Piliers Fondamentaux<br />de Votre Réussite
@@ -652,7 +606,6 @@ export default function OrientLandingPage() {
             </p>
           </div>
 
-          {/* 4 CARDS ROW */}
           <div className="academic-cards-grid">
             {ACADEMIC_PROGRAMS.map((prog, idx) => (
               <div key={idx} className="academic-program-card">
@@ -668,9 +621,6 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          SCHOOL FACILITIES (Campus & Infrastructures d'Élite)
-          ==================================================================== */}
       <section className="dribbble-facilities-section" id="campus">
         <div className="dribbble-container">
 
@@ -680,7 +630,6 @@ export default function OrientLandingPage() {
             </h2>
           </div>
 
-          {/* BENTO GRID OF HIGH QUALITY ARCHITECTURE & AMENITIES */}
           <div className="facilities-bento-grid">
 
             <div className="facility-card science-lab">
@@ -760,9 +709,6 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          OUR PROUD STUDENTS' ACHIEVEMENTS (Nos Lauréats & Fiertés)
-          ==================================================================== */}
       <section className="dribbble-achievements-section" id="laureats">
         <div className="dribbble-container">
 
@@ -772,7 +718,6 @@ export default function OrientLandingPage() {
             </h2>
           </div>
 
-          {/* 5 AWARDS PORTRAIT CARDS */}
           <div className="achievements-cards-grid">
             {ACHIEVEMENTS_DATA.map((item, idx) => (
               <div key={idx} className="achievement-card">
@@ -809,9 +754,6 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          GRADUATE PERSPECTIVES (Retours d'Expérience)
-          ==================================================================== */}
       <section className="dribbble-perspectives-section">
         <div className="dribbble-container">
 
@@ -832,7 +774,6 @@ export default function OrientLandingPage() {
             </div>
           </div>
 
-          {/* 3 TESTIMONIAL CARDS */}
           <div className="perspectives-cards-grid">
             {TESTIMONIALS_DATA.map((item, idx) => (
               <div key={idx} className="perspective-card">
@@ -861,7 +802,6 @@ export default function OrientLandingPage() {
             ))}
           </div>
 
-          {/* CAROUSEL DOT INDICATORS */}
           <div className="perspectives-carousel-dots">
             {[0, 1, 2].map((dot) => (
               <button
@@ -876,9 +816,6 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          LATEST NEWS (Actualités Concours & Formations)
-          ==================================================================== */}
       <section className="dribbble-news-section" id="actualites">
         <div className="dribbble-container">
 
@@ -892,9 +829,8 @@ export default function OrientLandingPage() {
             </button>
           </div>
 
-          {/* TOP 2 FEATURED NEWS CARDS */}
           <div className="news-featured-grid">
-            {/* Featured Card 1: Full-height image with dark text overlay */}
+            
             <div className="news-card-featured-overlay">
               <img
                 src={NEWS_FEATURED[0].image}
@@ -910,7 +846,6 @@ export default function OrientLandingPage() {
               </div>
             </div>
 
-            {/* Featured Card 2: Image on top, text underneath */}
             <div className="news-card-featured-standard">
               <div className="news-featured-img-top-wrap">
                 <img
@@ -928,7 +863,6 @@ export default function OrientLandingPage() {
             </div>
           </div>
 
-          {/* BOTTOM 3 NEWS CARDS */}
           <div className="news-recent-grid">
             {NEWS_RECENT.map((item, idx) => (
               <div key={idx} className="news-card-recent">
@@ -952,15 +886,11 @@ export default function OrientLandingPage() {
         </div>
       </section>
 
-      {/* ====================================================================
-          FOOTER (Matching Dribbble Layout & App Colors)
-          ==================================================================== */}
       <footer className="dribbble-footer" id="contact">
         <div className="dribbble-container">
 
           <div className="dribbble-footer-main-grid">
 
-            {/* COLUMN 1: MISSION STATEMENT & SOCIAL ICONS */}
             <div className="footer-col-mission">
               <h3 className="footer-mission-text">
                 OrientCompanion s'engage à accompagner chaque bachelier vers l'épanouissement académique, le discernement vocationnel et la réussite des concours d'excellence.
@@ -974,7 +904,6 @@ export default function OrientLandingPage() {
               </div>
             </div>
 
-            {/* COLUMN 2: NAVIGATION LINKS */}
             <div className="footer-col-nav">
               <span className="footer-col-heading">NAVIGATION</span>
               <ul className="footer-links-list">
@@ -986,7 +915,6 @@ export default function OrientLandingPage() {
               </ul>
             </div>
 
-            {/* COLUMN 3: CONTACT INFORMATION */}
             <div className="footer-col-contact">
               <span className="footer-col-heading">CONTACT</span>
               <div className="footer-contact-details">
@@ -1007,7 +935,6 @@ export default function OrientLandingPage() {
 
           </div>
 
-          {/* BOTTOM COPYRIGHT & LEGAL BAR */}
           <div className="dribbble-footer-bottom-bar">
             <span className="footer-copy-text">© 2026 OrientCompanion. Tous droits réservés.</span>
             <div className="footer-legal-links">
@@ -1019,9 +946,6 @@ export default function OrientLandingPage() {
         </div>
       </footer>
 
-      {/* ====================================================================
-          MODALS / POPUPS (Admissions & Achievements Interactive Views)
-          ==================================================================== */}
       {showAdmissionsModal && (
         <div className="dribbble-modal-backdrop" onClick={() => setShowAdmissionsModal(false)}>
           <div className="dribbble-modal-box" onClick={(e) => e.stopPropagation()}>

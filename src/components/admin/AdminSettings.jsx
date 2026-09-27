@@ -1,11 +1,10 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
 
-// Icônes vectorielles SVG professionnelles
 const TabIcons = {
+
   Cpu: ({ size = 14 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="4" width="16" height="16" rx="2" />
@@ -58,16 +57,15 @@ export default function AdminSettings() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 
-  const { data: auditData } = useFetch(
-    useCallback(() => AdminApi.getAuditLogs().catch(() => []), []),
-    []
-  );
+  const { auditLogs = [], fetchAuditLogs } = useContext(AdminContext);
 
-  const auditLogs = useMemo(() => {
-    return Array.isArray(auditData) ? auditData : auditData?.content ?? [];
-  }, [auditData]);
+  useEffect(() => {
+    fetchAuditLogs();
+  }, []);
 
   const [auditCategory, setAuditCategory] = useState("ALL");
+
+
 
   const filteredLogs = useMemo(() => {
     return auditLogs.filter((log) =>

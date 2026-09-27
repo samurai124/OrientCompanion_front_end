@@ -1,9 +1,9 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
+
 
 const EMPTY_FORM = {
   name: "",
@@ -18,24 +18,32 @@ const EMPTY_FORM = {
 export default function AdminSchools() {
   const location = useLocation();
 
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => AdminApi.getSchools(), []),
-    []
-  );
+  const {
+    adminSchools,
+    adminFields,
+    loading,
+    error,
+    fetchAdminSchools,
+    fetchAdminFields,
+    deleteSchool,
+    updateSchool,
+    createSchool
+  } = useContext(AdminContext);
 
-  const { data: fieldsData } = useFetch(
-    useCallback(() => AdminApi.getFields(), []),
-    []
-  );
+  useEffect(() => {
+    fetchAdminSchools();
+    fetchAdminFields();
+  }, []);
 
-  const schools = useMemo(() => (Array.isArray(data) ? data : data?.content ?? []), [data]);
-  const fields = useMemo(() => (Array.isArray(fieldsData) ? fieldsData : fieldsData?.content ?? []), [fieldsData]);
+  const schools = adminSchools;
+  const fields = adminFields;
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const [modalTarget, setModalTarget] = useState(null); // null: fermée, "NEW": création, objet: édition
+  const [modalTarget, setModalTarget] = useState(null);
 
   const filtered = useMemo(() => {
+
     const q = search.trim().toLowerCase();
     return schools.filter((s) => {
       const matchSearch = !q || [s.name, s.city, s.country].some((val) => (val ?? "").toLowerCase().includes(q));
@@ -53,17 +61,14 @@ export default function AdminSchools() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer cette école définitivement ?")) return;
-    try {
-      await AdminApi.deleteSchool(id);
-      reload();
-    } catch {
-      alert("Impossible de supprimer cet établissement.");
-    }
+    const success = await deleteSchool(id);
+    if (!success) alert("Impossible de supprimer cet établissement.");
   };
+
+
 
   return (
     <div className="adm-view-container">
-      {/* En-tête */}
       <div className="adm-page-header">
         <div className="adm-header-title-block">
           <span className="adm-page-badge"><span className="adm-status-dot-green" /> Référentiel</span>
@@ -76,7 +81,6 @@ export default function AdminSchools() {
         </button>
       </div>
 
-      {/* Barre de filtres */}
       <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.25rem" }}>
         <input
           className="adm-search-input"
@@ -92,15 +96,16 @@ export default function AdminSchools() {
         </select>
       </div>
 
-      {/* Tableau */}
       <div className="adm-card">
+
         {loading && <div style={{ padding: "3rem", textAlign: "center", color: "var(--adm-text-muted)" }}>Chargement...</div>}
         {error && (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <p style={{ color: "var(--adm-text-muted)", marginBottom: "0.75rem" }}>⚠️ {error}</p>
-            <button className="adm-btn adm-btn-secondary" onClick={reload}>Réessayer</button>
+            <button className="adm-btn adm-btn-secondary" onClick={fetchAdminSchools}>Réessayer</button>
           </div>
         )}
+
 
         {!loading && !error && (
           <div className="adm-table-container">
@@ -178,20 +183,23 @@ export default function AdminSchools() {
         )}
       </div>
 
-      {/* Modale d'ajout/modification */}
       {modalTarget && (
+
         <SchoolModal
           target={modalTarget === "NEW" ? null : modalTarget}
           fields={fields}
           onClose={() => setModalTarget(null)}
-          onSuccess={() => { setModalTarget(null); reload(); }}
+          onSuccess={() => { setModalTarget(null); fetchAdminSchools(); }}
+          createSchool={createSchool}
+          updateSchool={updateSchool}
         />
       )}
+
     </div>
   );
 }
 
-function SchoolModal({ target, fields, onClose, onSuccess }) {
+function SchoolModal({ target, fields, onClose, onSuccess, createSchool, updateSchool }) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(() => (
     target
@@ -209,19 +217,21 @@ function SchoolModal({ target, fields, onClose, onSuccess }) {
     setSaving(true);
     const payload = { ...form, fieldId: Number(form.fieldId) };
 
-    try {
-      if (target?.id) {
-        await AdminApi.updateSchool(target.id, payload);
-      } else {
-        await AdminApi.createSchool(payload);
-      }
-      onSuccess();
-    } catch (err) {
-      alert(err?.response?.data?.message || "Erreur lors de la sauvegarde.");
-    } finally {
-      setSaving(false);
+    let result;
+    if (target?.id) {
+      result = await updateSchool(target.id, payload);
+    } else {
+      result = await createSchool(payload);
     }
+
+    if (result) {
+      onSuccess();
+    } else {
+      alert("Erreur lors de la sauvegarde.");
+    }
+    setSaving(false);
   };
+
 
   return (
     <div className="adm-modal-backdrop" onClick={onClose}>

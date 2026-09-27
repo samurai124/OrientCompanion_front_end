@@ -1,8 +1,8 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import CounselorIcons from "./CounselorIcons";
-import { CounselorApi } from "../../api/CounselorApi";
-import { useFetch } from "../../hooks/useFetch";
+import { CounselorContext } from "../../context/CounselorContext";
 import "./Counselor.css";
+
 
 function Loading() {
   return <div style={{ padding: "3rem", textAlign: "center", color: "var(--csl-text-muted)" }}>Chargement...</div>;
@@ -58,10 +58,17 @@ function toDatetimeLocal(isoString) {
 }
 
 export default function CounselorSessions() {
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => CounselorApi.getSessions(), []),
-    []
-  );
+  const {
+    sessions,
+    loading,
+    error,
+    fetchSessions,
+    updateSession,
+  } = useContext(CounselorContext);
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   const [search, setSearch]             = useState("");
   const [statusFilter, setStatus]       = useState("ALL");
@@ -76,19 +83,20 @@ export default function CounselorSessions() {
     setTimeout(() => setToastMessage(""), 3500);
   };
 
-  const list = useMemo(() => {
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [data]);
+  const list = Array.isArray(sessions) ? sessions : [];
 
-  const filtered = useMemo(() => list.filter((s) => {
-    const q = search.toLowerCase();
-    const matchSearch = !q ||
-      (s.studentName  ?? "").toLowerCase().includes(q) ||
-      (s.studentEmail ?? "").toLowerCase().includes(q) ||
-      (s.meetLink     ?? "").toLowerCase().includes(q);
-    const matchStatus = statusFilter === "ALL" || s.status === statusFilter;
-    return matchSearch && matchStatus;
-  }), [list, search, statusFilter]);
+  const filtered = useMemo(() => {
+    const dataList = Array.isArray(sessions) ? sessions : [];
+    return dataList.filter((s) => {
+      const q = search.toLowerCase();
+      const matchSearch = !q ||
+        (s.studentName  ?? "").toLowerCase().includes(q) ||
+        (s.studentEmail ?? "").toLowerCase().includes(q) ||
+        (s.meetLink     ?? "").toLowerCase().includes(q);
+      const matchStatus = statusFilter === "ALL" || s.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [sessions, search, statusFilter]);
 
   function openEditModal(session) {
     setEditTarget(session);
@@ -112,32 +120,30 @@ export default function CounselorSessions() {
     }
 
     setSaving(true);
-    try {
-      await CounselorApi.updateSession(editTarget.id, {
-        status: "SCHEDULED",
-        scheduledAt: formDate,
-        meetLink: formMeetLink.trim() || null,
-      });
+    const success = await updateSession(editTarget.id, {
+      status: "SCHEDULED",
+      scheduledAt: formDate,
+      meetLink: formMeetLink.trim() || null,
+    });
+    if (success) {
       showToast("Date et lien Meet enregistrés avec succès !");
       closeEditModal();
-      reload();
-    } catch (err) {
-      alert(err?.response?.data?.message || "Impossible de mettre à jour la séance.");
-    } finally {
-      setSaving(false);
+    } else {
+      alert("Impossible de mettre à jour la séance.");
     }
+    setSaving(false);
   }
 
   async function handleMarkCompleted(sessionId) {
     if (!window.confirm("Marquer cette séance comme terminée ?")) return;
-    try {
-      await CounselorApi.updateSession(sessionId, { status: "COMPLETED" });
+    const success = await updateSession(sessionId, { status: "COMPLETED" });
+    if (success) {
       showToast("Séance marquée comme terminée.");
-      reload();
-    } catch {
+    } else {
       alert("Impossible de modifier le statut.");
     }
   }
+
 
   return (
     <div className="csl-view-container">
@@ -190,9 +196,10 @@ export default function CounselorSessions() {
 
       <div className="csl-card">
         {loading && <Loading />}
-        {error   && <ErrorBox message={error} onRetry={reload} />}
+        {error   && <ErrorBox message={error} onRetry={fetchSessions} />}
 
         {!loading && !error && (
+
           <div className="adm-table-container">
             <table className="adm-table">
               <thead>

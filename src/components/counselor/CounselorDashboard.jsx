@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback, useContext } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import CounselorIcons from "./CounselorIcons";
-import { CounselorApi } from "../../api/CounselorApi";
-import { useFetch } from "../../hooks/useFetch";
+import { CounselorContext } from "../../context/CounselorContext";
 import { AuthContext } from "../../context/AuthContext";
 import "./Counselor.css";
+
 
 function Loading() {
   return <div style={{ padding: "2rem", textAlign: "center", color: "var(--csl-text-muted)" }}>Chargement...</div>;
@@ -67,14 +67,22 @@ function KpiCard({ label, value, sub, subStyle, icon }) {
 
 export default function CounselorDashboard() {
   const { user } = useContext(AuthContext);
+  const {
+    profile,
+    sessions: contextSessions,
+    loading,
+    error,
+    fetchProfile,
+    fetchSessions,
+    updateSession,
+  } = useContext(CounselorContext);
 
-  const profileFetch = useFetch(useCallback(() => CounselorApi.getProfile(), []), null);
-  const sessionsFetch = useFetch(useCallback(() => CounselorApi.getSessions(), []), []);
+  useEffect(() => {
+    fetchProfile();
+    fetchSessions();
+  }, []);
 
-  const profile = profileFetch.data;
-  const sessions = useMemo(() => {
-    return Array.isArray(sessionsFetch.data) ? sessionsFetch.data : sessionsFetch.data?.content ?? [];
-  }, [sessionsFetch.data]);
+  const sessions = Array.isArray(contextSessions) ? contextSessions : [];
 
   const upcomingSessions = useMemo(() => {
     return sessions
@@ -121,22 +129,20 @@ export default function CounselorDashboard() {
     }
 
     setSavingSchedule(true);
-    try {
-      await CounselorApi.updateSession(scheduleModalTarget.id, {
-        status: "SCHEDULED",
-        scheduledAt: scheduleDate,
-        meetLink: meetLink.trim() || null,
-      });
+    const success = await updateSession(scheduleModalTarget.id, {
+      status: "SCHEDULED",
+      scheduledAt: scheduleDate,
+      meetLink: meetLink.trim() || null,
+    });
+    if (success) {
       showToast("Séance planifiée et lien Meet enregistré avec succès !");
       closeScheduleModal();
-      sessionsFetch.reload();
-      if (profileFetch.reload) profileFetch.reload();
-    } catch (err) {
-      alert(err?.response?.data?.message || "Impossible de mettre à jour la séance.");
-    } finally {
-      setSavingSchedule(false);
+    } else {
+      alert("Impossible de mettre à jour la séance.");
     }
+    setSavingSchedule(false);
   };
+
 
   return (
     <div className="csl-view-container">
@@ -226,11 +232,12 @@ export default function CounselorDashboard() {
         </div>
 
         <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-          {sessionsFetch.loading && <Loading />}
-          {sessionsFetch.error && <ErrorBox message={sessionsFetch.error} onRetry={sessionsFetch.reload} />}
+          {loading && <Loading />}
+          {error && <ErrorBox message={error} onRetry={() => { fetchProfile(); fetchSessions(); }} />}
 
-          {!sessionsFetch.loading && !sessionsFetch.error && upcomingSessions.length === 0 && (
+          {!loading && !error && upcomingSessions.length === 0 && (
             <p style={{ color: "var(--csl-text-muted)", fontSize: "0.84rem", padding: "1rem", textAlign: "center" }}>
+
               Aucune séance en attente ou planifiée pour le moment.
             </p>
           )}

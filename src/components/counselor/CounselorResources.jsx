@@ -1,20 +1,19 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import CounselorIcons from "./CounselorIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { SchoolContext } from "../../context/SchoolContext";
 import "./Counselor.css";
 
 export default function CounselorResources() {
-  const { data: schoolsData, loading, error, reload } = useFetch(
-    useCallback(() => AdminApi.getSchools().catch(() => []), []),
-    []
-  );
+  const { schools: contextSchools, loading, error, fetchSchools } = useContext(SchoolContext);
 
-  const schools = useMemo(() => {
-    return Array.isArray(schoolsData) ? schoolsData : schoolsData?.content ?? [];
-  }, [schoolsData]);
+  useEffect(() => {
+    fetchSchools();
+  }, []);
+
+  const schools = Array.isArray(contextSchools) ? contextSchools : [];
 
   const [searchTerm, setSearchTerm] = useState("");
+
 
   const filteredSchools = useMemo(() => {
     return schools.filter((s) => {
@@ -70,9 +69,10 @@ export default function CounselorResources() {
         {error && (
           <div style={{ padding: "2rem", textAlign: "center" }}>
             <p style={{ color: "var(--csl-text-muted)", marginBottom: "0.5rem" }}>⚠️ {error}</p>
-            <button className="csl-btn csl-btn-secondary" onClick={reload}>Réessayer</button>
+            <button className="csl-btn csl-btn-secondary" onClick={fetchSchools}>Réessayer</button>
           </div>
         )}
+
 
         {!loading && !error && (
           <div className="csl-table-container">

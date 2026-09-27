@@ -5,7 +5,7 @@ import "./RecommendationsPage.css";
 
 const DISCIPLINE_PRESETS = {
 
-  ai: "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80",
+  ai: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
 
   software: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
 
@@ -17,7 +17,7 @@ const DISCIPLINE_PRESETS = {
 
   electronics: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
 
-  civil: "https://images.unsplash.com/photo-1541888946425-d0fbb18015f5?auto=format&fit=crop&w=800&q=80",
+  civil: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
 
   architecture: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
 
@@ -277,7 +277,8 @@ export default function RecommendationsPage() {
 
   useEffect(() => {
     fetchMyRecommendations();
-  }, [fetchMyRecommendations]);
+  }, []);
+
 
   const categories = useMemo(() => {
     const set = new Set();

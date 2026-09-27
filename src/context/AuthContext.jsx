@@ -39,6 +39,17 @@ try {
   };
 
 
+  const register = async (registrationData) => {
+    setError(null);
+    try {
+      await AuthApi.register(registrationData);
+      return true;
+    } catch (err) {
+      setError(err.response?.data?.message || "Échec de l'inscription. Veuillez réessayer.");
+      return false;
+    }
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -47,8 +58,9 @@ try {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, error, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ token, user, error, login, register, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
+
 }

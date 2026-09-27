@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState } from "react";
 import { RecommendationApi } from "../api/recommendationApi";
 
 export const RecommendationContext = createContext();
@@ -8,31 +8,30 @@ export function RecommendationProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const executeRequest = async (apiCall, defaultErrorMessage) => {
+  const fetchMyRecommendations = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiCall();
+      const data = await RecommendationApi.getMyRecommendations();
       setRecommendations(data || []);
     } catch (err) {
-      setError(err.response?.data?.message || defaultErrorMessage);
+      setError(err.response?.data?.message || "Erreur lors du chargement des recommandations.");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchMyRecommendations = useCallback(() => {
-    return executeRequest(
-      () => RecommendationApi.getMyRecommendations(),
-      "Erreur lors du chargement des recommandations."
-    );
-  }, []);
-
-  const regenerateRecommendations = () => {
-    return executeRequest(
-      () => RecommendationApi.regenerate(),
-      "Erreur lors de la régénération des recommandations."
-    );
+  const regenerateRecommendations = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await RecommendationApi.regenerate();
+      setRecommendations(data || []);
+    } catch (err) {
+      setError(err.response?.data?.message || "Erreur lors de la régénération des recommandations.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

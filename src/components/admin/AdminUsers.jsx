@@ -1,8 +1,8 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
+
 
 const ROLE_LABELS = { STUDENT: "Étudiant", COUNSELOR: "Conseiller", ADMIN: "Admin" };
 
@@ -11,7 +11,20 @@ function getStatus(u) {
 }
 
 export default function AdminUsers() {
-  const { data, loading, error, reload } = useFetch(useCallback(() => AdminApi.getUsers(), []), []);
+  const {
+    users,
+    loading,
+    error,
+    fetchUsers,
+    createUser,
+    toggleUserStatus,
+    resetUserPassword,
+    deleteUser,
+  } = useContext(AdminContext);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRole] = useState("ALL");
@@ -20,7 +33,7 @@ export default function AdminUsers() {
   const [createOpen, setCreateOpen] = useState(false);
   const [passwordTarget, setPasswordTarget] = useState(null);
 
-  const list = useMemo(() => (Array.isArray(data) ? data : data?.content ?? []), [data]);
+  const list = Array.isArray(users) ? users : [];
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -41,23 +54,17 @@ export default function AdminUsers() {
 
   async function handleToggleStatus(user) {
     const next = getStatus(user) === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
-    try {
-      await AdminApi.toggleUserStatus(user.id, next);
-      reload();
-    } catch {
-      alert("Erreur lors de la modification du statut.");
-    }
+    const success = await toggleUserStatus(user.id, next);
+    if (!success) alert("Erreur lors de la modification du statut.");
   }
 
   async function handleDelete(id) {
     if (!window.confirm("Supprimer cet utilisateur définitivement ?")) return;
-    try {
-      await AdminApi.deleteUser(id);
-      reload();
-    } catch {
-      alert("Erreur lors de la suppression.");
-    }
+    const success = await deleteUser(id);
+    if (!success) alert("Erreur lors de la suppression.");
   }
+
+
 
   return (
     <div className="adm-view-container">
@@ -199,21 +206,25 @@ export default function AdminUsers() {
       {createOpen && (
         <CreateUserModal
           onClose={() => setCreateOpen(false)}
-          onSuccess={() => { setCreateOpen(false); reload(); }}
+          onSuccess={() => { setCreateOpen(false); fetchUsers(); }}
+          createUser={createUser}
         />
       )}
+
 
       {passwordTarget && (
         <ResetPasswordModal
           user={passwordTarget}
           onClose={() => setPasswordTarget(null)}
+          resetUserPassword={resetUserPassword}
         />
       )}
+
     </div>
   );
 }
 
-function CreateUserModal({ onClose, onSuccess }) {
+function CreateUserModal({ onClose, onSuccess, createUser }) {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ fullName: "", email: "", password: "", role: "STUDENT" });
 
@@ -232,15 +243,15 @@ function CreateUserModal({ onClose, onSuccess }) {
       return;
     }
     setSaving(true);
-    try {
-      await AdminApi.createUser(form);
+    const success = await createUser(form);
+    if (success) {
       onSuccess();
-    } catch (err) {
-      alert(err?.response?.data?.message || "Impossible de créer l'utilisateur.");
-    } finally {
-      setSaving(false);
+    } else {
+      alert("Impossible de créer l'utilisateur.");
     }
+    setSaving(false);
   }
+
 
   return (
     <div className="adm-modal-backdrop" onClick={onClose}>
@@ -313,7 +324,7 @@ function CreateUserModal({ onClose, onSuccess }) {
   );
 }
 
-function ResetPasswordModal({ user, onClose }) {
+function ResetPasswordModal({ user, onClose, resetUserPassword }) {
   const [newPassword, setNewPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -332,15 +343,14 @@ function ResetPasswordModal({ user, onClose }) {
       return;
     }
     setSaving(true);
-    try {
-      await AdminApi.resetUserPassword(user.id, newPassword);
+    const success = await resetUserPassword(user.id, newPassword);
+    if (success) {
       alert(`Mot de passe réinitialisé avec succès pour ${user.fullName}.`);
       onClose();
-    } catch (err) {
-      alert(err?.response?.data?.message || "Erreur lors de la réinitialisation du mot de passe.");
-    } finally {
-      setSaving(false);
+    } else {
+      alert("Erreur lors de la réinitialisation du mot de passe.");
     }
+    setSaving(false);
   }
 
   return (

@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState } from "react";
 import { MentorshipApi } from "../api/mentorshipApi";
 
 export const MentorshipContext = createContext();
@@ -10,7 +10,7 @@ export function MentorshipProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchAvailableCounselors = useCallback(async (fieldId) => {
+  const fetchAvailableCounselors = async (fieldId) => {
     setLoading(true);
     setError(null);
     try {
@@ -23,7 +23,7 @@ export function MentorshipProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const requestSession = async (counselorId) => {
     setLoading(true);
@@ -40,7 +40,7 @@ export function MentorshipProvider({ children }) {
     }
   };
 
-  const fetchMySessionsAsStudent = useCallback(async () => {
+  const fetchMySessionsAsStudent = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -53,9 +53,9 @@ export function MentorshipProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const fetchMySessionsAsCounselor = useCallback(async () => {
+  const fetchMySessionsAsCounselor = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -68,7 +68,7 @@ export function MentorshipProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const updateSession = async (sessionId, updateData) => {
     setLoading(true);

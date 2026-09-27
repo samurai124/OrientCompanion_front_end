@@ -1,12 +1,7 @@
-/* ==========================================================================
-   ORIENTCOMPANION — DRIBBBLE HIGH SCHOOL DESIGN SYSTEM
-   Faithfully reproduces the layout, typography, and structure of the reference design,
-   while seamlessly integrating the app's brand colors (light & dark).
-   ========================================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-/* ROOT CONTAINER */
 .dribbble-landing-root {
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'Space Grotesk', monospace;
@@ -26,7 +21,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Light mode defaults if variables not preset */
 .dribbble-landing-root[data-theme="light"] {
   --canvas-bg: #ffffff;
   --text-primary: #181a20;
@@ -45,7 +39,6 @@
   --card-shadow: 0 4px 20px -2px rgba(24, 26, 32, 0.04);
 }
 
-/* Dark mode adjustments using app's dark palette */
 .dribbble-landing-root[data-theme="dark"] {
   --canvas-bg: #0d0f17;
   --text-primary: #f8fafc;
@@ -64,7 +57,6 @@
   --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
 }
 
-/* COMMON CONTAINER */
 .dribbble-container {
   width: 100%;
   max-width: 1320px;
@@ -72,10 +64,6 @@
   padding: 0 1.5rem;
   box-sizing: border-box;
 }
-
-/* ==========================================================================
-   NAVIGATION
-   ========================================================================== */
 
 .dribbble-navbar {
   position: sticky;
@@ -99,7 +87,6 @@
   gap: 1.5rem;
 }
 
-/* Brand */
 .dribbble-brand {
   display: flex;
   align-items: center;
@@ -139,7 +126,6 @@
   color: var(--text-secondary);
 }
 
-/* Nav Links */
 .dribbble-nav-links {
   display: flex;
   align-items: center;
@@ -158,7 +144,6 @@
   color: var(--text-primary);
 }
 
-/* Actions */
 .dribbble-nav-actions {
   display: flex;
   align-items: center;
@@ -236,7 +221,6 @@
   cursor: pointer;
 }
 
-/* Mobile Menu */
 .dribbble-mobile-menu {
   display: flex;
   flex-direction: column;
@@ -260,10 +244,6 @@
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
-
-/* ==========================================================================
-   HERO SECTION
-   ========================================================================== */
 
 .dribbble-hero-section {
   padding: 3.5rem 0 2.5rem;
@@ -303,7 +283,6 @@
   font-size: 0.95rem;
 }
 
-/* Large Hero Banner Photo */
 .dribbble-hero-banner-wrap {
   position: relative;
   width: 100%;
@@ -322,17 +301,12 @@
   display: block;
 }
 
-/* ==========================================================================
-   ABOUT SECTION WITH SIGNATURE BLUE PIXEL / MOSAIC PATTERN
-   ========================================================================== */
-
 .dribbble-about-section {
   position: relative;
   padding: 6.5rem 0 5rem;
   overflow: hidden;
 }
 
-/* Stepped Mosaic Grid Accents */
 .mosaic-accent-grid {
   position: absolute;
   inset: 0;
@@ -348,7 +322,6 @@
   opacity: 0.92;
 }
 
-/* Top Right Cluster */
 .mb-tr-1 { top: 7%; right: 28%; }
 .mb-tr-2 { top: 7%; right: 24%; }
 .mb-tr-3 { top: 12%; right: 24%; }
@@ -357,7 +330,6 @@
 .mb-tr-6 { top: 17%; right: 16%; }
 .mb-tr-7 { top: 17%; right: 12%; }
 
-/* Left / Mid Cluster */
 .mb-ml-1 { top: 44%; left: 4%; }
 .mb-ml-2 { top: 44%; left: 8%; }
 .mb-ml-3 { top: 50%; left: 4%; }
@@ -402,14 +374,12 @@
   font-weight: 700;
 }
 
-/* 4 STATS CARDS */
 .about-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
 }
 
-/* Solid Blue Card (Card 1) */
 .stat-card-solid-blue {
   background-color: var(--mosaic-box-bg);
   color: #ffffff;
@@ -439,7 +409,6 @@
   color: #ffffff;
 }
 
-/* Standard Stats Cards (Cards 2, 3, 4) */
 .stat-card-standard {
   background-color: var(--dash-card-bg);
   border: 1px solid var(--dash-card-border);
@@ -472,10 +441,6 @@
   color: var(--text-secondary);
   margin: 0;
 }
-
-/* ==========================================================================
-   UNIVERSITY ADMISSIONS / PARTNER LOGOS GRID (DASHED BORDERS)
-   ========================================================================== */
 
 .dribbble-partners-section {
   padding: 3rem 0 5rem;
@@ -552,10 +517,6 @@
   color: var(--text-primary);
   letter-spacing: -0.01em;
 }
-
-/* ==========================================================================
-   ACADEMIC PROGRAM EXCELLENCE
-   ========================================================================== */
 
 .dribbble-academic-section {
   padding: 5rem 0;
@@ -634,10 +595,6 @@
   margin: 0;
 }
 
-/* ==========================================================================
-   SCHOOL FACILITIES (BENTO PHOTO GRID)
-   ========================================================================== */
-
 .dribbble-facilities-section {
   padding: 5rem 0;
 }
@@ -694,10 +651,6 @@
   text-transform: uppercase;
   color: var(--text-secondary);
 }
-
-/* ==========================================================================
-   OUR PROUD STUDENTS' ACHIEVEMENTS
-   ========================================================================== */
 
 .dribbble-achievements-section {
   padding: 5.5rem 0;
@@ -803,10 +756,6 @@
   border-color: var(--text-muted);
   transform: translateY(-1px);
 }
-
-/* ==========================================================================
-   GRADUATE PERSPECTIVES (TESTIMONIALS)
-   ========================================================================== */
 
 .dribbble-perspectives-section {
   padding: 5.5rem 0 4rem;
@@ -937,10 +886,6 @@
   transform: scale(1.2);
 }
 
-/* ==========================================================================
-   LATEST NEWS
-   ========================================================================== */
-
 .dribbble-news-section {
   padding: 5rem 0 6rem;
 }
@@ -972,7 +917,6 @@
   text-underline-offset: 4px;
 }
 
-/* Top 2 Featured News */
 .news-featured-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -980,7 +924,6 @@
   margin-bottom: 2.25rem;
 }
 
-/* Featured Card 1: Full image with dark text overlay */
 .news-card-featured-overlay {
   position: relative;
   width: 100%;
@@ -1042,7 +985,6 @@
   margin: 0;
 }
 
-/* Featured Card 2: Photo on top, content underneath */
 .news-card-featured-standard {
   display: flex;
   flex-direction: column;
@@ -1085,7 +1027,6 @@
   margin: 0;
 }
 
-/* Bottom 3 Recent News */
 .news-recent-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1135,10 +1076,6 @@
   color: var(--text-secondary);
   margin: 0;
 }
-
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
 
 .dribbble-footer {
   border-top: 1px solid var(--dash-card-border);
@@ -1278,10 +1215,6 @@
 .footer-legal-links a:hover {
   color: var(--text-primary);
 }
-
-/* ==========================================================================
-   MODALS
-   ========================================================================== */
 
 .dribbble-modal-backdrop {
   position: fixed;
@@ -1425,10 +1358,6 @@
 .modal-actions-row {
   margin-top: 1rem;
 }
-
-/* ==========================================================================
-   RESPONSIVE DESIGN BREAKPOINTS
-   ========================================================================== */
 
 @media (max-width: 1080px) {
   .about-stats-grid {

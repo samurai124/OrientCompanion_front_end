@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState } from "react";
 import { FieldApi } from "../api/fieldApi";
 
 export const FieldContext = createContext();
@@ -9,7 +9,7 @@ export function FieldProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchFields = useCallback(async (category, search) => {
+  const fetchFields = async (category, search) => {
     setLoading(true);
     setError(null);
     try {
@@ -22,7 +22,7 @@ export function FieldProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const fetchFieldById = async (id) => {
     setLoading(true);

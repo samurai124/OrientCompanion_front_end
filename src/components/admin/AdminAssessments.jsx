@@ -1,7 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
 
 const RIASEC_FULL_NAMES = {
@@ -27,16 +26,14 @@ function ErrorBox({ message, onRetry }) {
 }
 
 export default function AdminAssessments() {
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => AdminApi.getAssessments(), []),
-    []
-  );
+  const { assessments = [], loading, error, fetchAssessments } = useContext(AdminContext);
 
-  const assessments = useMemo(() => {
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [data]);
+  useEffect(() => {
+    fetchAssessments();
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
+
   const [dimensionFilter, setDimensionFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selectedAssessment, setSelectedAssessment] = useState(null);
@@ -53,6 +50,7 @@ export default function AdminAssessments() {
 
   const filteredAssessments = useMemo(() => {
     return assessments.filter((a) => {
+
       const matchSearch =
         (a.studentName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         (a.studentEmail || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -85,6 +83,8 @@ export default function AdminAssessments() {
     return assessments.filter((a) => a.embeddingComputed || a.status === "VALIDATED").length;
   }, [assessments]);
 
+
+
   return (
     <div className="adm-view-container">
       <div className="adm-page-header">
@@ -105,6 +105,7 @@ export default function AdminAssessments() {
             <AdminIcons.Assessments width="14" height="14" />
           </div>
           <div className="adm-kpi-value">{assessments.length}</div>
+
           <div className="adm-kpi-footer">
             <span className="adm-trend-pill positive">Total enregistrés</span>
           </div>
@@ -140,6 +141,8 @@ export default function AdminAssessments() {
           <div className="adm-kpi-value">
             {assessments.length > 0 ? `${Math.round((completedCount / assessments.length) * 100)}%` : "100%"}
           </div>
+
+
           <div className="adm-kpi-footer">
             <span>Vecteurs IA générés</span>
           </div>
@@ -228,7 +231,8 @@ export default function AdminAssessments() {
 
       <div className="adm-card">
         {loading && <Loading />}
-        {error && <ErrorBox message={error} onRetry={reload} />}
+        {error && <ErrorBox message={error} onRetry={fetchAssessments} />}
+
 
         {!loading && !error && (
           <div className="adm-table-container">

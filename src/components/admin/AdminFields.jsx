@@ -1,9 +1,9 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
+
 
 function Loading() {
   return <div style={{ padding: "3rem", textAlign: "center", color: "var(--adm-text-muted)" }}>Chargement...</div>;
@@ -29,10 +29,21 @@ const EMPTY_FORM = {
 export default function AdminFields() {
   const location = useLocation();
 
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => AdminApi.getFields(), []),
-    []
-  );
+  const {
+    adminFields,
+    loading,
+    error,
+    fetchAdminFields,
+    createField,
+    updateField,
+    deleteField,
+  } = useContext(AdminContext);
+
+  useEffect(() => {
+    fetchAdminFields();
+  }, []);
+
+  const list = adminFields;
 
   const [search, setSearch]         = useState("");
   const [catFilter, setCatFilter]   = useState("ALL");
@@ -40,12 +51,6 @@ export default function AdminFields() {
   const [editTarget, setEditTarget] = useState(null);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
-  const [localList, setLocalList]   = useState(null);
-
-  const list = useMemo(() => {
-    if (localList) return localList;
-    return Array.isArray(data) ? data : data?.content ?? [];
-  }, [localList, data]);
 
   const filtered = useMemo(() => list.filter((f) => {
     const q = search.toLowerCase();
@@ -57,7 +62,7 @@ export default function AdminFields() {
     return matchSearch && matchCat;
   }), [list, search, catFilter]);
 
-  const openModal = useCallback((field = null) => {
+  function openModal(field = null) {
     setEditTarget(field);
     setForm(field ? {
       name: field.name ?? "",
@@ -67,14 +72,14 @@ export default function AdminFields() {
       description: field.description ?? "",
     } : EMPTY_FORM);
     setModalOpen(true);
-  }, []);
+  }
 
   useEffect(() => {
     if (location.state?.openNew) {
       openModal();
       window.history.replaceState({}, document.title);
     }
-  }, [location.state, openModal]);
+  }, [location.state]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -89,32 +94,27 @@ export default function AdminFields() {
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
-    try {
-      if (editTarget) {
-        const updated = await AdminApi.updateField(editTarget.id, form);
-        setLocalList(list.map((f) => f.id === editTarget.id ? updated : f));
-      } else {
-        const created = await AdminApi.createField(form);
-        setLocalList([created, ...list]);
-      }
-      setModalOpen(false);
-    } catch (err) {
-      alert(err?.response?.data?.message || "Erreur lors de la sauvegarde.");
-    } finally {
-      setSaving(false);
+    let result;
+    if (editTarget) {
+      result = await updateField(editTarget.id, form);
+    } else {
+      result = await createField(form);
     }
+    if (result) {
+      setModalOpen(false);
+    } else {
+      alert("Erreur lors de la sauvegarde.");
+    }
+    setSaving(false);
   }
 
   async function handleDelete(id) {
     if (!window.confirm("Supprimer cette filière ?")) return;
-    setLocalList(list.filter((f) => f.id !== id));
-    try {
-      await AdminApi.deleteField(id);
-    } catch {
-      setLocalList(null);
-      reload();
-    }
+    const success = await deleteField(id);
+    if (!success) alert("Erreur lors de la suppression.");
   }
+
+
 
   return (
     <div className="adm-view-container">

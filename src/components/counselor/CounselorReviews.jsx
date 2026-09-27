@@ -1,7 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
 import CounselorIcons from "./CounselorIcons";
-import { CounselorApi } from "../../api/CounselorApi";
-import { useFetch } from "../../hooks/useFetch";
+import { CounselorContext } from "../../context/CounselorContext";
 import "./Counselor.css";
 
 function Loading() {
@@ -17,22 +16,26 @@ function ErrorBox({ message, onRetry }) {
 }
 
 export default function CounselorReviews() {
+  const {
+    pendingAssessments,
+    loading,
+    error,
+    fetchPendingAssessments,
+    submitReview,
+  } = useContext(CounselorContext);
 
-  const { data, loading, error, reload } = useFetch(
-    useCallback(() => CounselorApi.getPendingAssessments(), []),
-    []
-  );
+  useEffect(() => {
+    fetchPendingAssessments();
+  }, []);
 
-  const [localList, setLocalList]   = useState(null);
-  const [selected, setSelected]     = useState(null);
-  const [opinion, setOpinion]       = useState("");
-  const [saving, setSaving]         = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [opinion, setOpinion]   = useState("");
+  const [saving, setSaving]     = useState(false);
 
-  const list = localList ?? (Array.isArray(data) ? data : data?.content ?? []);
+  const list = Array.isArray(pendingAssessments) ? pendingAssessments : [];
 
   function openReview(rev) {
     setSelected(rev);
-
     setOpinion(rev.counselorEndorsement || "");
   }
 
@@ -40,17 +43,15 @@ export default function CounselorReviews() {
     e.preventDefault();
     if (!selected) return;
     setSaving(true);
-    try {
-      await CounselorApi.submitReview(selected.id, { opinion, status: "VALIDATED" });
-
-      setLocalList(list.filter((r) => r.id !== selected.id));
+    const success = await submitReview(selected.id, { opinion, status: "VALIDATED" });
+    if (success) {
       setSelected(null);
-    } catch (err) {
-      alert(err?.response?.data?.message || "Impossible d'enregistrer l'avis.");
-    } finally {
-      setSaving(false);
+    } else {
+      alert("Impossible d'enregistrer l'avis.");
     }
+    setSaving(false);
   }
+
 
   return (
     <div className="csl-view-container">
@@ -64,9 +65,10 @@ export default function CounselorReviews() {
       </div>
 
       {loading && <Loading />}
-      {error   && <ErrorBox message={error} onRetry={reload} />}
+      {error   && <ErrorBox message={error} onRetry={fetchPendingAssessments} />}
 
       {!loading && !error && list.length === 0 && (
+
         <div style={{ padding: "3rem", textAlign: "center" }}>
           <p style={{ color: "var(--csl-text-muted)", fontSize: "1rem" }}>
             ✅ Tous les bilans ont été traités. Aucun bilan en attente.

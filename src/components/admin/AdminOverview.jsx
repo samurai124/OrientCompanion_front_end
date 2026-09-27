@@ -1,9 +1,9 @@
-import { useCallback } from "react";
+import { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import AdminIcons from "./AdminIcons";
-import { AdminApi } from "../../api/AdminApi";
-import { useFetch } from "../../hooks/useFetch";
+import { AdminContext } from "../../context/AdminContext";
 import "./Admin.css";
+
 
 function Loading() {
   return (
@@ -48,16 +48,21 @@ function KpiCard({ label, value, trend, sub, icon }) {
 }
 
 export default function AdminOverview() {
-  const statsFetch = useFetch(useCallback(() => AdminApi.getStats(), []), null);
-  const assessFetch = useFetch(
-    useCallback(() => AdminApi.getRecentAssessments(), []),
-    []
-  );
+  const {
+    stats,
+    recentAssessments,
+    loading,
+    error,
+    fetchStats,
+    fetchRecentAssessments,
+  } = useContext(AdminContext);
 
-  const stats = statsFetch.data;
-  const assessments = Array.isArray(assessFetch.data)
-    ? assessFetch.data
-    : assessFetch.data?.content ?? [];
+  useEffect(() => {
+    fetchStats();
+    fetchRecentAssessments();
+  }, []);
+
+  const assessments = recentAssessments;
 
   return (
     <div className="adm-view-container">
@@ -85,12 +90,13 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      {statsFetch.loading && <Loading />}
-      {statsFetch.error && (
-        <ErrorBox message={statsFetch.error} onRetry={statsFetch.reload} />
+      {loading && <Loading />}
+      {error && (
+        <ErrorBox message={error} onRetry={() => { fetchStats(); fetchRecentAssessments(); }} />
       )}
 
-      {!statsFetch.loading && !statsFetch.error && (
+      {!loading && !error && (
+
         <div className="adm-kpi-grid">
           <KpiCard
             label="Étudiants Inscrits"
@@ -146,12 +152,13 @@ export default function AdminOverview() {
           </Link>
         </div>
 
-        {assessFetch.loading && <Loading />}
-        {assessFetch.error && (
-          <ErrorBox message={assessFetch.error} onRetry={assessFetch.reload} />
+        {loading && <Loading />}
+        {error && (
+          <ErrorBox message={error} onRetry={fetchRecentAssessments} />
         )}
 
-        {!assessFetch.loading && !assessFetch.error && (
+        {!loading && !error && (
+
           <div className="adm-table-container">
             <table className="adm-table">
               <thead>

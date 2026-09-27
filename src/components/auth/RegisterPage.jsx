@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { AuthApi } from "../../api/AuthApi";
+import { AuthContext } from "../../context/AuthContext";
 import AuthSideHero from "./AuthSideHero";
 import BrandLogo from "../common/BrandLogo";
 import "./Auth.css";
@@ -29,6 +29,7 @@ const schema = yup.object({
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [theme] = useState(() => localStorage.getItem("orient_theme") || "light");
+  const { register: registerAuth, error: contextError } = useContext(AuthContext);
 
   const {
     register,
@@ -53,17 +54,15 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     setLoading(true);
     setError(null);
-    try {
-      await AuthApi.register(data);
+    const success = await registerAuth(data);
+    if (success) {
       navigate("/login", { state: { registered: true } });
-    } catch (err) {
-      const message =
-        err.response?.data?.message || "Échec de l'inscription. Veuillez réessayer.";
-      setError(message);
-    } finally {
-      setLoading(false);
+    } else {
+      setError(contextError || "Échec de l'inscription. Veuillez réessayer.");
     }
+    setLoading(false);
   };
+
 
   return (
     <div className="auth-page-wrapper" data-theme={theme}>

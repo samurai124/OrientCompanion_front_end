@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState } from "react";
 import { SchoolApi } from "../api/schoolApi";
 
 export const SchoolContext = createContext();
@@ -9,7 +9,7 @@ export function SchoolProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchSchools = useCallback(async (fieldId) => {
+  const fetchSchools = async (fieldId) => {
     setLoading(true);
     setError(null);
     try {
@@ -22,7 +22,7 @@ export function SchoolProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const fetchSchoolById = async (id) => {
     setLoading(true);

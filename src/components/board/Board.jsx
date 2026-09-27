@@ -104,7 +104,8 @@ export default function Board() {
     if (fetchProfile) fetchProfile();
     if (fetchMyRecommendations) fetchMyRecommendations();
     if (fetchMySessionsAsStudent) fetchMySessionsAsStudent();
-  }, [fetchProfile, fetchMyRecommendations, fetchMySessionsAsStudent]);
+  }, []);
+
 
   const todayDateFormatted = useMemo(() => {
     const raw = new Intl.DateTimeFormat("fr-FR", {

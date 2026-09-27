@@ -94,7 +94,8 @@ export default function MentorshipManagement() {
     } else {
       fetchMySessionsAsCounselor();
     }
-  }, [activeTab, fetchAvailableCounselors, fetchMySessionsAsStudent, fetchMySessionsAsCounselor]);
+  }, [activeTab]);
+
 
   const handleRequestSession = async (counselorId, counselorName) => {
     setRequestingId(counselorId);

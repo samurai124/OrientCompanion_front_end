@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from "react";
+import { createContext, useState } from "react";
 import { AssessmentApi } from "../api/assessmentApi";
 
 export const AssessmentContext = createContext();
@@ -8,7 +8,7 @@ export function AssessmentProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchProfile = useCallback(async () => {
+  const fetchProfile = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -17,7 +17,6 @@ export function AssessmentProvider({ children }) {
     } catch (err) {
       const status = err?.response?.status;
       if (status === 404) {
-
         setProfile(null);
       } else {
         setError("Erreur lors du chargement du profil.");
@@ -25,7 +24,7 @@ export function AssessmentProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const submitAssessment = async (assessmentData) => {
     setLoading(true);
@@ -50,7 +49,6 @@ export function AssessmentProvider({ children }) {
         error,
         fetchProfile,
         submitAssessment,
-
         hasCompletedAssessment: Boolean(profile),
       }}
     >
